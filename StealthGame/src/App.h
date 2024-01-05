@@ -19,8 +19,10 @@ public:
 	int Exec();
 private:
 	void Tick();
+	void UpdateCamera();
 private:
 	Window m_window;
+	Camera m_camera;
 	QuadRenderer m_renderer;
 };
 

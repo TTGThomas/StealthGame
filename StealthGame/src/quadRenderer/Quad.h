@@ -8,6 +8,8 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "Camera.h"
+
 struct Vertex
 {
 	struct
@@ -30,7 +32,7 @@ public:
 
 	void Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex);
 
-	void Draw(Shader* shader, Texture* texture);
+	void Draw(Camera* camera, Shader* shader, Texture* texture, float ratio);
 
 	int getShaderIndex() { return m_shaderIndex; }
 	int GetTextureIndex() { return m_textureIndex; }
@@ -45,10 +47,10 @@ private:
 	glm::vec2 m_scale{};
 
 	constexpr static Vertex m_vertices[4] = {
-		{{-0.5f,  0.5f}, {0.0f, 0.0f}},
-		{{ 0.5f,  0.5f}, {1.0f, 0.0f}},
-		{{-0.5f, -0.5f}, {0.0f, 1.0f}},
-		{{ 0.5f, -0.5f}, {1.0f, 1.0f}},
+		{{-1.0f,  1.0f}, {0.0f, 0.0f}},
+		{{ 1.0f,  1.0f}, {1.0f, 0.0f}},
+		{{-1.0f, -1.0f}, {0.0f, 1.0f}},
+		{{ 1.0f, -1.0f}, {1.0f, 1.0f}},
 	};
 
 	constexpr static unsigned int m_indices[6] = {

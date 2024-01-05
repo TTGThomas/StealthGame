@@ -3,9 +3,17 @@
 App::App()
 	: m_window("Stealth Game", 800, 600, false, false)
 {
+	m_renderer.BindCamera(&m_camera);
+
 	m_renderer.AddShader("shaders/default/Vertex.glsl", "shaders/default/Fragment.glsl");
 	m_renderer.AddTexture("res/logo.png");
-	m_renderer.AddQuad(glm::vec2(0.0f), glm::vec2(0.5f), 0, 0);
+	for (float y = -5.0f; y < 5.0f; y += 1.0f)
+	{
+		for (float x = -5.0f; x < 5.0f; x += 1.0f)
+		{
+			m_renderer.AddQuad(glm::vec2(x, y), glm::vec2(0.1f), 0, 0);
+		}
+	}
 }
 
 App::~App()
@@ -17,6 +25,7 @@ int App::Exec()
 	while (!m_window.GetShouldClose())
 	{
 		m_window.NewFrame();
+		glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 		Tick();
 		Mouse::Flush();
 		KeyBoard::Flush();
@@ -27,17 +36,31 @@ int App::Exec()
 
 void App::Tick()
 {
+	UpdateCamera();
+
 	ImGui::Begin("Stats");
 	ImGui::Text("FPS: %ffps", ImGui::GetIO().Framerate);
 	ImGui::Text("MS: %fms", ImGui::GetIO().DeltaTime);
 	ImGui::End();
 
-	ImGui::Begin("Renderer");
-	ImGui::Text("Quad count: %u", m_renderer.GetQuads().size());
-	Quad& quad = m_renderer.GetQuads()[0];
-	ImGui::DragFloat2("Position", glm::value_ptr(quad.GetPos()), 0.001f);
-	ImGui::DragFloat2("Scale", glm::value_ptr(quad.GetScale()), 0.001f);
-	ImGui::End();
+	m_renderer.ShowStatsWindow();
+	m_camera.ShowStatsWindow();
 
-	m_renderer.Render();
+	m_renderer.Render((float)m_window.GetHeight() / (float)m_window.GetWidth());
+}
+
+void App::UpdateCamera()
+{
+	float speed = 0.0005f;
+	glm::vec2 add{};
+	if (KeyBoard::IsKeyDown(GLFW_KEY_W))
+		add.y += speed;
+	if (KeyBoard::IsKeyDown(GLFW_KEY_A))
+		add.x -= speed;
+	if (KeyBoard::IsKeyDown(GLFW_KEY_S))
+		add.y -= speed;
+	if (KeyBoard::IsKeyDown(GLFW_KEY_D))
+		add.x += speed;
+	m_camera.ChangePos(add);
+	m_camera.ChangeZoom((float)Mouse::GetMouseScrollDY() * 0.1f);
 }

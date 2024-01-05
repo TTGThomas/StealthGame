@@ -40,13 +40,16 @@ void Quad::Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsign
 	glBindVertexArray(0);
 }
 
-void Quad::Draw(Shader* shader, Texture* texture)
+void Quad::Draw(Camera* camera, Shader* shader, Texture* texture, float ratio)
 {
 	shader->Bind();
 	texture->Bind();
 
-	glUniform2f(LOCATION(*shader, "u_pos"), m_pos.x, m_pos.y);
+	glUniform1f(LOCATION(*shader, "u_screenRatio"), ratio);
+
+	glUniform2f(LOCATION(*shader, "u_pos"), m_pos.x - camera->GetPosX(), m_pos.y - camera->GetPosY());
 	glUniform2f(LOCATION(*shader, "u_scale"), m_scale.x, m_scale.y);
+	glUniform1f(LOCATION(*shader, "u_cameraZoom"), camera->GetZoom());
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
