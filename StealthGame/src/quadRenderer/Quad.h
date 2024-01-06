@@ -28,9 +28,9 @@ class Quad
 public:
 	Quad() = default;
 	Quad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex);
-	~Quad();
 
 	void Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex);
+	void Cleanup();
 
 	void Draw(Camera* camera, Shader* shader, Texture* texture, float ratio);
 

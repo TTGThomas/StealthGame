@@ -7,13 +7,9 @@ App::App()
 
 	m_renderer.AddShader("shaders/default/Vertex.glsl", "shaders/default/Fragment.glsl");
 	m_renderer.AddTexture("res/logo.png");
-	for (float y = -5.0f; y < 5.0f; y += 1.0f)
-	{
-		for (float x = -5.0f; x < 5.0f; x += 1.0f)
-		{
+	for (float y = -5.0f; y < 5.0f; y += 0.2f)
+		for (float x = -5.0f; x < 5.0f; x += 0.2f)
 			m_renderer.AddQuad(glm::vec2(x, y), glm::vec2(0.1f), 0, 0);
-		}
-	}
 }
 
 App::~App()
@@ -41,6 +37,7 @@ void App::Tick()
 	ImGui::Begin("Stats");
 	ImGui::Text("FPS: %ffps", ImGui::GetIO().Framerate);
 	ImGui::Text("MS: %fms", ImGui::GetIO().DeltaTime);
+	ImGui::Text("Wnd Scale: %i, %i", m_window.GetWidth(), m_window.GetHeight());
 	ImGui::End();
 
 	m_renderer.ShowStatsWindow();
@@ -51,7 +48,7 @@ void App::Tick()
 
 void App::UpdateCamera()
 {
-	float speed = 0.0005f;
+	float speed = 1.0f * ImGui::GetIO().DeltaTime;
 	glm::vec2 add{};
 	if (KeyBoard::IsKeyDown(GLFW_KEY_W))
 		add.y += speed;

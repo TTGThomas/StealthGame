@@ -5,7 +5,7 @@ Quad::Quad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned in
 	Init(pos, scale, shaderIndex, textureIndex);
 }
 
-Quad::~Quad()
+void Quad::Cleanup()
 {
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);

@@ -19,6 +19,8 @@
 class QuadRenderer
 {
 public:
+	~QuadRenderer();
+
 	void BindCamera(Camera* camera);
 
 	void AddQuad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex);
@@ -31,6 +33,9 @@ public:
 
 	std::vector<Quad>& GetQuads() { return m_quads; }
 private:
+	bool InWindow(Quad& quad, float ratio);
+private:
+	unsigned int m_quadRendered = 0;
 	Camera* m_camera = nullptr;
 	std::vector<Quad> m_quads;
 	std::vector<Shader> m_shaders;

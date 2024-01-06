@@ -40,8 +40,7 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
         return false;
     }
 
-    x = width;
-    y = height;
+    glfwGetFramebufferSize(m_window, &x, &y);
 
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(vSynch ? 1 : 0);// for clarification
@@ -52,7 +51,10 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
         return false;
     }
 
-    glfwSetWindowSizeCallback(m_window, OnResize);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+
+    glfwSetFramebufferSizeCallback(m_window, OnResize);
     glfwSetKeyCallback(m_window, KeyBoard::KeyCallback);
     glfwSetCursorPosCallback(m_window, Mouse::MousePosCallback);
     glfwSetScrollCallback(m_window, Mouse::MouseScrollCallback);
@@ -88,7 +90,7 @@ void Window::NewFrame()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::EndFrame()
@@ -124,6 +126,7 @@ bool Window::GetShouldClose()
 
 void OnResize(GLFWwindow* window, int width, int height)
 {
+    glViewport(0, 0, width, height);
 	x = width;
 	y = height;
 }

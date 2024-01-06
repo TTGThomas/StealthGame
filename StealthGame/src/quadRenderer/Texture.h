@@ -18,4 +18,3 @@ private:
 	unsigned int m_id;
 	int m_width, m_height;
 };
-
