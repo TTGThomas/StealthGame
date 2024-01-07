@@ -20,7 +20,7 @@ public:
 private:
 	unsigned int CompileShader(const char* path, GLenum type);
 private:
-	unsigned int m_program;
+	unsigned int m_program = 0;
 };
 
 #define LOCATION(shader, name) glGetUniformLocation((shader).GetProgram(), (name))

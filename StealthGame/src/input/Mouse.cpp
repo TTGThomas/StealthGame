@@ -1,18 +1,18 @@
 #include "Mouse.h"
 
 bool Mouse::m_mouseIsFirst = true;
-double Mouse::m_mousePosX;
-double Mouse::m_mousePosY;
-double Mouse::m_mouseLastPosX;
-double Mouse::m_mouseLastPosY;
-double Mouse::m_mouseDX;
-double Mouse::m_mouseDY;
+double Mouse::m_mousePosX = 0.0;
+double Mouse::m_mousePosY = 0.0;
+double Mouse::m_mouseLastPosX = 0.0;
+double Mouse::m_mouseLastPosY = 0.0;
+double Mouse::m_mouseDX = 0.0;
+double Mouse::m_mouseDY = 0.0;
 
-double Mouse::m_mouseScrollDX;
-double Mouse::m_mouseScrollDY;
+double Mouse::m_mouseScrollDX = 0.0;
+double Mouse::m_mouseScrollDY = 0.0;
 
-std::bitset<GLFW_MOUSE_BUTTON_LAST> Mouse::m_buttonDown;
-std::bitset<GLFW_MOUSE_BUTTON_LAST> Mouse::m_buttonPress;
+std::bitset<GLFW_MOUSE_BUTTON_LAST> Mouse::m_buttonDown{};
+std::bitset<GLFW_MOUSE_BUTTON_LAST> Mouse::m_buttonPress{};
 
 void Mouse::MousePosCallback(GLFWwindow* window, double x, double y)
 {

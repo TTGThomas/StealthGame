@@ -26,28 +26,43 @@ void QuadRenderer::AddTexture(const char* texturePath)
 	m_textures.emplace_back(texturePath);
 }
 
-void QuadRenderer::Render(float ratio)
+void QuadRenderer::Render(float ratio, int selectedIndex)
 {
 	m_quadRendered = 0;
-	for (Quad& quad : m_quads)
+
+	RenderDesc desc;
+	desc.m_camera = m_camera;
+	desc.m_ratio = ratio;
+
+	for (int i = 0; i < m_quads.size(); i++)
 	{
+		Quad& quad = m_quads[i];
 		if (InWindow(quad, ratio))
 		{
-			quad.Draw(m_camera, &m_shaders[quad.getShaderIndex()], &m_textures[quad.GetTextureIndex()], ratio);
+			desc.m_shader = &m_shaders[quad.getShaderIndex()];
+			desc.m_texture = &m_textures[quad.GetTextureIndex()];
+			desc.m_isSelected = (i == selectedIndex);
+
+			quad.Draw(desc);
 			m_quadRendered++;
 		}
 	}
 }
 
-void QuadRenderer::ShowStatsWindow()
+void QuadRenderer::ShowStatsWindow(int controlIndex)
 {
+#ifndef IMGUI_DISABLE
 	ImGui::Begin("Renderer");
 	ImGui::Text("Quad count: %u", m_quads.size());
 	ImGui::Text("Quad Rendered: %u", m_quadRendered);
-	Quad& quad = m_quads.back();
-	ImGui::DragFloat2("Position", glm::value_ptr(quad.GetPos()), 0.001f);
-	ImGui::DragFloat2("Scale", glm::value_ptr(quad.GetScale()), 0.001f);
+	if (controlIndex != -1.0f)
+	{
+		Quad& quad = m_quads[controlIndex];
+		ImGui::DragFloat2("Position", glm::value_ptr(quad.GetPos()), 0.001f);
+		ImGui::DragFloat2("Scale", glm::value_ptr(quad.GetScale()), 0.001f);
+	}
 	ImGui::End();
+#endif
 }
 
 bool QuadRenderer::InWindow(Quad& quad, float ratio)

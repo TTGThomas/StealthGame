@@ -29,7 +29,7 @@ public:
 	float GetPosY() { return m_pos.y; }
 	float GetZoom() { return m_zoom; }
 private:
-	glm::vec2 m_pos;
+	glm::vec2 m_pos{};
 	float m_zoom = 1.0f;
 
 	constexpr static float m_minZoom = 0.1f;

@@ -1,8 +1,7 @@
 #include "Window.h"
 
 static int x = 0, y = 0;
-
-static void OnResize(GLFWwindow* window, int width, int height);
+static float ratio = 1.0f;
 
 Window::Window(const char* title, int width, int height, bool vSynch, bool fullScreen)
 {
@@ -14,9 +13,11 @@ Window::Window(const char* title, int width, int height, bool vSynch, bool fullS
 
 Window::~Window()
 {
+#ifndef IMGUI_DISABLE
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui::DestroyContext();
+#endif
     glfwDestroyWindow(m_window);
     glfwTerminate();
 }
@@ -51,8 +52,11 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
         return false;
     }
 
+    OnResize(m_window, x, y);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glfwSetFramebufferSizeCallback(m_window, OnResize);
     glfwSetKeyCallback(m_window, KeyBoard::KeyCallback);
@@ -64,6 +68,7 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
 
     std::cout << "window created" << std::endl;
     
+#ifndef IMGUI_DISABLE
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& m_io = ImGui::GetIO();
@@ -78,7 +83,7 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     ImGui_ImplOpenGL3_Init("#version 330");
 
     std::cout << "ImGui context created" << std::endl;
-
+#endif
     return true;
 }
 
@@ -86,15 +91,18 @@ void Window::NewFrame()
 {
     glfwPollEvents();
 
+#ifndef IMGUI_DISABLE
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
+#endif
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::EndFrame()
 {
+#ifndef IMGUI_DISABLE
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -105,7 +113,7 @@ void Window::EndFrame()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-
+#endif
     glfwSwapBuffers(m_window);
 }
 
@@ -119,6 +127,11 @@ int Window::GetHeight()
 	return y;
 }
 
+float Window::GetRatio()
+{
+    return ratio;
+}
+
 bool Window::GetShouldClose()
 {
     return glfwWindowShouldClose(m_window);
@@ -129,4 +142,14 @@ void OnResize(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 	x = width;
 	y = height;
+    ratio = (float)y / (float)x;
+}
+
+void OnResize(GLFWwindow* window, int width, int height, int x, int y)
+{
+    width /= 2;
+    glViewport(x, y, width, height);
+    x = width;
+    y = height;
+    ratio = (float)y / (float)x;
 }

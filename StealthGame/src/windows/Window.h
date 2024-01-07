@@ -12,6 +12,9 @@
 #include "../input/KeyBoard.h"
 #include "../input/Mouse.h"
 
+void OnResize(GLFWwindow* window, int width, int height);
+void OnResize(GLFWwindow* window, int width, int height, int x, int y);
+
 class Window
 {
 public:
@@ -23,6 +26,7 @@ public:
 
 	int GetWidth();
 	int GetHeight();
+	float GetRatio();
 	bool GetShouldClose();
 	GLFWwindow* GetWindow() { return m_window; }
 private:

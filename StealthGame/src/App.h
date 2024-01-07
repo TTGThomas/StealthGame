@@ -9,6 +9,11 @@
 #include "input/Mouse.h"
 
 #include "quadRenderer/QuadRenderer.h"
+#include "Collisions/CollisionDetector.h"
+
+#include "Utils/Timer.h"
+
+#include "Game/Game.h"
 
 class App
 {
@@ -19,10 +24,24 @@ public:
 	int Exec();
 private:
 	void Tick();
+private:
 	void UpdateCamera();
+	void UpdateSelection();
+	void UpdateGame();
+private:
+	glm::vec2 GetMouseGLPos();
 private:
 	Window m_window;
 	Camera m_camera;
 	QuadRenderer m_renderer;
-};
+	CollisionDetector m_collision;
 
+	// timers here
+	Timer m_gpuTimer;
+	Timer m_tickTimer;
+
+	int m_hoveredIndex = -1;
+	int m_selectedIndex = -1;
+
+	Game m_game;
+};

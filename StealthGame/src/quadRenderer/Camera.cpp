@@ -16,8 +16,10 @@ void Camera::ChangeZoom(float zoom)
 
 void Camera::ShowStatsWindow()
 {
+#ifndef IMGUI_DISABLE
 	ImGui::Begin("Camera");
 	ImGui::DragFloat2("Position", glm::value_ptr(m_pos), 0.0001f);
 	ImGui::DragFloat("Zoom", &m_zoom, 0.01f);
 	ImGui::End();
+#endif
 }

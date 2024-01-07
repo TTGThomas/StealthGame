@@ -1,7 +1,7 @@
 #include "KeyBoard.h"
 
-std::bitset<GLFW_KEY_LAST> KeyBoard::m_keyDown;
-std::bitset<GLFW_KEY_LAST> KeyBoard::m_KeyPress;
+std::bitset<GLFW_KEY_LAST> KeyBoard::m_keyDown{};
+std::bitset<GLFW_KEY_LAST> KeyBoard::m_KeyPress{};
 
 void KeyBoard::KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
 {

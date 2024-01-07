@@ -27,9 +27,9 @@ public:
 	void AddShader(const char* vertex, const char* fragment);
 	void AddTexture(const char* texturePath);
 
-	void Render(float ratio);
+	void Render(float ratio, int selectedIndex = -1);
 
-	void ShowStatsWindow();
+	void ShowStatsWindow(int controlIndex = -1);
 
 	std::vector<Quad>& GetQuads() { return m_quads; }
 private:
@@ -37,7 +37,7 @@ private:
 private:
 	unsigned int m_quadRendered = 0;
 	Camera* m_camera = nullptr;
-	std::vector<Quad> m_quads;
-	std::vector<Shader> m_shaders;
-	std::vector<Texture> m_textures;
+	std::vector<Quad> m_quads{};
+	std::vector<Shader> m_shaders{};
+	std::vector<Texture> m_textures{};
 };

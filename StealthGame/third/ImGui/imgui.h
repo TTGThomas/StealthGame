@@ -51,6 +51,8 @@ Index of this file:
 
 */
 
+#include "../../ImGuiSwitch.h"
+
 #pragma once
 
 // Configuration file with compile-time options

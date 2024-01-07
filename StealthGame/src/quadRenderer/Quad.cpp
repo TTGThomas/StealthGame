@@ -14,6 +14,8 @@ void Quad::Cleanup()
 
 void Quad::Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex)
 {
+	m_aabb = AABB(pos - scale, pos + scale);
+
 	m_pos = pos;
 	m_scale = scale;
 	m_shaderIndex = shaderIndex;
@@ -40,22 +42,33 @@ void Quad::Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsign
 	glBindVertexArray(0);
 }
 
-void Quad::Draw(Camera* camera, Shader* shader, Texture* texture, float ratio)
+void Quad::Draw(RenderDesc& desc)
 {
-	shader->Bind();
-	texture->Bind();
+	if (!m_visible)
+		return;
 
-	glUniform1f(LOCATION(*shader, "u_screenRatio"), ratio);
+	desc.m_shader->Bind();
+	desc.m_texture->Bind();
 
-	glUniform2f(LOCATION(*shader, "u_pos"), m_pos.x - camera->GetPosX(), m_pos.y - camera->GetPosY());
-	glUniform2f(LOCATION(*shader, "u_scale"), m_scale.x, m_scale.y);
-	glUniform1f(LOCATION(*shader, "u_cameraZoom"), camera->GetZoom());
+	glUniform1f(LOCATION(*desc.m_shader, "u_screenRatio"), desc.m_ratio);
+
+	glUniform2f(LOCATION(*desc.m_shader, "u_pos"), m_pos.x - desc.m_camera->GetPosX(), m_pos.y - desc.m_camera->GetPosY());
+	glUniform2f(LOCATION(*desc.m_shader, "u_scale"), m_scale.x, m_scale.y);
+
+	glUniform1f(LOCATION(*desc.m_shader, "u_cameraZoom"), desc.m_camera->GetZoom());
+	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	texture->Unbind();
-	shader->Unbind();
+	desc.m_texture->Unbind();
+	desc.m_shader->Unbind();
+}
+
+void Quad::UpdateAABB()
+{
+	m_aabb.SetMinPos(m_pos - m_scale);
+	m_aabb.SetMaxPos(m_pos + m_scale);
 }
