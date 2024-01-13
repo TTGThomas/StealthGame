@@ -44,7 +44,8 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 			desc.m_isSelected = (i == selectedIndex);
 
 			quad.Draw(desc);
-			m_quadRendered++;
+			if (quad.GetVisible())
+				m_quadRendered++;
 		}
 	}
 }

@@ -16,12 +16,10 @@ void Player::PlayerTick(GameTickDesc& desc)
 		return;
 
 	MovePlayer(desc);
-	InteractPlayer(desc);
 }
 
 void Player::EliminateNPC(NPC& victim)
 {
-	victim.EliminateMyself();
 	SetPos(victim.GetPos());
 }
 
@@ -54,23 +52,4 @@ void Player::MovePlayer(GameTickDesc& desc)
 	// synch hitbox and character
 	GetQuad(2)->SetScale(GetQuad(0)->GetScale());
 	GetQuad(2)->SetPos(GetQuad(0)->GetPos());
-}
-
-void Player::InteractPlayer(GameTickDesc& desc)
-{
-	m_map->GetQuads()[GetIndex(1)].SetVisibility(false);
-	for (NPC& npc : *m_npcs)
-	{
-		glm::vec2 diff = npc.GetPos() - GetPos();
-		if (glm::length(diff) < 0.5f)
-		{
-			m_map->GetQuads()[GetIndex(1)].SetPos(npc.GetPos());
-			m_map->GetQuads()[GetIndex(1)].SetVisibility(true);
-			if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
-			{
-				EliminateNPC(npc);
-			}
-			break;
-		}
-	}
 }

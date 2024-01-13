@@ -21,7 +21,7 @@ public:
 	Object() = default;
 	Object(QuadRenderer* map, std::vector<QuadInitDesc>& descs);
 
-	virtual void Init(QuadRenderer* map, std::vector<QuadInitDesc>& descs);
+	inline void Init(QuadRenderer* map, std::vector<QuadInitDesc>& descs);
 
 	Quad* GetQuad(int index) { return &m_map->GetQuads()[GetIndex(index)]; }
 	const std::vector<int>& GetIndices() { return m_indices; }

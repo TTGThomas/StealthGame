@@ -23,7 +23,12 @@
 #include "Characters/Player.h"
 #include "Characters/NPC.h"
 
+#include "Characters/NPCStats.h"
+
 #include "Items/Item.h"
+#include "Items/Disguise.h"
+
+#include "Scene.h"
 
 #include "Desc.h"
 
@@ -37,9 +42,6 @@ public:
 
 	void Tick(GameTickDesc& desc);
 private:
-	Player m_player;
-	std::vector<NPC> m_npcs;
-	std::vector<Item> m_items;
-	Object m_map0;
+	Scene m_scene;
 };
 

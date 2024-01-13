@@ -1,17 +1,19 @@
 #pragma once
 
-#include "../Engine/Object.h"
+#include "../../quadRenderer/QuadRenderer.h"
 
-#include "../Characters/Player.h"
-#include "../Characters/NPC.h"
-
-// haves no hitbox
-// every quad acts as a character
-class Item : public Object
+// items should only have one quad
+class Item
 {
 public:
-	virtual void Init(QuadRenderer* map, std::vector<QuadInitDesc>& descs) override;
+	void SetItemIndex(int index) { m_itemIndex = index; }
 
-	virtual void OnCollect(Player* player) {}
-	virtual void OnCollect(NPC* npc) {}
+	virtual void OnCollect(class Scene* scene) {}
+
+	Quad& GetQuad() { return m_map->GetQuads()[m_index]; }
+	int GetIndex() { return m_index; }
+protected:
+	QuadRenderer* m_map;
+	int m_index;
+	int m_itemIndex;
 };

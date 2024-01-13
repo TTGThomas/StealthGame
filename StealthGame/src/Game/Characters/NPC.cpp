@@ -26,4 +26,21 @@ void NPC::ChangePos(glm::vec2 pos)
 
 void NPC::EliminateMyself()
 {
+	m_state = State::DEAD;
+}
+
+void NPC::TickStaticGuest()
+{
+}
+
+void NPC::TickGuest()
+{
+}
+
+void NPC::TickGuard()
+{
+}
+
+void NPC::TickNonStatic()
+{
 }

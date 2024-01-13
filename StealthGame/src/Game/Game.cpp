@@ -10,6 +10,8 @@ Game::~Game()
 
 void Game::Init(GameTickDesc& desc)
 {
+	desc.m_collision->BindMap(&desc.m_renderer->GetQuads());
+
 	desc.m_camera->SetZoom(0.5f);
 
 	desc.m_renderer->BindCamera(desc.m_camera);
@@ -26,33 +28,52 @@ void Game::Init(GameTickDesc& desc)
 	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.2f), 0, 0});
 	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.1f), 0, 2});
 	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.2f), 0, 1});
-	m_player.Init(desc.m_renderer, playerDesc);
-	m_player.BindCamera(desc.m_camera);
-	m_player.BindNPCs(&m_npcs);
 
-	m_npcs.resize(1);
+	std::vector<std::vector<QuadInitDesc>> allNpcDesc{};
 
 	std::vector<QuadInitDesc> npcDesc{};
 	npcDesc.push_back({ glm::vec2(-1.2f, 0.0f), glm::vec2(0.2f), 0, 0 });
 	npcDesc.push_back({ glm::vec2(-1.2f, 0.0f), glm::vec2(0.05f), 0, 4 });
 	npcDesc.push_back({ glm::vec2(-1.2f, 0.0f), glm::vec2(0.2f), 0, 3 });
-	m_npcs[0].Init(desc.m_renderer, npcDesc);
+	allNpcDesc.push_back(npcDesc);
+
+	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
 
 	std::vector<QuadInitDesc> mapDesc{};
 	mapDesc.push_back({ glm::vec2(1.2f, 0.0f), glm::vec2(0.5f), 0, 0 });
 	mapDesc.push_back({ glm::vec2(1.2f, 0.0f), glm::vec2(0.5f), 0, 0 });
-	m_map0.Init(desc.m_renderer, mapDesc);
+	allMapDesc.push_back(mapDesc);
 
-	desc.m_collision->BindMap(&desc.m_renderer->GetQuads());
+	SceneInitDesc initDesc;
+	initDesc.m_renderer = desc.m_renderer;
+	initDesc.m_player = &playerDesc;
+	initDesc.m_playerCamera = desc.m_camera;
+	initDesc.m_npcs = &allNpcDesc;
+	initDesc.m_map = &allMapDesc;
+	m_scene.Init(initDesc);
+
+	std::vector<std::shared_ptr<Item>> items;
+	for (float y = 1.0f; y < 3.0f; y += 0.1f)
+	{
+		for (float x = -1.0f; x < 1.0f; x += 0.1f)
+		{
+			items.emplace_back(std::make_shared<Disguise>());
+			dynamic_cast<Disguise*>(items.back().get())->Init(desc.m_renderer, Disguise::Type::GAURD, glm::vec2(x, y), 0);
+		}
+	}
+	m_scene.GetItems().AddItem(items);
 }
 
 void Game::Tick(GameTickDesc& desc)
 {
-	for (NPC& npc : m_npcs)
+	for (NPC& npc : m_scene.GetNPCs())
 		npc.GetQuad(0)->GetAABB().SetEnabled(false);
-	m_player.PlayerTick(desc);
-	for (NPC& npc : m_npcs)
+	m_scene.GetPlayer().PlayerTick(desc);
+	for (NPC& npc : m_scene.GetNPCs())
 		npc.GetQuad(0)->GetAABB().SetEnabled(true);
 
-	m_npcs[0].NPCTick(desc);
+	m_scene.InteractTick(desc);
+
+	for (NPC& npc : m_scene.GetNPCs())
+		npc.NPCTick(desc);
 }

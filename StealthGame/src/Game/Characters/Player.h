@@ -33,10 +33,9 @@ public:
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 	bool GetInputEnabled() { return m_inputEnabled; }
 	bool GetIsCrouching() { return m_isCrouching; }
-private:
 	void EliminateNPC(NPC& victim);
+private:
 	void MovePlayer(GameTickDesc& desc);
-	void InteractPlayer(GameTickDesc& desc);
 private:
 	bool m_inputEnabled = true;
 	Camera* m_bindedCamera = nullptr;
