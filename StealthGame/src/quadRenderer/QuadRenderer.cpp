@@ -11,9 +11,16 @@ void QuadRenderer::BindCamera(Camera* camera)
 	m_camera = camera;
 }
 
-void QuadRenderer::AddQuad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex)
+void QuadRenderer::AddQuad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
 {
-	m_quads.emplace_back(pos, scale, shaderIndex, textureIndex);
+	int n = m_quads.size();
+	int index = 0;
+	for (int i = 0; i < m_dstIndex.size() && depth < m_quads[m_dstIndex[i]].GetDepth(); i++)
+	{
+		index++;
+	}
+	m_dstIndex.insert(m_dstIndex.begin() + index, n);
+	m_quads.emplace_back(pos, scale, depth, shaderIndex, textureIndex);
 }
 
 void QuadRenderer::AddShader(const char* vertex, const char* fragment)
@@ -34,9 +41,9 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	desc.m_camera = m_camera;
 	desc.m_ratio = ratio;
 
-	for (int i = 0; i < m_quads.size(); i++)
+	for (int i = 0; i < m_dstIndex.size(); i++)
 	{
-		Quad& quad = m_quads[i];
+		Quad& quad = m_quads[m_dstIndex[i]];
 		if (InWindow(quad, ratio))
 		{
 			desc.m_shader = &m_shaders[quad.getShaderIndex()];

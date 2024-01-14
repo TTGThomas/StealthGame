@@ -23,7 +23,7 @@ public:
 
 	void BindCamera(Camera* camera);
 
-	void AddQuad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex);
+	void AddQuad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex);
 	void AddShader(const char* vertex, const char* fragment);
 	void AddTexture(const char* texturePath);
 
@@ -40,4 +40,6 @@ private:
 	std::vector<Quad> m_quads{};
 	std::vector<Shader> m_shaders{};
 	std::vector<Texture> m_textures{};
+
+	std::vector<int> m_dstIndex;
 };

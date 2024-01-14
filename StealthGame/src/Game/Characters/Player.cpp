@@ -26,17 +26,17 @@ void Player::EliminateNPC(NPC& victim)
 void Player::MovePlayer(GameTickDesc& desc)
 {
 	float speed = (m_isCrouching ? m_crouchSpeed : m_normalSpeed) * desc.m_tickTimer->Second();
-	glm::vec2 add{};
+	m_velocity = {};
 	if (KeyBoard::IsKeyDown(GLFW_KEY_W))
-		add.y += speed;
+		m_velocity.y += speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_A))
-		add.x -= speed;
+		m_velocity.x -= speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_S))
-		add.y -= speed;
+		m_velocity.y -= speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_D))
-		add.x += speed;
+		m_velocity.x += speed;
 
-	Move(desc.m_collision, add.x, add.y);
+	Move(desc.m_collision, m_velocity.x, m_velocity.y);
 
 	desc.m_camera->SetPos(GetQuad(0)->GetPos());
 

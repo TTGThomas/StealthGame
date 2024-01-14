@@ -18,6 +18,7 @@ public:
 	void DisableAABBs(std::vector<int> indices);
 
 	CollisionPayload Collide(glm::vec2 point);
+	CollisionPayload Collide(glm::vec2 l0, glm::vec2 l1);
 	CollisionPayload Collide(AABB& aabb);
 	CollisionPayload Collide(int index);
 private:

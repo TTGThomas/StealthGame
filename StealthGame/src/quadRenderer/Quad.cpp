@@ -1,8 +1,8 @@
 #include "Quad.h"
 
-Quad::Quad(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex)
+Quad::Quad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
 {
-	Init(pos, scale, shaderIndex, textureIndex);
+	Init(pos, scale, depth, shaderIndex, textureIndex);
 }
 
 void Quad::Cleanup()
@@ -12,12 +12,13 @@ void Quad::Cleanup()
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void Quad::Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsigned int textureIndex)
+void Quad::Init(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
 {
 	m_aabb = AABB(pos - scale, pos + scale);
 
 	m_pos = pos;
 	m_scale = scale;
+	m_depth = depth;
 	m_shaderIndex = shaderIndex;
 	m_textureIndex = textureIndex;
 
@@ -34,7 +35,7 @@ void Quad::Init(glm::vec2 pos, glm::vec2 scale, unsigned int shaderIndex, unsign
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_pos));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_pos));
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoord));
@@ -52,10 +53,22 @@ void Quad::Draw(RenderDesc& desc)
 
 	glUniform1f(LOCATION(*desc.m_shader, "u_screenRatio"), desc.m_ratio);
 
-	glUniform2f(LOCATION(*desc.m_shader, "u_pos"), m_pos.x - desc.m_camera->GetPosX(), m_pos.y - desc.m_camera->GetPosY());
-	glUniform2f(LOCATION(*desc.m_shader, "u_scale"), m_scale.x, m_scale.y);
+	glm::mat4 matrix = glm::identity<glm::mat4>();
 
-	glUniform1f(LOCATION(*desc.m_shader, "u_cameraZoom"), desc.m_camera->GetZoom());
+	// view
+	matrix = glm::scale(matrix, glm::vec3(desc.m_camera->GetZoom()));
+	matrix = glm::translate(matrix, {-desc.m_camera->GetPosX(), -desc.m_camera->GetPosY(), 0.0f});
+
+	// model
+	matrix = glm::translate(matrix, {m_pos.x, m_pos.y, 0.0f});
+	matrix = glm::scale(matrix, {m_scale.x, m_scale.y, 1.0f});
+	matrix = glm::rotate(matrix, glm::radians(-m_rotation), {0.0f, 0.0f, 1.0f});
+
+	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
+	glUniformMatrix4fv(LOCATION(*desc.m_shader, "u_matrix"), 1, GL_FALSE, glm::value_ptr(matrix));
+
+	glUniform1f(LOCATION(*desc.m_shader, "u_depth"), m_depth);
+
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
 
 	glBindVertexArray(m_vao);

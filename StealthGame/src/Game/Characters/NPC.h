@@ -9,9 +9,17 @@
 
 #include "../Desc.h"
 
+class Player;
+class CollisionDetector;
+
+struct NPCRoutePoint
+{
+	glm::vec2 m_pos;
+};
+
 // first quad in the list acts as the hitbox
-// second quad in the list acts as the direction
-// third quad in the list acts as the character
+// second quad in the list acts as the character
+// third quad in the list acts as the direction
 // quads that are further down the list will be ignored
 class NPC : public Entity
 {
@@ -23,12 +31,17 @@ public:
 
 	enum class State
 	{
-		NORMAL, ALERT, DEAD
+		NORMAL, SUSPICIOUS, ALERT, DEAD
 	};
 public:
 	NPC() = default;
 
 	//inline void Init();
+
+	void BindPlayer(Player* player) { m_player = player; }
+	void BindCollision(CollisionDetector* collision) { m_collision = collision; }
+
+	void BindRoute(std::vector<NPCRoutePoint>& route) { m_route = route; }
 
 	void SetType(Type type) { m_type = type; }
 	void SetState(State state) { m_state = state; }
@@ -41,32 +54,39 @@ public:
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 
 	void EliminateMyself();
+
+	bool IsPlayerDetected();
 private:
-	void TickStaticGuest();
-	void TickGuest();
-	void TickGuard();
-	void TickNonStatic();
+	void SetDirPos(glm::vec2 pos);
 private:
-	// 7 0 1
-	// 6 + 2
-	// 5 4 3
-	int m_dir = 0;
+	bool IsPlayerInSight();
+	void DetectPlayer();
+private:
+	void TickStaticGuest(GameTickDesc& desc);
+	void TickGuest(GameTickDesc& desc);
+	void TickGuard(GameTickDesc& desc);
+	void TickNonStatic(GameTickDesc& desc);
+	void TickDead(GameTickDesc& desc);
+private:
+	// returns if it is at point or not
+	bool MoveToTarget(float dt, glm::vec2 point);
+	void PointAtPoint(glm::vec2 point);
+private:
+	Player* m_player;
+	CollisionDetector* m_collision;
+
+	bool m_isPlayerDetected = false;
+
+	float m_dir = 0.0f;
 
 	Type m_type = Type::GUEST;
 	State m_state = State::NORMAL;
+	float m_suspiciousMeter = 0;
 
-	constexpr static glm::vec2 m_dirOffset[8] = {
-		{  0.0f,  1.0f },
-		{  1.0f,  1.0f },
-		{  1.0f,  0.0f },
-		{  1.0f, -1.0f },
-		{  0.0f, -1.0f },
-		{ -1.0f, -1.0f },
-		{ -1.0f,  0.0f },
-		{ -1.0f,  1.0f },
-	};
+	std::vector<NPCRoutePoint> m_route;
+	int m_targetRouteIndex = 0;
 
 	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
 
-	constexpr static float m_speed = 1.5f;
+	constexpr static float m_speed = 0.8f;
 };

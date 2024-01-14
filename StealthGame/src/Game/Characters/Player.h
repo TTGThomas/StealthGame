@@ -31,12 +31,15 @@ public:
 	void SetIsCrouching(bool newInput) { m_isCrouching = newInput; }
 	
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
+	const glm::vec2& GetVelocity() { return m_velocity; }
 	bool GetInputEnabled() { return m_inputEnabled; }
 	bool GetIsCrouching() { return m_isCrouching; }
 	void EliminateNPC(NPC& victim);
 private:
 	void MovePlayer(GameTickDesc& desc);
 private:
+	glm::vec2 m_velocity{};
+
 	bool m_inputEnabled = true;
 	Camera* m_bindedCamera = nullptr;
 	std::vector<NPC>* m_npcs = nullptr;

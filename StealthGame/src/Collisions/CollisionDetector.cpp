@@ -26,6 +26,18 @@ CollisionPayload CollisionDetector::Collide(glm::vec2 point)
 	return { false, -1 };
 }
 
+CollisionPayload CollisionDetector::Collide(glm::vec2 l0, glm::vec2 l1)
+{
+	for (int i = 0; i < m_map->size(); i++)
+	{
+		Quad& quad = (*m_map)[i];
+		quad.UpdateAABB();
+		if (quad.GetAABB().Collide(l0, l1))
+			return { true, i };
+	}
+	return { false, -1 };
+}
+
 CollisionPayload CollisionDetector::Collide(AABB& aabb)
 {
 	for (int i = 0; i < m_map->size(); i++)

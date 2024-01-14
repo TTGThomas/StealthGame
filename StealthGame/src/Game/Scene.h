@@ -18,14 +18,21 @@
 
 #include "Desc.h"
 
+struct NPCInitDesc
+{
+	std::vector<QuadInitDesc>* m_desc;
+	std::vector<NPCRoutePoint>* m_route;
+};
+
 struct SceneInitDesc
 {
 	QuadRenderer* m_renderer;
-	
+	CollisionDetector* m_collision;
+
 	std::vector<QuadInitDesc>* m_player;
 	Camera* m_playerCamera;
 
-	std::vector<std::vector<QuadInitDesc>>* m_npcs;
+	std::vector<NPCInitDesc>* m_npcs;
 	std::vector<std::vector<QuadInitDesc>>* m_map;
 };
 

@@ -21,7 +21,7 @@ public:
 public:
 	Disguise() = default;
 
-	void Init(QuadRenderer* renderer, Type type, glm::vec2 pos, int shaderIndex);
+	void Init(QuadRenderer* renderer, Type type, glm::vec2 pos, float depth, int shaderIndex);
 
 	virtual void OnCollect(class Scene* scene) override;
 

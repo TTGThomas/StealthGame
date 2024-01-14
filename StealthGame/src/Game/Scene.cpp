@@ -7,10 +7,13 @@ void Scene::Init(SceneInitDesc& desc)
 	m_player.BindNPCs(&m_npcs);
 
 	m_npcs.reserve(desc.m_npcs->size());
-	for (std::vector<QuadInitDesc>& npcDesc : *desc.m_npcs)
+	for (NPCInitDesc& npcDesc : *desc.m_npcs)
 	{
 		m_npcs.push_back(NPC());
-		m_npcs.back().Init(desc.m_renderer, npcDesc);
+		m_npcs.back().Init(desc.m_renderer, *npcDesc.m_desc);
+		m_npcs.back().BindPlayer(&m_player);
+		m_npcs.back().BindCollision(desc.m_collision);
+		m_npcs.back().BindRoute(*npcDesc.m_route);
 	}
 
 	m_map.reserve(desc.m_map->size());
@@ -32,7 +35,7 @@ void Scene::InteractTick(GameTickDesc& desc)
 	for (NPC& npc : m_npcs)
 	{
 		glm::vec2 diff = npc.GetPos() - m_player.GetPos();
-		if (glm::length(diff) < 0.5f)
+		if (glm::length(diff) < 0.5f && !npc.IsPlayerDetected())
 		{
 			m_interact = std::make_shared<KillInteract>(&m_player, &npc);
 			break;
