@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "Characters/NPCStats.h"
+
 Game::Game()
 {
 }
@@ -23,6 +25,11 @@ void Game::Init(GameTickDesc& desc)
 	desc.m_renderer->AddTexture("res/Player/Cursor.png");
 	desc.m_renderer->AddTexture("res/NPC/NPC0.png");
 	desc.m_renderer->AddTexture("res/NPC/Dir.png");
+
+	NPCStatInitDesc npcStatDesc;
+	npcStatDesc.m_deadBodyTextureIndex = 1;
+	npcStatDesc.m_guestTextureIndex = 3;
+	NPCStats::SetTextures(npcStatDesc);
 
 	// layer 0 = objLayer
 	// layer 1 = UILayer
@@ -104,9 +111,47 @@ void Game::Tick(GameTickDesc& desc)
 	for (NPC& npc : m_scene.GetNPCs())
 		npc.GetQuad(0)->GetAABB().SetEnabled(true);
 
-	m_scene.InteractTick(desc);
+	InteractTick(desc);
 
 	if (glm::length(m_scene.GetPlayer().GetVelocity()) != 0.0f || true)
 		for (NPC& npc : m_scene.GetNPCs())
 			npc.NPCTick(desc);
+}
+
+void Game::InteractTick(GameTickDesc& desc)
+{
+	m_interact.reset();
+
+	// get possible interactive NPC
+	desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetVisibility(false);
+	for (NPC& npc : m_scene.GetNPCs())
+	{
+		glm::vec2 diff = npc.GetPos() - m_scene.GetPlayer().GetPos();
+		if (glm::length(diff) < 0.5f && !npc.IsPlayerDetected())
+		{
+			m_interact = std::make_shared<KillInteract>(&m_scene.GetPlayer(), &npc);
+			break;
+		}
+	}
+
+	// get possible interactive items
+	Item* item = m_scene.GetItems().GetNearestItem(m_scene.GetPlayer().GetPos()).get();
+	if (item != nullptr)
+	{
+		if (glm::distance(item->GetQuad().GetPos(), m_scene.GetPlayer().GetPos()) < 0.5f)
+		{
+			m_interact.reset();
+			m_interact = std::make_shared<ItemInteract>(&m_scene, item);
+		}
+	}
+
+	if (m_interact.get() != nullptr)
+	{
+		desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetPos(m_interact->OnTick());
+		desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetVisibility(true);
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
+		{
+			m_interact->OnInteract();
+		}
+	}
 }

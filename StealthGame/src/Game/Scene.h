@@ -41,8 +41,6 @@ class Scene
 public:
 	void Init(SceneInitDesc& desc);
 
-	void InteractTick(GameTickDesc& desc);
-
 	std::vector<Object>& GetMap() { return m_map; }
 	std::vector<NPC>& GetNPCs() { return m_npcs; }
 	ItemsManager& GetItems() { return m_items; }
@@ -52,5 +50,4 @@ private:
 	std::vector<NPC> m_npcs;
 	ItemsManager m_items;
 	Player m_player;
-	std::shared_ptr<Interaction> m_interact;
 };

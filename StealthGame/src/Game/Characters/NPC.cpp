@@ -1,5 +1,7 @@
 #include "NPC.h"
 
+#include "NPCStats.h"
+
 #include "Player.h"
 
 void NPC::NPCTick(GameTickDesc& desc)
@@ -123,7 +125,7 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 	{
 		m_suspiciousMeter = 1.0f;
 	}
-	else if (dst < 0.4f)
+	else if (dst < 0.5f)
 	{
 		if (glm::length(m_player->GetVelocity()) != 0.0f)
 		{
@@ -167,6 +169,7 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 
 void NPC::TickDead(GameTickDesc& desc)
 {
+	GetQuad(1)->SetTextureIndex(NPCStats::GetDeadBodyTextureIndex());
 	GetQuad(1)->ChangeRotation(0.01f);
 }
 

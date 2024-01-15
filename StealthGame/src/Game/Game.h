@@ -42,6 +42,9 @@ public:
 
 	void Tick(GameTickDesc& desc);
 private:
+	void InteractTick(GameTickDesc& desc);
+private:
 	Scene m_scene;
+	std::shared_ptr<Interaction> m_interact;
 };
 
