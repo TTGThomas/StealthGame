@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{48cb17a3-e13b-4e9d-8442-f1447f149ae8}</ProjectGuid>
+    <RootNamespace>StealthGame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);USEIMGUI=1</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendors\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW/glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendors\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW/glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendors\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW/glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendors\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW/glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Game\Characters\NPCStats.cpp" />
+    <ClCompile Include="src\Game\Interact\ItemInteract.cpp" />
+    <ClCompile Include="src\Game\Interact\KillInteract.cpp" />
+    <ClCompile Include="src\Game\Items\ItemsManager.cpp" />
+    <ClCompile Include="src\Game\Items\Disguise.cpp" />
+    <ClCompile Include="src\Game\Characters\NPC.cpp" />
+    <ClCompile Include="src\Game\Characters\Player.cpp" />
+    <ClCompile Include="src\Game\Engine\Entity.cpp" />
+    <ClCompile Include="src\Game\Engine\Object.cpp" />
+    <ClCompile Include="src\Game\Game.cpp" />
+    <ClCompile Include="src\Collisions\AABB.cpp" />
+    <ClCompile Include="src\Collisions\CollisionDetector.cpp" />
+    <ClCompile Include="src\Game\Scene.cpp" />
+    <ClCompile Include="src\quadRenderer\Camera.cpp" />
+    <ClCompile Include="src\quadRenderer\Shader.cpp" />
+    <ClCompile Include="src\quadRenderer\Quad.cpp" />
+    <ClCompile Include="src\quadRenderer\QuadRenderer.cpp" />
+    <ClCompile Include="src\input\KeyBoard.cpp" />
+    <ClCompile Include="src\input\Mouse.cpp" />
+    <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\quadRenderer\Texture.cpp" />
+    <ClCompile Include="third\glad.c" />
+    <ClCompile Include="third\ImGui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="third\ImGui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="third\ImGui\imgui.cpp" />
+    <ClCompile Include="third\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="third\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="third\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="third\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="src\windows\Window.cpp" />
+    <ClCompile Include="src\UUID.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Game\Characters\NPCStats.h" />
+    <ClInclude Include="src\Game\Interact\ItemInteract.h" />
+    <ClInclude Include="src\Game\Interact\KillInteract.h" />
+    <ClInclude Include="src\Game\Interact\Interaction.h" />
+    <ClInclude Include="src\Game\Items\ItemsManager.h" />
+    <ClInclude Include="src\Game\Items\Item.h" />
+    <ClInclude Include="src\Game\Items\Disguise.h" />
+    <ClInclude Include="ImGuiSwitch.h" />
+    <ClInclude Include="src\Game\Characters\NPC.h" />
+    <ClInclude Include="src\Game\Desc.h" />
+    <ClInclude Include="src\Game\Characters\Player.h" />
+    <ClInclude Include="src\Game\Engine\Entity.h" />
+    <ClInclude Include="src\Game\Engine\Object.h" />
+    <ClInclude Include="src\Game\Game.h" />
+    <ClInclude Include="src\Collisions\AABB.h" />
+    <ClInclude Include="src\Collisions\CollisionDetector.h" />
+    <ClInclude Include="src\Game\Scene.h" />
+    <ClInclude Include="src\quadRenderer\Camera.h" />
+    <ClInclude Include="src\quadRenderer\Shader.h" />
+    <ClInclude Include="src\quadRenderer\Quad.h" />
+    <ClInclude Include="src\quadRenderer\QuadRenderer.h" />
+    <ClInclude Include="src\input\KeyBoard.h" />
+    <ClInclude Include="src\input\Mouse.h" />
+    <ClInclude Include="src\App.h" />
+    <ClInclude Include="src\quadRenderer\Texture.h" />
+    <ClInclude Include="src\Utils\Timer.h" />
+    <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="third\ImGui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="third\ImGui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="third\ImGui\imconfig.h" />
+    <ClInclude Include="third\ImGui\imgui.h" />
+    <ClInclude Include="third\ImGui\imgui_internal.h" />
+    <ClInclude Include="third\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="third\ImGui\imstb_textedit.h" />
+    <ClInclude Include="third\ImGui\imstb_truetype.h" />
+    <ClInclude Include="third\ImGui\misc\single_file\imgui_single_file.h" />
+    <ClInclude Include="src\windows\Window.h" />
+    <ClInclude Include="src\UUID.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\default\Fragment.glsl" />
+    <None Include="shaders\default\Vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\logo.png" />
+    <Image Include="res\NPC\Dir.png" />
+    <Image Include="res\NPC\NPC0.png" />
+    <Image Include="res\Player\Cursor.png" />
+    <Image Include="res\Player\player.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
