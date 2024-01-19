@@ -36,7 +36,7 @@ struct SceneInitDesc
 	std::vector<std::vector<QuadInitDesc>>* m_map;
 };
 
-class Scene
+class GameScene
 {
 public:
 	void Init(SceneInitDesc& desc);

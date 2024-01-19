@@ -50,16 +50,17 @@ void NPC::EliminateMyself()
 
 void NPC::SetDirPos(glm::vec2 pos)
 {
+	Scene* scene = GlobalData::Get().m_scene;
 	if (m_state == State::DEAD)
 	{
-		m_map->GetQuads()[GetIndex(2)].SetVisibility(false);
+		scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
 		return;
 	}
 	glm::vec2 p = pos;
-	p.x += glm::sin(glm::radians(m_dir)) * m_map->GetQuads()[GetIndex(2)].GetScale().x;
-	p.y += glm::cos(glm::radians(m_dir)) * m_map->GetQuads()[GetIndex(2)].GetScale().x;
-	m_map->GetQuads()[GetIndex(2)].SetPos(p);
-	m_map->GetQuads()[GetIndex(2)].SetRotation(m_dir);
+	p.x += glm::sin(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().x;
+	p.y += glm::cos(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().x;
+	scene->GetQuads()[GetUUID(2).GetUUID()].SetPos(p);
+	scene->GetQuads()[GetUUID(2).GetUUID()].SetRotation(m_dir);
 }
 
 bool NPC::IsPlayerInSight()
@@ -79,11 +80,13 @@ bool NPC::IsPlayerInSight()
 	if (dst > 3.0f)
 		return false;
 
-	GetQuad(0)->GetAABB().SetEnabled(false);
-	m_player->GetQuad(0)->GetAABB().SetEnabled(false);
+	Scene* scene = GlobalData::Get().m_scene;
+
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
 	bool ret = !m_collision->Collide(GetPos(), m_player->GetPos()).m_hasHit;
-	GetQuad(0)->GetAABB().SetEnabled(true);
-	m_player->GetQuad(0)->GetAABB().SetEnabled(true);
+	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	return ret;
 }
 
@@ -94,6 +97,12 @@ bool NPC::IsPlayerDetected()
 
 void NPC::DetectPlayer()
 {
+	if (m_state == State::DEAD)
+	{
+		m_isPlayerDetected = false;
+		return;
+	}
+
 	if (IsPlayerInSight())
 	{
 		m_isPlayerDetected = true;
@@ -169,12 +178,15 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 
 void NPC::TickDead(GameTickDesc& desc)
 {
-	GetQuad(1)->SetTextureIndex(NPCStats::GetDeadBodyTextureIndex());
+	Scene* scene = GlobalData::Get().m_scene;
+	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureIndex(NPCStats::GetDeadBodyTextureIndex());
 	GetQuad(1)->ChangeRotation(0.01f);
 }
 
 bool NPC::MoveToTarget(float dt, glm::vec2 point)
 {
+	Scene* scene = GlobalData::Get().m_scene;
+
 	glm::vec2 add{};
 	float speed = m_speed * dt;
 	if (GetPos().x < point.x)
@@ -185,11 +197,15 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point)
 		add.y += speed;
 	if (GetPos().y > point.y)
 		add.y -= speed;
-	m_player->GetQuad(0)->GetAABB().SetEnabled(false);
-	GetQuad(0)->GetAABB().SetEnabled(true);
+
+	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+
 	Move(m_collision, add.x, add.y);
-	GetQuad(0)->GetAABB().SetEnabled(false);
-	m_player->GetQuad(0)->GetAABB().SetEnabled(true);
+
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
+
 	if (glm::distance(GetPos(), point) < 0.1f)
 		SetPos(point);
 	return GetPos() == point;

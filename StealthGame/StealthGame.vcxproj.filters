@@ -57,7 +57,7 @@
     <ClCompile Include="src\quadRenderer\QuadRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\quadRenderer\Quad.cpp">
+    <ClCompile Include="src\quadRenderer\RenderQuad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\quadRenderer\Shader.cpp">
@@ -93,9 +93,6 @@
     <ClCompile Include="src\Game\Items\Disguise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\OldScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Items\ItemsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -109,6 +106,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\UUID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\GameScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\GlobalData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,7 +164,7 @@
     <ClInclude Include="src\quadRenderer\QuadRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\quadRenderer\Quad.h">
+    <ClInclude Include="src\quadRenderer\RenderQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\quadRenderer\Shader.h">
@@ -203,9 +209,6 @@
     <ClInclude Include="src\Game\Items\Disguise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\OldScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Items\Item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -225,6 +228,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\UUID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\GameScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\GlobalData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

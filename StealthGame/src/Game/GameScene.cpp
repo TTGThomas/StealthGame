@@ -1,8 +1,8 @@
-#include "Scene.h"
+#include "GameScene.h"
 
-void Scene::Init(SceneInitDesc& desc)
+void GameScene::Init(SceneInitDesc& desc)
 {
-	m_player.Init(desc.m_renderer, *desc.m_player);
+	m_player.Init(*desc.m_player);
 	m_player.BindCamera(desc.m_playerCamera);
 	m_player.BindNPCs(&m_npcs);
 
@@ -10,7 +10,7 @@ void Scene::Init(SceneInitDesc& desc)
 	for (NPCInitDesc& npcDesc : *desc.m_npcs)
 	{
 		m_npcs.push_back(NPC());
-		m_npcs.back().Init(desc.m_renderer, *npcDesc.m_desc);
+		m_npcs.back().Init(*npcDesc.m_desc);
 		m_npcs.back().BindPlayer(&m_player);
 		m_npcs.back().BindCollision(desc.m_collision);
 		m_npcs.back().BindRoute(*npcDesc.m_route);
@@ -20,8 +20,6 @@ void Scene::Init(SceneInitDesc& desc)
 	for (std::vector<QuadInitDesc>& objectDesc : *desc.m_map)
 	{
 		m_map.push_back(Object());
-		m_map.back().Init(desc.m_renderer, objectDesc);
+		m_map.back().Init(objectDesc);
 	}
-
-	m_items.BindMap(desc.m_renderer);
 }

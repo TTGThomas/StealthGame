@@ -12,19 +12,25 @@ Game::~Game()
 
 void Game::Init(GameTickDesc& desc)
 {
-	desc.m_collision->BindMap(&desc.m_renderer->GetQuads());
+	GlobalData::Get().m_scene = desc.m_scene;
 
 	desc.m_camera->SetZoom(0.5f);
 
-	desc.m_renderer->BindCamera(desc.m_camera);
-
-	desc.m_renderer->AddShader("shaders/default/Vertex.glsl", "shaders/default/Fragment.glsl");
+	Shader shader("shaders/default/Vertex.glsl", "shaders/default/Fragment.glsl");
+	GlobalData::Get().m_defaultShader = shader.GetUUID().GetUUID();
+	desc.m_renderer->AddShader(shader);
 	
-	desc.m_renderer->AddTexture("res/logo.png");
-	desc.m_renderer->AddTexture("res/Player/player.png");
-	desc.m_renderer->AddTexture("res/Player/Cursor.png");
-	desc.m_renderer->AddTexture("res/NPC/NPC0.png");
-	desc.m_renderer->AddTexture("res/NPC/Dir.png");
+	Texture logo("res/logo.png");
+	desc.m_renderer->AddTexture(logo);
+
+	Texture cursor("res/Player/Cursor.png");
+	desc.m_renderer->AddTexture(cursor);
+
+	Texture npc0("res/NPC/NPC0.png");
+	desc.m_renderer->AddTexture(npc0);
+
+	Texture npcDir("res/NPC/Dir.png");
+	desc.m_renderer->AddTexture(npcDir);
 
 	NPCStatInitDesc npcStatDesc;
 	npcStatDesc.m_deadBodyTextureIndex = 1;
@@ -96,59 +102,64 @@ void Game::Init(GameTickDesc& desc)
 		for (float x = -1.0f; x < 1.0f; x += 0.5f)
 		{
 			items.emplace_back(std::make_shared<Disguise>());
-			dynamic_cast<Disguise*>(items.back().get())->Init(desc.m_renderer, Disguise::Type::GAURD, glm::vec2(x, y), 0.0f, 0);
+			dynamic_cast<Disguise*>(items.back().get())->Init(Disguise::Type::GAURD, glm::vec2(x, y), 0.0f, 0);
 		}
 	}
-	m_scene.GetItems().AddItem(items);
-	m_scene.Init(initDesc);
+	m_gameScene.GetItems().AddItem(items);
+	m_gameScene.Init(initDesc);
 }
 
 void Game::Tick(GameTickDesc& desc)
 {
-	for (NPC& npc : m_scene.GetNPCs())
-		npc.GetQuad(0)->GetAABB().SetEnabled(false);
-	m_scene.GetPlayer().PlayerTick(desc);
-	for (NPC& npc : m_scene.GetNPCs())
-		npc.GetQuad(0)->GetAABB().SetEnabled(true);
+	Scene* scene = GlobalData::Get().m_scene;
+
+	for (NPC& npc : m_gameScene.GetNPCs())
+		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
+	m_gameScene.GetPlayer().PlayerTick(desc);
+	for (NPC& npc : m_gameScene.GetNPCs())
+		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(true);
 
 	InteractTick(desc);
 
-	if (glm::length(m_scene.GetPlayer().GetVelocity()) != 0.0f || true)
-		for (NPC& npc : m_scene.GetNPCs())
+	if (glm::length(m_gameScene.GetPlayer().GetVelocity()) != 0.0f || true)
+		for (NPC& npc : m_gameScene.GetNPCs())
 			npc.NPCTick(desc);
 }
 
 void Game::InteractTick(GameTickDesc& desc)
 {
+	Scene* scene = GlobalData::Get().m_scene;
+
 	m_interact.reset();
 
 	// get possible interactive NPC
-	desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetVisibility(false);
-	for (NPC& npc : m_scene.GetNPCs())
+	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
+	for (NPC& npc : m_gameScene.GetNPCs())
 	{
-		glm::vec2 diff = npc.GetPos() - m_scene.GetPlayer().GetPos();
+		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
 		if (glm::length(diff) < 0.5f && !npc.IsPlayerDetected())
 		{
-			m_interact = std::make_shared<KillInteract>(&m_scene.GetPlayer(), &npc);
+			m_interact = std::make_shared<KillInteract>(&m_gameScene.GetPlayer(), &npc);
 			break;
 		}
 	}
 
 	// get possible interactive items
-	Item* item = m_scene.GetItems().GetNearestItem(m_scene.GetPlayer().GetPos()).get();
+	Item* item = m_gameScene.GetItems().GetNearestItem(m_gameScene.GetPlayer().GetPos()).get();
 	if (item != nullptr)
 	{
-		if (glm::distance(item->GetQuad().GetPos(), m_scene.GetPlayer().GetPos()) < 0.5f)
+		if (glm::distance(item->GetQuad().GetPos(), m_gameScene.GetPlayer().GetPos()) < 0.5f)
 		{
 			m_interact.reset();
-			m_interact = std::make_shared<ItemInteract>(&m_scene, item);
+			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
 		}
 	}
 
 	if (m_interact.get() != nullptr)
 	{
-		desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetPos(m_interact->OnTick());
-		desc.m_renderer->GetQuads()[m_scene.GetPlayer().GetIndex(1)].SetVisibility(true);
+		scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(true);
+		scene->GetQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetPos(m_interact->OnTick());
+
 		if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
 		{
 			m_interact->OnInteract();

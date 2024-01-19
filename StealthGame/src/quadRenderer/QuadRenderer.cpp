@@ -1,9 +1,11 @@
 #include "QuadRenderer.h"
 
+#include "../Scene.h"
+
 QuadRenderer::~QuadRenderer()
 {
-	for (Quad& quad : m_quads)
-		quad.Cleanup();
+	for (auto& [key, val] : m_parent->GetRenderQuads())
+		val.Cleanup();
 }
 
 void QuadRenderer::BindCamera(Camera* camera)
@@ -11,26 +13,14 @@ void QuadRenderer::BindCamera(Camera* camera)
 	m_camera = camera;
 }
 
-void QuadRenderer::AddQuad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
+void QuadRenderer::AddShader(Shader& shader)
 {
-	int n = m_quads.size();
-	int index = 0;
-	for (int i = 0; i < m_dstIndex.size() && depth < m_quads[m_dstIndex[i]].GetDepth(); i++)
-	{
-		index++;
-	}
-	m_dstIndex.insert(m_dstIndex.begin() + index, n);
-	m_quads.emplace_back(pos, scale, depth, shaderIndex, textureIndex);
+	m_shaders[shader.GetUUID().GetUUID()] = std::move(shader);
 }
 
-void QuadRenderer::AddShader(const char* vertex, const char* fragment)
+void QuadRenderer::AddTexture(Texture& texture)
 {
-	m_shaders.emplace_back(vertex, fragment);
-}
-
-void QuadRenderer::AddTexture(const char* texturePath)
-{
-	m_textures.emplace_back(texturePath);
+	m_textures[texture.GetUUID().GetUUID()] = std::move(texture);
 }
 
 void QuadRenderer::Render(float ratio, int selectedIndex)
@@ -41,44 +31,38 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	desc.m_camera = m_camera;
 	desc.m_ratio = ratio;
 
-	for (int i = 0; i < m_dstIndex.size(); i++)
+	for (auto& [key, renderQuad] : m_parent->GetRenderQuads())
 	{
-		Quad& quad = m_quads[m_dstIndex[i]];
+		Quad& quad = m_parent->GetQuads()[key];
 		if (InWindow(quad, ratio))
 		{
-			desc.m_shader = &m_shaders[quad.getShaderIndex()];
-			desc.m_texture = &m_textures[quad.GetTextureIndex()];
-			desc.m_isSelected = (i == selectedIndex);
+			desc.m_shader = &m_shaders[renderQuad.getShaderIndex()];
+			desc.m_texture = &m_textures[renderQuad.GetTextureIndex()];
+			desc.m_isSelected = false;
 
-			quad.Draw(desc);
-			if (quad.GetVisible())
+			renderQuad.Draw(desc);
+			if (renderQuad.GetVisible())
 				m_quadRendered++;
 		}
 	}
 }
 
-void QuadRenderer::ShowStatsWindow(int controlIndex)
+void QuadRenderer::ShowStatsWindow()
 {
 #ifndef IMGUI_DISABLE
 	ImGui::Begin("Renderer");
-	ImGui::Text("Quad count: %u", m_quads.size());
+	ImGui::Text("Quad count: %u", m_parent->GetQuads().size());
 	ImGui::Text("Quad Rendered: %u", m_quadRendered);
-	if (controlIndex != -1.0f)
-	{
-		Quad& quad = m_quads[controlIndex];
-		ImGui::DragFloat2("Position", glm::value_ptr(quad.GetPos()), 0.001f);
-		ImGui::DragFloat2("Scale", glm::value_ptr(quad.GetScale()), 0.001f);
-	}
 	ImGui::End();
 #endif
 }
 
 bool QuadRenderer::InWindow(Quad& quad, float ratio)
 {
-	float right = quad.GetPos().x - m_camera->GetPosX() + quad.GetScale().x;
-	float left = quad.GetPos().x - m_camera->GetPosX() - quad.GetScale().x;
-	float top = quad.GetPos().y - m_camera->GetPosY() + quad.GetScale().y;
-	float bottom = quad.GetPos().y - m_camera->GetPosY() - quad.GetScale().y;
+	float right = quad.GetPos().x - m_camera->GetPosX() + quad.GetRadius().x;
+	float left = quad.GetPos().x - m_camera->GetPosX() - quad.GetRadius().x;
+	float top = quad.GetPos().y - m_camera->GetPosY() + quad.GetRadius().y;
+	float bottom = quad.GetPos().y - m_camera->GetPosY() - quad.GetRadius().y;
 
 	right *= m_camera->GetZoom();
 	left *= m_camera->GetZoom();

@@ -1,20 +1,31 @@
 #include "Object.h"
 
-Object::Object(QuadRenderer* map, std::vector<QuadInitDesc>& descs)
+Object::Object(std::vector<QuadInitDesc>& descs)
 {
-	Init(map, descs);
+	Init(descs);
 }
 
-void Object::Init(QuadRenderer* map, std::vector<QuadInitDesc>& descs)
+void Object::Init(std::vector<QuadInitDesc>& descs)
 {
-	m_map = map;
-	m_indices.reserve(descs.size());
+	Scene* scene = GlobalData::Get().m_scene;
+
+	m_uuids.reserve(descs.size());
 	for (QuadInitDesc& desc : descs)
 	{
-		m_map->AddQuad(desc.m_pos, desc.m_scale, desc.m_depth, desc.m_shaderIndex, desc.m_textuerIndex);
-		m_indices.emplace_back((int)m_map->GetQuads().size() - 1);
-		m_map->GetQuads().back().GetAABB().SetEnabled(false);
+		Quad quad(desc.m_pos, desc.m_scale);
+		uint64_t uuid = quad.GetUUID().GetUUID();
+
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = desc.m_depth;
+		renderDesc.m_shaderIndex = desc.m_shaderIndex;
+		renderDesc.m_textureIndex = desc.m_textuerIndex;
+
+		scene->AddQuad(quad, renderDesc);
+		scene->GetRenderQuads()[uuid].UpdateRenderQuad(scene, uuid);
+		scene->GetAABBs()[uuid].SetEnabled(false);
+
+		m_uuids.emplace_back(uuid);
 	}
-	GetQuad(0)->GetAABB().SetEnabled(true);
-	GetQuad(0)->SetVisibility(false);
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetRenderQuads()[GetUUID(0).GetUUID()].SetVisibility(false);
 }

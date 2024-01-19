@@ -5,6 +5,11 @@
 
 Texture::Texture(const char* filePath)
 {
+	Init(filePath);
+}
+
+void Texture::Init(const char* filePath)
+{
 	glGenTextures(1, &m_id);
 
 	int nChannels = 0;

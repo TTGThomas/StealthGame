@@ -1,12 +1,17 @@
 #include "App.h"
 
 App::App()
-	: m_window("Stealth Game", 800, 600, false, false)
+	: m_window("Stealth Game", 800, 600, false, false), 
+	m_renderer(&m_scene), 
+	m_collision(&m_scene)
 {
+	m_renderer.BindCamera(&m_camera);
+
 	GameTickDesc desc;
 	desc.m_window = &m_window;
 	desc.m_renderer = &m_renderer;
 	desc.m_collision = &m_collision;
+	desc.m_scene = &m_scene;
 	desc.m_camera = &m_camera;
 	desc.m_tickTimer = &m_tickTimer;
 	m_game.Init(desc);
@@ -34,6 +39,11 @@ int App::Exec()
 
 void App::Tick()
 {
+	for (auto [uuid, quad] : m_scene.GetRenderQuads())
+	{
+		quad.UpdateRenderQuad(&m_scene);
+	}
+
 	//UpdateCamera();
 	UpdateSelection();
 	UpdateGame();
@@ -49,7 +59,7 @@ void App::Tick()
 	ImGui::End();
 #endif
 
-	m_renderer.ShowStatsWindow(m_selectedIndex);
+	m_renderer.ShowStatsWindow();
 	m_camera.ShowStatsWindow();
 
 	m_gpuTimer.Start();
@@ -82,7 +92,6 @@ void App::UpdateSelection()
 	cursPos /= m_camera.GetZoom();
 	cursPos += m_camera.GetPos();
 	CollisionPayload payload = m_collision.Collide(cursPos);
-	m_hoveredIndex = payload.m_hitIndex;
 	
 	// selected
 #ifndef IMGUI_DISABLE

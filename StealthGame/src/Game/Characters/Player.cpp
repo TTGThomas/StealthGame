@@ -44,12 +44,12 @@ void Player::MovePlayer(GameTickDesc& desc)
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_C))
 		m_isCrouching = !m_isCrouching;
 
-	GetQuad(0)->SetScale(m_isCrouching ? m_crouchScale : m_normalScale);
+	GetQuad(0)->SetRadius(m_isCrouching ? m_crouchScale : m_normalScale);
 	// check if in wall
-	if (desc.m_collision->Collide(GetIndex(0)).m_hasHit)
+	if (desc.m_collision->Collide(GetUUID(0)).m_hasHit)
 		m_isCrouching = true;
 
 	// synch hitbox and character
-	GetQuad(2)->SetScale(GetQuad(0)->GetScale());
+	GetQuad(2)->SetRadius(GetQuad(0)->GetRadius());
 	GetQuad(2)->SetPos(GetQuad(0)->GetPos());
 }

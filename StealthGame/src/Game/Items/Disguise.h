@@ -7,9 +7,11 @@
 
 #include "../../quadRenderer/QuadRenderer.h"
 
-#include "../Scene.h"
+#include "../GameScene.h"
 
 #include "Item.h"
+
+#include "../GlobalData.h"
 
 class Disguise : public Item
 {
@@ -21,9 +23,9 @@ public:
 public:
 	Disguise() = default;
 
-	void Init(QuadRenderer* renderer, Type type, glm::vec2 pos, float depth, int shaderIndex);
+	void Init(Type type, glm::vec2 pos, float depth, int shaderIndex);
 
-	virtual void OnCollect(class Scene* scene) override;
+	virtual void OnCollect(class GameScene* scene) override;
 
 	Type GetType() { return m_type; }
 private:

@@ -2,8 +2,7 @@
 
 void ItemsManager::AddItem(std::shared_ptr<Item> item)
 {
-	m_items.emplace_back(item);
-	m_items.back()->SetItemIndex((int)m_items.size() - 1);
+	m_items[item->GetUUID().GetUUID()] = item;
 }
 
 void ItemsManager::AddItem(std::vector<std::shared_ptr<Item>>& items)
@@ -14,37 +13,40 @@ void ItemsManager::AddItem(std::vector<std::shared_ptr<Item>>& items)
 	}
 }
 
-void ItemsManager::DeleteItem(int index)
+void ItemsManager::DeleteItem(uint64_t uuid)
 {
-	Item* item = m_items[index].get();
-	m_map->GetQuads()[item->GetIndex()].Cleanup();
-	m_map->GetQuads()[item->GetIndex()].SetVisibility(false);
+	Scene* scene = GlobalData::Get().m_scene;
+	Item* item = m_items[uuid].get();
+
+	scene->GetRenderQuads()[item->GetUUID().GetUUID()].Cleanup();
+	scene->GetRenderQuads()[item->GetUUID().GetUUID()].SetVisibility(false);
+
 	//m_map->GetQuads().erase(m_map->GetQuads().begin() + item->GetIndex());
-	m_items[index].reset();
+	m_items[item->GetUUID().GetUUID()].reset();
 	//m_items.erase(m_items.begin() + index);
 }
 
-int ItemsManager::GetNearestIndex(glm::vec2 pos)
+UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
 {
-	int ret = -1;
-	float retDist = 0.0f;
-	for (int i = 0; i < m_items.size(); i++)
+	uint64_t ret = 0;
+	float retDist = -1.0f;
+	for (auto [uuid, item] : m_items)
 	{
-		if (GetItem(i).get() == nullptr)
+		if (GetItem(uuid).get() == nullptr)
 			continue;
 
-		float dist = glm::distance(pos, GetItem(i)->GetQuad().GetPos());
-		if (ret == -1 || dist < retDist)
+		float dist = glm::distance(pos, GetItem(uuid)->GetQuad().GetPos());
+		if (retDist == -1.0f || dist < retDist)
 		{
 			retDist = dist;
-			ret = i;
+			ret = uuid;
 		}
 	}
-	return ret;
+	return UUID(ret);
 }
 
 std::shared_ptr<Item> ItemsManager::GetNearestItem(glm::vec2 pos)
 {
-	int index = GetNearestIndex(pos);
-	return index == -1 ? nullptr : m_items[index];
+	uint64_t index = GetNearestUUID(pos).GetUUID();
+	return m_items[index];
 }

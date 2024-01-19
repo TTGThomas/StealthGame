@@ -1,72 +1,57 @@
 #include "CollisionDetector.h"
 
-void CollisionDetector::BindMap(std::vector<Quad>* map)
-{
-	m_map = map;
-}
-
-void CollisionDetector::DisableAABBs(std::vector<int> indices)
-{
-	for (int& index : indices)
-	{
-		(*m_map)[index].GetAABB().SetEnabled(false);
-	}
-}
-
 // be carefull, point is in world space not screen space
 CollisionPayload CollisionDetector::Collide(glm::vec2 point)
 {
-	for (int i = 0; i < m_map->size(); i++)
+	for (auto& [uuid, quad] : m_parent->GetQuads())
 	{
-		Quad& quad = (*m_map)[i];
-		quad.UpdateAABB();
-		if (quad.GetAABB().Collide(point))
-			return { true, i };
+		AABB& aabb = m_parent->GetAABBs()[uuid];
+		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
+		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
+		if (aabb.Collide(point))
+			return { true, UUID(uuid) };
 	}
-	return { false, -1 };
+	return { false, UUID(0) };
 }
 
 CollisionPayload CollisionDetector::Collide(glm::vec2 l0, glm::vec2 l1)
 {
-	for (int i = 0; i < m_map->size(); i++)
+	for (auto& [uuid, quad] : m_parent->GetQuads())
 	{
-		Quad& quad = (*m_map)[i];
-		quad.UpdateAABB();
-		if (quad.GetAABB().Collide(l0, l1))
-			return { true, i };
+		AABB& aabb = m_parent->GetAABBs()[uuid];
+		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
+		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
+		if (aabb.Collide(l0, l1))
+			return { true, UUID(uuid) };
 	}
-	return { false, -1 };
+	return { false, UUID(0) };
 }
 
 CollisionPayload CollisionDetector::Collide(AABB& aabb)
 {
-	for (int i = 0; i < m_map->size(); i++)
+	for (auto& [uuid, quad] : m_parent->GetQuads())
 	{
-		Quad& quad = (*m_map)[i];
-		quad.UpdateAABB();
-		if (quad.GetAABB().Collide(aabb))
-			return { true, i };
+		AABB& aabb = m_parent->GetAABBs()[uuid];
+		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
+		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
+		if (aabb.Collide(aabb))
+			return { true, UUID(uuid) };
 	}
-	return { false, -1 };
+	return { false, UUID(0) };
 }
 
-CollisionPayload CollisionDetector::Collide(int index)
+CollisionPayload CollisionDetector::Collide(UUID& uuid)
 {
-	(*m_map)[index].UpdateAABB();
-	AABB& aabb = (*m_map)[index].GetAABB();
-
-	for (int i = 0; i < m_map->size(); i++)
+	for (auto& [id, quad] : m_parent->GetQuads())
 	{
-		if (i == index)
+		if (id == uuid.GetUUID())
 			continue;
 
-		Quad& quad = (*m_map)[i];
-		quad.UpdateAABB();
-		if (quad.GetAABB().Collide(aabb))
-		{
-			return { true, i };
-		}
+		AABB& aabb = m_parent->GetAABBs()[id];
+		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
+		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
+		if (aabb.Collide(m_parent->GetAABBs()[id]))
+			return { true, UUID(uuid) };
 	}
-
-	return { false, -1 };
+	return { false, UUID(0) };
 }

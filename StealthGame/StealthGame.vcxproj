@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\GlobalData.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Game\Characters\NPCStats.cpp" />
     <ClCompile Include="src\Game\Interact\ItemInteract.cpp" />
     <ClCompile Include="src\Game\Interact\KillInteract.cpp" />
@@ -155,10 +157,10 @@
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Collisions\AABB.cpp" />
     <ClCompile Include="src\Collisions\CollisionDetector.cpp" />
-    <ClCompile Include="src\Game\Scene.cpp" />
+    <ClCompile Include="src\Game\GameScene.cpp" />
     <ClCompile Include="src\quadRenderer\Camera.cpp" />
     <ClCompile Include="src\quadRenderer\Shader.cpp" />
-    <ClCompile Include="src\quadRenderer\Quad.cpp" />
+    <ClCompile Include="src\quadRenderer\RenderQuad.cpp" />
     <ClCompile Include="src\quadRenderer\QuadRenderer.cpp" />
     <ClCompile Include="src\input\KeyBoard.cpp" />
     <ClCompile Include="src\input\Mouse.cpp" />
@@ -177,6 +179,8 @@
     <ClCompile Include="src\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\GlobalData.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Game\Characters\NPCStats.h" />
     <ClInclude Include="src\Game\Interact\ItemInteract.h" />
     <ClInclude Include="src\Game\Interact\KillInteract.h" />
@@ -193,10 +197,10 @@
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Collisions\AABB.h" />
     <ClInclude Include="src\Collisions\CollisionDetector.h" />
-    <ClInclude Include="src\Game\Scene.h" />
+    <ClInclude Include="src\Game\GameScene.h" />
     <ClInclude Include="src\quadRenderer\Camera.h" />
     <ClInclude Include="src\quadRenderer\Shader.h" />
-    <ClInclude Include="src\quadRenderer\Quad.h" />
+    <ClInclude Include="src\quadRenderer\RenderQuad.h" />
     <ClInclude Include="src\quadRenderer\QuadRenderer.h" />
     <ClInclude Include="src\input\KeyBoard.h" />
     <ClInclude Include="src\input\Mouse.h" />

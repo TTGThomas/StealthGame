@@ -11,6 +11,8 @@
 #include "Camera.h"
 #include "../Collisions/AABB.h"
 
+#include "../UUID.h"
+
 struct Vertex
 {
 	struct
@@ -33,37 +35,35 @@ struct RenderDesc
 	bool m_isSelected;
 };
 
-class Quad
+struct RenderQuadInitDesc
+{
+	float m_depth;
+	unsigned int m_shaderIndex;
+	unsigned int m_textureIndex;
+};
+
+class RenderQuad
 {
 public:
-	Quad() = default;
-	Quad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex);
+	RenderQuad() = default;
+	RenderQuad(RenderQuadInitDesc& desc);
 
-	void Init(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex);
+	void Init(float depth, unsigned int shaderIndex, unsigned int textureIndex);
 	void Cleanup();
 
 	void Draw(RenderDesc& desc);
 
-	void UpdateAABB();
+	void UpdateRenderQuad(class Scene* scene);
+	void UpdateRenderQuad(Scene* scene, UUID uuid);
 
 	void SetTextureIndex(int index) { m_textureIndex = index; }
 	void SetShaderIndex(int index) { m_shaderIndex= index; }
-	void SetPos(glm::vec2 pos) { m_pos = pos; }
-	void SetRotation(float rot) { m_rotation = rot; }
-	void SetScale(glm::vec2 scale) { m_scale = scale; }
-	void ChangePos(glm::vec2 pos) { m_pos += pos; }
-	void ChangeRotation(float rot) { m_rotation += rot; }
-	void ChangeScale(glm::vec2 scale) { m_scale += scale; }
 	void SetDepth(float depth) { m_depth = depth; }
 	void SetVisibility(bool visible) { m_visible = visible; }
 
 	int getShaderIndex() { return m_shaderIndex; }
 	int GetTextureIndex() { return m_textureIndex; }
-	glm::vec2& GetPos() { return m_pos; }
 	float GetDepth() { return m_depth; }
-	glm::vec2& GetScale() { return m_scale; }
-	float GetRotation() { return m_rotation; }
-	AABB& GetAABB() { return m_aabb; }
 	const bool& GetVisible() { return m_visible; }
 private:
 	unsigned int m_vao = 0, m_vbo = 0, m_ebo = 0;
@@ -71,12 +71,12 @@ private:
 	unsigned int m_textureIndex = 0;
 
 	glm::vec2 m_pos{};
-	glm::vec2 m_scale{};
+	glm::vec2 m_radius{};
 	float m_rotation = 0.0f;
 
-	float m_depth = 0.0f;
+	UUID m_uuid;
 
-	AABB m_aabb;
+	float m_depth = 0.0f;
 
 	bool m_visible = true;
 

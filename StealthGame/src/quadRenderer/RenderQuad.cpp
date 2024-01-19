@@ -1,26 +1,24 @@
-#include "Quad.h"
+#include "RenderQuad.h"
 
-Quad::Quad(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
+#include "../Scene.h"
+
+RenderQuad::RenderQuad(RenderQuadInitDesc& desc)
 {
-	Init(pos, scale, depth, shaderIndex, textureIndex);
+	Init(desc.m_depth, desc.m_shaderIndex, desc.m_textureIndex);
 }
 
-void Quad::Cleanup()
+void RenderQuad::Cleanup()
 {
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void Quad::Init(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shaderIndex, unsigned int textureIndex)
+void RenderQuad::Init(float depth, unsigned int shaderIndex, unsigned int textureIndex)
 {
-	m_aabb = AABB(pos - scale, pos + scale);
-
-	m_pos = pos;
-	m_scale = scale;
-	m_depth = depth;
 	m_shaderIndex = shaderIndex;
 	m_textureIndex = textureIndex;
+	m_depth = depth;
 
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
@@ -43,7 +41,7 @@ void Quad::Init(glm::vec2 pos, glm::vec2 scale, float depth, unsigned int shader
 	glBindVertexArray(0);
 }
 
-void Quad::Draw(RenderDesc& desc)
+void RenderQuad::Draw(RenderDesc& desc)
 {
 	if (!m_visible)
 		return;
@@ -60,8 +58,8 @@ void Quad::Draw(RenderDesc& desc)
 	matrix = glm::translate(matrix, {-desc.m_camera->GetPosX(), -desc.m_camera->GetPosY(), 0.0f});
 
 	// model
-	matrix = glm::translate(matrix, {m_pos.x, m_pos.y, 0.0f});
-	matrix = glm::scale(matrix, {m_scale.x, m_scale.y, 1.0f});
+	matrix = glm::translate(matrix, { m_pos.x, m_pos.y, 0.0f });
+	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
 	matrix = glm::rotate(matrix, glm::radians(-m_rotation), {0.0f, 0.0f, 1.0f});
 
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
@@ -80,8 +78,20 @@ void Quad::Draw(RenderDesc& desc)
 	desc.m_shader->Unbind();
 }
 
-void Quad::UpdateAABB()
+void RenderQuad::UpdateRenderQuad(Scene* scene)
 {
-	m_aabb.SetMinPos(m_pos - m_scale);
-	m_aabb.SetMaxPos(m_pos + m_scale);
+	Quad& quad = scene->GetQuads()[m_uuid.GetUUID()];
+	m_pos = quad.GetPos();
+	m_radius = quad.GetRadius();
+	m_rotation = quad.GetRotation();
+}
+
+void RenderQuad::UpdateRenderQuad(Scene* scene, UUID uuid)
+{
+	m_uuid = uuid;
+
+	Quad& quad = scene->GetQuads()[m_uuid.GetUUID()];
+	m_pos = quad.GetPos();
+	m_radius = quad.GetRadius();
+	m_rotation = quad.GetRotation();
 }

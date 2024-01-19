@@ -2,25 +2,29 @@
 
 #include <vector>
 
-#include "../quadRenderer/Quad.h"
+#include "../quadRenderer/RenderQuad.h"
+
+#include "../UUID.h"
+#include "../Scene.h"
+
+#include "AABB.h"
 
 struct CollisionPayload
 {
 	bool m_hasHit;
-	int m_hitIndex;
+	UUID m_uuid;
 };
 
 class CollisionDetector
 {
 public:
-	void BindMap(std::vector<Quad>* map);
-
-	void DisableAABBs(std::vector<int> indices);
+	CollisionDetector(class Scene* parent)
+		: m_parent(parent) {}
 
 	CollisionPayload Collide(glm::vec2 point);
 	CollisionPayload Collide(glm::vec2 l0, glm::vec2 l1);
 	CollisionPayload Collide(AABB& aabb);
-	CollisionPayload Collide(int index);
+	CollisionPayload Collide(UUID& uuid);
 private:
-	std::vector<Quad>* m_map = nullptr;
+	Scene* m_parent = nullptr;
 };

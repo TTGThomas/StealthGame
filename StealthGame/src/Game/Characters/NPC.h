@@ -9,6 +9,8 @@
 
 #include "../Desc.h"
 
+#include "../GlobalData.h"
+
 class Player;
 class CollisionDetector;
 

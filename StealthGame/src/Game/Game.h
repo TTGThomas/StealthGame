@@ -28,7 +28,9 @@
 #include "Items/Item.h"
 #include "Items/Disguise.h"
 
-#include "Scene.h"
+#include "GameScene.h"
+
+#include "GlobalData.h"
 
 #include "Desc.h"
 
@@ -44,7 +46,7 @@ public:
 private:
 	void InteractTick(GameTickDesc& desc);
 private:
-	Scene m_scene;
+	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
 };
 

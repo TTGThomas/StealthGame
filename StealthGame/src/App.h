@@ -11,6 +11,8 @@
 #include "quadRenderer/QuadRenderer.h"
 #include "Collisions/CollisionDetector.h"
 
+#include "Scene.h"
+
 #include "Utils/Timer.h"
 
 #include "Game/Game.h"
@@ -33,6 +35,8 @@ private:
 private:
 	Window m_window;
 	Camera m_camera;
+
+	Scene m_scene;
 	QuadRenderer m_renderer;
 	CollisionDetector m_collision;
 

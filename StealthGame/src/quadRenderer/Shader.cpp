@@ -2,6 +2,16 @@
 
 Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath)
 {
+	Init(vertexShaderPath, fragmentShaderPath);
+}
+
+Shader::~Shader()
+{
+	glDeleteProgram(m_program);
+}
+
+void Shader::Init(const char* vertexShaderPath, const char* fragmentShaderPath)
+{
 	unsigned int vertex = CompileShader(vertexShaderPath, GL_VERTEX_SHADER);
 	unsigned int fragment = CompileShader(fragmentShaderPath, GL_FRAGMENT_SHADER);
 
@@ -12,11 +22,6 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath)
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
-}
-
-Shader::~Shader()
-{
-	glDeleteProgram(m_program);
 }
 
 void Shader::Bind()
