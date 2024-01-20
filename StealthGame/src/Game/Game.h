@@ -27,6 +27,7 @@
 #include "Items/Disguise.h"
 
 #include "GameScene.h"
+#include "SceneLoader/SceneLoader.h"
 
 #include "GlobalData.h"
 

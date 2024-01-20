@@ -80,6 +80,7 @@ private:
 	bool m_isPlayerDetected = false;
 
 	float m_dir = 0.0f;
+	float m_targetDir = 0.0f;
 
 	Type m_type = Type::GUEST;
 	State m_state = State::NORMAL;

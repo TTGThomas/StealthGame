@@ -25,6 +25,8 @@ void NPC::NPCTick(GameTickDesc& desc)
 
 	while (m_dir > 360.0f)
 		m_dir -= 360.0f;
+	while (m_dir < 0.0f)
+		m_dir += 360.0f;
 }
 
 void NPC::SetPos(glm::vec2 newPos)
@@ -172,6 +174,13 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 			PointAtPoint(m_route[m_targetRouteIndex].m_pos);
 		}
 	}
+
+	float t0 = m_targetDir - m_dir;
+	float t1 = 360 - glm::abs(t0);
+	if (glm::abs(t0) < glm::abs(t1))
+		m_dir += 0.01f * t0;
+	else
+		m_dir += 0.01f * (m_dir + t1 > 360.0f ? t1 : -t1);
 }
 
 void NPC::TickDead(GameTickDesc& desc)
@@ -215,5 +224,5 @@ void NPC::PointAtPoint(glm::vec2 point)
 	glm::vec2 front = glm::vec2(0.0f, 1.0f);
 
 	float degree = glm::degrees(glm::acos(glm::dot(point, front)));
-	m_dir = (point.x > 0.0f ? degree : -degree);
+	m_targetDir = (point.x > 0.0f ? degree : 360.0f - degree);
 }

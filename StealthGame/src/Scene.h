@@ -46,6 +46,8 @@ public:
 
 	void AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc);
 
+	void DeleteQuad(uint64_t uuid);
+
 	std::unordered_map<uint64_t, Quad>& GetQuads() { return m_quads; }
 	std::unordered_map<uint64_t, RenderQuad>& GetRenderQuads() { return m_renderQuads; }
 	std::unordered_map<uint64_t, AABB>& GetAABBs() { return m_aabb; }

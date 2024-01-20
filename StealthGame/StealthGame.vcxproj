@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\SceneLoader\SceneLoader.cpp" />
     <ClCompile Include="src\Game\GlobalData.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Game\Interact\ItemInteract.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="src\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\SceneLoader\SceneLoader.h" />
     <ClInclude Include="src\Game\GlobalData.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Game\Interact\ItemInteract.h" />

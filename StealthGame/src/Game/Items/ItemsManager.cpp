@@ -16,14 +16,9 @@ void ItemsManager::AddItem(std::vector<std::shared_ptr<Item>>& items)
 void ItemsManager::DeleteItem(uint64_t uuid)
 {
 	Scene* scene = GlobalData::Get().m_scene;
-	Item* item = m_items[uuid].get();
 
-	scene->GetRenderQuads()[item->GetUUID().GetUUID()].Cleanup();
-	scene->GetRenderQuads()[item->GetUUID().GetUUID()].SetVisibility(false);
-
-	//m_map->GetQuads().erase(m_map->GetQuads().begin() + item->GetIndex());
-	m_items[item->GetUUID().GetUUID()].reset();
-	//m_items.erase(m_items.begin() + index);
+	scene->DeleteQuad(uuid);
+	m_items.erase(uuid);
 }
 
 UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
