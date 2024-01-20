@@ -24,8 +24,6 @@ void Game::Tick(GameTickDesc& desc)
 	for (NPC& npc : m_gameScene.GetNPCs())
 		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
 	m_gameScene.GetPlayer().PlayerTick(desc);
-	for (NPC& npc : m_gameScene.GetNPCs())
-		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(true);
 
 	InteractTick(desc);
 

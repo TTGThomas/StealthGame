@@ -90,9 +90,9 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	scene->Init(initDesc);
 
 	std::vector<std::shared_ptr<Item>> items;
-	for (float y = 1.0f; y < 3.0f; y += 0.5f)
+	for (float y = 1.0f; y < 3.0f; y += 0.1f)
 	{
-		for (float x = -1.0f; x < 1.0f; x += 0.5f)
+		for (float x = -1.0f; x < 1.0f; x += 0.1f)
 		{
 			items.emplace_back(std::make_shared<Disguise>());
 			dynamic_cast<Disguise*>(items.back().get())->Init(Disguise::Type::GAURD, glm::vec2(x, y), -0.0f, globalData.m_defaultShader);

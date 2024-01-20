@@ -205,13 +205,13 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point)
 	if (GetPos().y > point.y)
 		add.y -= speed;
 
-	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
 
 	Move(m_collision, add.x, add.y);
 
-	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	if (glm::distance(GetPos(), point) < 0.1f)
 		SetPos(point);
