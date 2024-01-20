@@ -39,14 +39,8 @@ int App::Exec()
 
 void App::Tick()
 {
-	for (auto [uuid, quad] : m_scene.GetRenderQuads())
-	{
-		quad.UpdateRenderQuad(&m_scene);
-	}
-
 	//UpdateCamera();
 	UpdateSelection();
-	UpdateGame();
 
 #ifndef IMGUI_DISABLE
 	ImGui::Begin("Stats");
@@ -61,6 +55,8 @@ void App::Tick()
 
 	m_renderer.ShowStatsWindow();
 	m_camera.ShowStatsWindow();
+
+	UpdateGame();
 
 	m_gpuTimer.Start();
 	m_renderer.Render(m_window.GetRatio(), m_hoveredIndex);

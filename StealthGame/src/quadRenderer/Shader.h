@@ -16,6 +16,8 @@ public:
 	Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 	~Shader();
 
+	void Cleanup();
+
 	void Init(const char* vertexShaderPath, const char* fragmentShaderPath);
 
 	void Bind();

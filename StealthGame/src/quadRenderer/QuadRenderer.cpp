@@ -6,6 +6,9 @@ QuadRenderer::~QuadRenderer()
 {
 	for (auto& [key, val] : m_parent->GetRenderQuads())
 		val.Cleanup();
+
+	for (auto& [key, val] : m_shaders)
+		val.Cleanup();
 }
 
 void QuadRenderer::BindCamera(Camera* camera)
@@ -31,13 +34,16 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	desc.m_camera = m_camera;
 	desc.m_ratio = ratio;
 
-	for (auto& [key, renderQuad] : m_parent->GetRenderQuads())
+	for (uint64_t& uuid : m_parent->GetDepthOrder())
 	{
-		Quad& quad = m_parent->GetQuads()[key];
+		RenderQuad& renderQuad = m_parent->GetRenderQuads()[uuid];
+		renderQuad.UpdateRenderQuad(m_parent);
+
+		Quad& quad = m_parent->GetQuads()[uuid];
 		if (InWindow(quad, ratio))
 		{
-			desc.m_shader = &m_shaders[renderQuad.getShaderIndex()];
-			desc.m_texture = &m_textures[renderQuad.GetTextureIndex()];
+			desc.m_shader = &m_shaders[renderQuad.getShaderUUID()];
+			desc.m_texture = &m_textures[renderQuad.GetTextureUUID()];
 			desc.m_isSelected = false;
 
 			renderQuad.Draw(desc);

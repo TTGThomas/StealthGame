@@ -7,6 +7,10 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath)
 
 Shader::~Shader()
 {
+}
+
+void Shader::Cleanup()
+{
 	glDeleteProgram(m_program);
 }
 

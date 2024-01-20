@@ -1,7 +1,5 @@
 #include "NPC.h"
 
-#include "NPCStats.h"
-
 #include "Player.h"
 
 void NPC::NPCTick(GameTickDesc& desc)
@@ -179,7 +177,7 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 void NPC::TickDead(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
-	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureIndex(NPCStats::GetDeadBodyTextureIndex());
+	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texPlayer);
 	GetQuad(1)->ChangeRotation(0.01f);
 }
 

@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClCompile Include="src\Game\GlobalData.cpp" />
     <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Game\Characters\NPCStats.cpp" />
     <ClCompile Include="src\Game\Interact\ItemInteract.cpp" />
     <ClCompile Include="src\Game\Interact\KillInteract.cpp" />
     <ClCompile Include="src\Game\Items\ItemsManager.cpp" />
@@ -181,7 +180,6 @@
   <ItemGroup>
     <ClInclude Include="src\Game\GlobalData.h" />
     <ClInclude Include="src\Scene.h" />
-    <ClInclude Include="src\Game\Characters\NPCStats.h" />
     <ClInclude Include="src\Game\Interact\ItemInteract.h" />
     <ClInclude Include="src\Game\Interact\KillInteract.h" />
     <ClInclude Include="src\Game\Interact\Interaction.h" />

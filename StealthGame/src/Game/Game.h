@@ -23,8 +23,6 @@
 #include "Characters/Player.h"
 #include "Characters/NPC.h"
 
-#include "Characters/NPCStats.h"
-
 #include "Items/Item.h"
 #include "Items/Disguise.h"
 

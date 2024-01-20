@@ -102,9 +102,6 @@
     <ClCompile Include="src\Game\Interact\ItemInteract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Characters\NPCStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\UUID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,9 +219,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Interact\ItemInteract.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\Characters\NPCStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\UUID.h">

@@ -17,8 +17,8 @@ void Object::Init(std::vector<QuadInitDesc>& descs)
 
 		RenderQuadInitDesc renderDesc;
 		renderDesc.m_depth = desc.m_depth;
-		renderDesc.m_shaderIndex = desc.m_shaderIndex;
-		renderDesc.m_textureIndex = desc.m_textuerIndex;
+		renderDesc.m_shaderUUID = desc.m_shaderUUID;
+		renderDesc.m_textureUUID = desc.m_textureUUID;
 
 		scene->AddQuad(quad, renderDesc);
 		scene->GetRenderQuads()[uuid].UpdateRenderQuad(scene, uuid);

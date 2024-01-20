@@ -17,8 +17,8 @@ struct QuadInitDesc
 	glm::vec2 m_pos{};
 	glm::vec2 m_scale{};
 	float m_depth = 0.0f;
-	int m_shaderIndex = 0;
-	int m_textuerIndex = 0;
+	uint64_t m_shaderUUID = 0;
+	uint64_t m_textureUUID = 0;
 };
 
 class Object

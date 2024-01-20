@@ -42,6 +42,13 @@ CollisionPayload CollisionDetector::Collide(AABB& aabb)
 
 CollisionPayload CollisionDetector::Collide(UUID& uuid)
 {
+	{
+		Quad& quad = m_parent->GetQuads()[uuid.GetUUID()];
+		AABB& aabb = m_parent->GetAABBs()[uuid.GetUUID()];
+		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
+		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
+	}
+
 	for (auto& [id, quad] : m_parent->GetQuads())
 	{
 		if (id == uuid.GetUUID())
@@ -50,7 +57,7 @@ CollisionPayload CollisionDetector::Collide(UUID& uuid)
 		AABB& aabb = m_parent->GetAABBs()[id];
 		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
-		if (aabb.Collide(m_parent->GetAABBs()[id]))
+		if (aabb.Collide(m_parent->GetAABBs()[uuid.GetUUID()]))
 			return { true, UUID(uuid) };
 	}
 	return { false, UUID(0) };

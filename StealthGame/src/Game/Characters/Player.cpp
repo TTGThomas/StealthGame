@@ -12,6 +12,7 @@ void Player::BindNPCs(std::vector<NPC>* npcs)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
+	GlobalData::Get().m_scene->GetAABBs()[GetUUID(1).GetUUID()].SetEnabled(false);
 	if (!m_inputEnabled)
 		return;
 
@@ -38,7 +39,7 @@ void Player::MovePlayer(GameTickDesc& desc)
 
 	Move(desc.m_collision, m_velocity.x, m_velocity.y);
 
-	desc.m_camera->SetPos(GetQuad(0)->GetPos());
+	desc.m_camera->SetPos(GetQuad(2)->GetPos());
 
 	// crouch / unCrouch accoding to the input
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_C))

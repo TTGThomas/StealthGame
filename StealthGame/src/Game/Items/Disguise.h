@@ -23,7 +23,7 @@ public:
 public:
 	Disguise() = default;
 
-	void Init(Type type, glm::vec2 pos, float depth, int shaderIndex);
+	void Init(Type type, glm::vec2 pos, float depth, uint64_t shaderUUID);
 
 	virtual void OnCollect(class GameScene* scene) override;
 

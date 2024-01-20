@@ -4,7 +4,7 @@
 
 RenderQuad::RenderQuad(RenderQuadInitDesc& desc)
 {
-	Init(desc.m_depth, desc.m_shaderIndex, desc.m_textureIndex);
+	Init(desc.m_depth, desc.m_shaderUUID, desc.m_textureUUID);
 }
 
 void RenderQuad::Cleanup()
@@ -14,10 +14,10 @@ void RenderQuad::Cleanup()
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void RenderQuad::Init(float depth, unsigned int shaderIndex, unsigned int textureIndex)
+void RenderQuad::Init(float depth, uint64_t shaderUUID, uint64_t textureUUID)
 {
-	m_shaderIndex = shaderIndex;
-	m_textureIndex = textureIndex;
+	m_shaderUUID = shaderUUID;
+	m_textureUUID = textureUUID;
 	m_depth = depth;
 
 	glGenVertexArrays(1, &m_vao);

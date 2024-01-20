@@ -1,6 +1,6 @@
 #include "Disguise.h"
 
-void Disguise::Init(Type type, glm::vec2 pos, float depth, int shaderIndex)
+void Disguise::Init(Type type, glm::vec2 pos, float depth, uint64_t shaderUUID)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
@@ -11,8 +11,8 @@ void Disguise::Init(Type type, glm::vec2 pos, float depth, int shaderIndex)
 
 	RenderQuadInitDesc renderDesc;
 	renderDesc.m_depth = depth;
-	renderDesc.m_shaderIndex = shaderIndex;
-	renderDesc.m_textureIndex = 0;
+	renderDesc.m_shaderUUID = shaderUUID;
+	renderDesc.m_textureUUID = GlobalData::Get().m_texLogo;
 
 	scene->AddQuad(quad, renderDesc);
 	scene->GetRenderQuads()[uuid].UpdateRenderQuad(scene, uuid);

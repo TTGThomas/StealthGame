@@ -38,8 +38,8 @@ struct RenderDesc
 struct RenderQuadInitDesc
 {
 	float m_depth;
-	unsigned int m_shaderIndex;
-	unsigned int m_textureIndex;
+	uint64_t m_shaderUUID;
+	uint64_t m_textureUUID;
 };
 
 class RenderQuad
@@ -48,7 +48,7 @@ public:
 	RenderQuad() = default;
 	RenderQuad(RenderQuadInitDesc& desc);
 
-	void Init(float depth, unsigned int shaderIndex, unsigned int textureIndex);
+	void Init(float depth, uint64_t shaderUUID, uint64_t textureUUID);
 	void Cleanup();
 
 	void Draw(RenderDesc& desc);
@@ -56,19 +56,19 @@ public:
 	void UpdateRenderQuad(class Scene* scene);
 	void UpdateRenderQuad(Scene* scene, UUID uuid);
 
-	void SetTextureIndex(int index) { m_textureIndex = index; }
-	void SetShaderIndex(int index) { m_shaderIndex= index; }
+	void SetTextureUUID(uint64_t uuid) { m_textureUUID = uuid; }
+	void SetShaderUUID(uint64_t uuid) { m_shaderUUID = uuid; }
 	void SetDepth(float depth) { m_depth = depth; }
 	void SetVisibility(bool visible) { m_visible = visible; }
 
-	int getShaderIndex() { return m_shaderIndex; }
-	int GetTextureIndex() { return m_textureIndex; }
+	uint64_t getShaderUUID() { return m_shaderUUID; }
+	uint64_t GetTextureUUID() { return m_textureUUID;; }
 	float GetDepth() { return m_depth; }
 	const bool& GetVisible() { return m_visible; }
 private:
 	unsigned int m_vao = 0, m_vbo = 0, m_ebo = 0;
-	unsigned int m_shaderIndex = 0;
-	unsigned int m_textureIndex = 0;
+	uint64_t m_shaderUUID = 0;
+	uint64_t m_textureUUID = 0;
 
 	glm::vec2 m_pos{};
 	glm::vec2 m_radius{};
