@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include <glm/glm.hpp>
 
 #include "../../input/KeyBoard.h"
@@ -28,12 +30,12 @@ class NPC : public Entity
 public:
 	enum class Type
 	{
-		STATICGUEST, GUEST, VIPGUEST, GUARD, VIPGUARD
+		GUEST, VIPGUEST, GUARD, VIPGUARD
 	};
 
 	enum class State
 	{
-		NORMAL, SUSPICIOUS, ALERT, DEAD
+		NORMAL, SUSPICIOUS, WITNESS
 	};
 public:
 	NPC() = default;
@@ -41,6 +43,7 @@ public:
 	//inline void Init();
 
 	void BindPlayer(Player* player) { m_player = player; }
+	void BindNPCs(std::vector<NPC>* npcs) { m_npcs = npcs; }
 	void BindCollision(CollisionDetector* collision) { m_collision = collision; }
 
 	void BindRoute(std::vector<NPCRoutePoint>& route) { m_route = route; }
@@ -58,23 +61,26 @@ public:
 	void EliminateMyself();
 
 	bool IsPlayerDetected();
+
+	float GetSuspiciousMeter() { return m_suspiciousMeter; }
+	State GetState() { return m_state; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
 	bool IsPlayerInSight();
 	void DetectPlayer();
 private:
-	void TickStaticGuest(GameTickDesc& desc);
 	void TickGuest(GameTickDesc& desc);
 	void TickGuard(GameTickDesc& desc);
 	void TickNonStatic(GameTickDesc& desc);
 	void TickDead(GameTickDesc& desc);
 private:
 	// returns if it is at point or not
-	bool MoveToTarget(float dt, glm::vec2 point);
+	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
 	void PointAtPoint(glm::vec2 point);
 private:
 	Player* m_player;
+	std::vector<NPC>* m_npcs;
 	CollisionDetector* m_collision;
 
 	bool m_isPlayerDetected = false;
@@ -85,6 +91,7 @@ private:
 	Type m_type = Type::GUEST;
 	State m_state = State::NORMAL;
 	float m_suspiciousMeter = 0;
+	int m_health = 100;
 
 	std::vector<NPCRoutePoint> m_route;
 	int m_targetRouteIndex = 0;

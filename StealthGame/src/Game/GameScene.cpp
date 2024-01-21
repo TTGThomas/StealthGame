@@ -10,10 +10,12 @@ void GameScene::Init(SceneInitDesc& desc)
 	for (NPCInitDesc& npcDesc : *desc.m_npcs)
 	{
 		m_npcs.push_back(NPC());
-		m_npcs.back().Init(*npcDesc.m_desc);
+		m_npcs.back().Init(npcDesc.m_desc);
 		m_npcs.back().BindPlayer(&m_player);
+		m_npcs.back().BindNPCs(&m_npcs);
 		m_npcs.back().BindCollision(desc.m_collision);
-		m_npcs.back().BindRoute(*npcDesc.m_route);
+		m_npcs.back().BindRoute(npcDesc.m_route);
+		m_npcs.back().SetType(npcDesc.m_type);
 	}
 
 	m_map.reserve(desc.m_map->size());

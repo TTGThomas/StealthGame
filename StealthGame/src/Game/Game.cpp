@@ -37,29 +37,8 @@ void Game::InteractTick(GameTickDesc& desc)
 	Scene* scene = GlobalData::Get().m_scene;
 
 	m_interact.reset();
-
-	// get possible interactive NPC
-	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
-	for (NPC& npc : m_gameScene.GetNPCs())
-	{
-		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
-		if (glm::length(diff) < 0.5f && !npc.IsPlayerDetected())
-		{
-			m_interact = std::make_shared<KillInteract>(&m_gameScene.GetPlayer(), &npc);
-			break;
-		}
-	}
-
-	// get possible interactive items
-	Item* item = m_gameScene.GetItems().GetNearestItem(m_gameScene.GetPlayer().GetPos()).get();
-	if (item != nullptr)
-	{
-		if (glm::distance(item->GetQuad().GetPos(), m_gameScene.GetPlayer().GetPos()) < 0.5f)
-		{
-			m_interact.reset();
-			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
-		}
-	}
+	InteractNPC();
+	InteracatItems();
 
 	if (m_interact.get() != nullptr)
 	{
@@ -69,6 +48,46 @@ void Game::InteractTick(GameTickDesc& desc)
 		if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
 		{
 			m_interact->OnInteract();
+		}
+	}
+}
+
+void Game::InteractNPC()
+{
+	Scene* scene = GlobalData::Get().m_scene;
+
+	// get possible interactive NPC
+	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
+	NPC* victim;
+	float victimDst = -1.0f;
+	for (NPC& npc : m_gameScene.GetNPCs())
+	{
+		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
+		float dst = glm::length(diff);
+		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f))
+		{
+			victim = &npc;
+			victimDst = glm::length(diff);
+		}
+	}
+
+	if (victimDst != -1.0f)
+	{
+		m_interact.reset();
+		m_interact = std::make_shared<KillInteract>(&m_gameScene.GetPlayer(), victim);
+	}
+}
+
+void Game::InteracatItems()
+{
+	// get possible interactive items
+	Item* item = m_gameScene.GetItems().GetNearestItem(m_gameScene.GetPlayer().GetPos()).get();
+	if (item != nullptr)
+	{
+		if (glm::distance(item->GetQuad().GetPos(), m_gameScene.GetPlayer().GetPos()) < 0.5f)
+		{
+			m_interact.reset();
+			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
 		}
 	}
 }

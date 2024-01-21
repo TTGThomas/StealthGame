@@ -12,6 +12,7 @@ void Player::BindNPCs(std::vector<NPC>* npcs)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
+	m_actionType = ActionType::NORMAL;
 	GlobalData::Get().m_scene->GetAABBs()[GetUUID(1).GetUUID()].SetEnabled(false);
 	if (!m_inputEnabled)
 		return;
@@ -22,6 +23,7 @@ void Player::PlayerTick(GameTickDesc& desc)
 void Player::EliminateNPC(NPC& victim)
 {
 	SetPos(victim.GetPos());
+	m_actionType = ActionType::ILLEGAL;
 }
 
 void Player::MovePlayer(GameTickDesc& desc)

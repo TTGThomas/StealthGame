@@ -7,12 +7,9 @@ void NPC::NPCTick(GameTickDesc& desc)
 	DetectPlayer();
 	SetPos(GetPos());
 
-	if (m_state != State::DEAD)
+	if (m_health > 0)
 	{
-		if (m_type != Type::STATICGUEST)
-			TickNonStatic(desc);
-		else
-			TickStaticGuest(desc);
+		TickNonStatic(desc);
 		if (m_type == Type::GUEST || m_type == Type::VIPGUEST)
 			TickGuest(desc);
 		else if (m_type == Type::GUARD || m_type == Type::VIPGUARD)
@@ -45,13 +42,13 @@ void NPC::ChangePos(glm::vec2 pos)
 
 void NPC::EliminateMyself()
 {
-	m_state = State::DEAD;
+	m_health = 0;
 }
 
 void NPC::SetDirPos(glm::vec2 pos)
 {
 	Scene* scene = GlobalData::Get().m_scene;
-	if (m_state == State::DEAD)
+	if (m_health == 0)
 	{
 		scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
 		return;
@@ -97,7 +94,7 @@ bool NPC::IsPlayerDetected()
 
 void NPC::DetectPlayer()
 {
-	if (m_state == State::DEAD)
+	if (m_health == 0)
 	{
 		m_isPlayerDetected = false;
 		return;
@@ -112,98 +109,160 @@ void NPC::DetectPlayer()
 	m_isPlayerDetected = false;
 }
 
-void NPC::TickStaticGuest(GameTickDesc& desc)
-{
-}
-
 void NPC::TickGuest(GameTickDesc& desc)
 {
+	if (IsPlayerDetected())
+	{
+		if (m_player->GetActionType() == Player::ActionType::ILLEGAL)
+		{
+			m_state = State::WITNESS;
+		}
+	}
+
+	if (m_state == State::WITNESS)
+	{
+		//MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos(), false);
+		//PointAtPoint(m_player->GetPos());
+		EliminateMyself();
+	}
 }
 
 void NPC::TickGuard(GameTickDesc& desc)
 {
+	if (IsPlayerDetected())
+	{
+		if (m_player->GetActionType() == Player::ActionType::ILLEGAL)
+		{
+			m_state = State::WITNESS;
+			GlobalData::Get().m_globalState = GlobalState::ALERT;
+		}
+	}
+
+	if (GlobalData::Get().m_globalState == GlobalState::ALERT)
+	{
+		m_state = State::WITNESS;
+		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - m_player->GetPos());
+		pos *= 1.5f;
+		MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos() + pos, false);
+		PointAtPoint(m_player->GetPos());
+	}
 }
 
 void NPC::TickNonStatic(GameTickDesc& desc)
 {
-	if (IsPlayerDetected())
-		m_state = State::NORMAL;
+	if (m_state != State::WITNESS)
+	{
+		if (IsPlayerDetected())
+			m_state = State::NORMAL;
 
-	float dst = glm::distance(GetPos(), m_player->GetPos());
-	if (dst < 0.2f)
-	{
-		m_suspiciousMeter = 1.0f;
-	}
-	else if (dst < 0.5f)
-	{
-		if (glm::length(m_player->GetVelocity()) != 0.0f)
+		float dst = glm::distance(GetPos(), m_player->GetPos());
+		if (dst < 0.2f)
 		{
-			if (!m_player->GetIsCrouching())
+			m_suspiciousMeter = 1.0f;
+		}
+		else if (dst < 0.5f)
+		{
+			if (glm::length(m_player->GetVelocity()) != 0.0f)
 			{
-				m_suspiciousMeter = 1.0f;
+				if (!m_player->GetIsCrouching())
+				{
+					m_suspiciousMeter = 1.0f;
+				}
 			}
 		}
-	}
 
-	if (m_suspiciousMeter > 0.0f)
-	{
-		m_state = State::SUSPICIOUS;
-		m_suspiciousMeter -= desc.m_tickTimer->Second();
-	}
-	else
-	{
-		m_suspiciousMeter = 0.0f;
-		m_state = State::NORMAL;
-	}
-
-	if (m_state == State::SUSPICIOUS)
-	{
-		PointAtPoint(m_player->GetPos());
-	}
-	
-	if (m_state == State::NORMAL)
-	{
-		if (m_route.size() > 0)
+		if (m_suspiciousMeter > 0.0f)
 		{
-			if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+			m_state = State::SUSPICIOUS;
+			m_suspiciousMeter -= desc.m_tickTimer->Second();
+		}
+		else
+		{
+			m_suspiciousMeter = 0.0f;
+			m_state = State::NORMAL;
+		}
+
+		if (m_state == State::SUSPICIOUS)
+		{
+			PointAtPoint(m_player->GetPos());
+		}
+
+		if (m_state == State::NORMAL)
+		{
+			if (m_route.size() > 0)
 			{
-				m_targetRouteIndex++;
-				if (m_targetRouteIndex >= m_route.size())
-					m_targetRouteIndex -= m_route.size();
+				if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+				{
+					m_targetRouteIndex++;
+					if (m_targetRouteIndex >= m_route.size())
+						m_targetRouteIndex -= m_route.size();
+				}
+				PointAtPoint(m_route[m_targetRouteIndex].m_pos);
 			}
-			PointAtPoint(m_route[m_targetRouteIndex].m_pos);
+			else
+			{
+				m_targetDir = 0.0f;
+			}
 		}
 	}
 
 	float t0 = m_targetDir - m_dir;
 	float t1 = 360 - glm::abs(t0);
+	float amount = 0.0f;
 	if (glm::abs(t0) < glm::abs(t1))
-		m_dir += 0.01f * t0;
+		amount = t0;
 	else
-		m_dir += 0.01f * (m_dir + t1 > 360.0f ? t1 : -t1);
+		amount = (m_dir + t1 > 360.0f ? t1 : -t1);
+	float dirSpeed = desc.m_tickTimer->Second() * 500.0f;
+	if (amount > 0.0f)
+		m_dir += glm::min(dirSpeed, amount);
+	else
+		m_dir -= glm::min(dirSpeed, -amount);
 }
 
 void NPC::TickDead(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
-	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texPlayer);
-	GetQuad(1)->ChangeRotation(0.01f);
+	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texNPCDead);
 }
 
-bool NPC::MoveToTarget(float dt, glm::vec2 point)
+bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
 	glm::vec2 add{};
 	float speed = m_speed * dt;
-	if (GetPos().x < point.x)
-		add.x += speed;
-	if (GetPos().x > point.x)
-		add.x -= speed;
-	if (GetPos().y < point.y)
-		add.y += speed;
-	if (GetPos().y > point.y)
-		add.y -= speed;
+
+	// perform BFS for shortest path
+	
+	const float BFSPrecision = 0.1f;
+	std::queue<glm::vec2> bfs;
+	bfs.push(GetQuad(0)->GetPos());
+	while (!bfs.empty())
+	{
+		glm::vec2 now = bfs.front();
+		bfs.pop();
+
+		if (m_collision->Collide(GetUUID(0)).m_hasHit)
+			continue;
+
+		float dx[] = { 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f };
+		float dy[] = { 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f, 0.0f, 1.0f };
+		for (int i = 0; i < 7; i++)
+		{
+			glm::vec2 newPos = now + (glm::vec2(dx[i], dy[i]) * BFSPrecision);
+			bfs.push(newPos);
+		}
+	}
+
+	//if (GetPos().x < point.x)
+	//	add.x += speed;
+	//if (GetPos().x > point.x)
+	//	add.x -= speed;
+	//if (GetPos().y < point.y)
+	//	add.y += speed;
+	//if (GetPos().y > point.y)
+	//	add.y -= speed;
 
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
@@ -213,7 +272,7 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point)
 	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
-	if (glm::distance(GetPos(), point) < 0.1f)
+	if (glm::distance(GetPos(), point) < 0.1f && snapp)
 		SetPos(point);
 	return GetPos() == point;
 }

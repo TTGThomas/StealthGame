@@ -18,6 +18,11 @@
 class Player : public Entity
 {
 public:
+	enum class ActionType
+	{
+		NORMAL, ILLEGAL
+	};
+public:
 	Player() = default;
 
 	void BindCamera(Camera* camera);
@@ -35,11 +40,13 @@ public:
 	bool GetInputEnabled() { return m_inputEnabled; }
 	bool GetIsCrouching() { return m_isCrouching; }
 	void EliminateNPC(NPC& victim);
+	ActionType GetActionType() { return m_actionType; }
 private:
 	void MovePlayer(GameTickDesc& desc);
 private:
 	glm::vec2 m_velocity{};
 
+	ActionType m_actionType = ActionType::NORMAL;
 	bool m_inputEnabled = true;
 	Camera* m_bindedCamera = nullptr;
 	std::vector<NPC>* m_npcs = nullptr;

@@ -20,8 +20,9 @@
 
 struct NPCInitDesc
 {
-	std::vector<QuadInitDesc>* m_desc;
-	std::vector<NPCRoutePoint>* m_route;
+	std::vector<QuadInitDesc> m_desc;
+	std::vector<NPCRoutePoint> m_route;
+	NPC::Type m_type;
 };
 
 struct SceneInitDesc

@@ -228,8 +228,13 @@
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />
+    <Image Include="res\NPC\NPC2.png" />
+    <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
     <Image Include="res\Player\player.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\NPC\FormatInfo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

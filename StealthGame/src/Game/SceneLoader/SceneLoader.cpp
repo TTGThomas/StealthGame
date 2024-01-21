@@ -18,9 +18,17 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texPlayer = player.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(player);
 
+	Texture npcDead("res/NPC/NPCDead.png");
+	GlobalData::Get().m_texNPCDead = npcDead.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(npcDead);
+
 	Texture npc0("res/NPC/NPC0.png");
 	GlobalData::Get().m_texNPC0 = npc0.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc0);
+
+	Texture npc2("res/NPC/NPC2.png");
+	GlobalData::Get().m_texNPC2 = npc2.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(npc2);
 
 	Texture npcDir("res/NPC/Dir.png");
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
@@ -31,54 +39,50 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	GlobalData& globalData = GlobalData::Get();
 
+	// Player
 	std::vector<QuadInitDesc> playerDesc{};
-	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.2f), -0.02f, globalData.m_defaultShader, globalData.m_texLogo });
-	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.1f), -1.0f, globalData.m_defaultShader, globalData.m_texPlayerCursor });
-	playerDesc.push_back({ glm::vec2(0.0f, 0.0f), glm::vec2(0.2f), -0.02f, globalData.m_defaultShader, globalData.m_texPlayer });
-
+	SetPlayer(&playerDesc, { 0.0f, 0.0f }, globalData.m_defaultShader, globalData.m_texPlayer);
+	
+	// NPC
 	std::vector<NPCInitDesc> allNpcDesc{};
 
-	std::vector<QuadInitDesc> npcQuad0;
-	std::vector<NPCRoutePoint> m_npcRoute0;
 	{
-		NPCInitDesc npcDesc{};
-		glm::vec2 npcPos = glm::vec2(-2.0f, 0.0f);
-		npcQuad0.push_back({ npcPos, glm::vec2(0.2f), -0.0101f, globalData.m_defaultShader, globalData.m_texLogo });
-		npcQuad0.push_back({ npcPos, glm::vec2(0.2f), -0.0101f, globalData.m_defaultShader, globalData.m_texNPC0 });
-		npcQuad0.push_back({ npcPos, glm::vec2(0.5f), -0.0201f, globalData.m_defaultShader, globalData.m_texNPCDir });
-		npcDesc.m_desc = &npcQuad0;
-		m_npcRoute0.push_back({ {-2.0f,  0.0f} });
-		m_npcRoute0.push_back({ {-2.0f,  4.0f} });
-		m_npcRoute0.push_back({ { 2.0f,  4.0f} });
-		m_npcRoute0.push_back({ { 2.0f, -1.0f} });
-		npcDesc.m_route = &m_npcRoute0;
-		allNpcDesc.push_back(npcDesc);
+		std::vector<NPCRoutePoint> npcRoute;
+		npcRoute.push_back({ {-2.0f,  0.0f} });
+		npcRoute.push_back({ {-2.0f,  4.0f} });
+		npcRoute.push_back({ { 2.0f,  4.0f} });
+		npcRoute.push_back({ { 2.0f, -1.0f} });
+
+		LoadNPC(&allNpcDesc, { -2.0f, 0.0f }, NPC::Type::GUARD, globalData.m_defaultShader, globalData.m_texNPC2, npcRoute);
 	}
 
-	std::vector<QuadInitDesc> npcQuad1;
-	std::vector<NPCRoutePoint> m_npcRoute1;
 	{
-		NPCInitDesc npcDesc{};
-		glm::vec2 npcPos = glm::vec2(-2.0f, -1.0f);
-		npcQuad1.push_back({ npcPos, glm::vec2(0.2f), -0.0102f, globalData.m_defaultShader, globalData.m_texLogo });
-		npcQuad1.push_back({ npcPos, glm::vec2(0.2f), -0.0102f, globalData.m_defaultShader, globalData.m_texNPC0 });
-		npcQuad1.push_back({ npcPos, glm::vec2(0.5f), -0.0202f, globalData.m_defaultShader, globalData.m_texNPCDir });
-		npcDesc.m_desc = &npcQuad1;
-		m_npcRoute1.push_back({ { 2.0f, -1.0f} });
-		m_npcRoute1.push_back({ { 2.0f,  4.0f} });
-		m_npcRoute1.push_back({ {-2.0f,  4.0f} });
-		m_npcRoute1.push_back({ {-2.0f,  0.0f} });
-		npcDesc.m_route = &m_npcRoute1;
-		allNpcDesc.push_back(npcDesc);
+		std::vector<NPCRoutePoint> npcRoute;
+		npcRoute.push_back({ { 2.0f, -1.0f} });
+		npcRoute.push_back({ { 2.0f,  4.0f} });
+		npcRoute.push_back({ {-2.0f,  4.0f} });
+		npcRoute.push_back({ {-2.0f,  0.0f} });
+
+		LoadNPC(&allNpcDesc, { -2.0f, -1.0f }, NPC::Type::GUARD, globalData.m_defaultShader, globalData.m_texNPC2, npcRoute);
 	}
 
+	for (float y = 1.0f; y < 4.0f; y += 0.7f)
+	{
+		for (float x = -2.0f; x < 2.0f; x += 0.7f)
+		{
+			std::vector<NPCRoutePoint> npcRoute;
+			LoadNPC(&allNpcDesc, { x, y }, NPC::Type::GUEST, globalData.m_defaultShader, globalData.m_texNPC0, npcRoute);
+		}
+	}
+
+	// Map
 	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
 
 	std::vector<QuadInitDesc> mapDesc{};
-	mapDesc.push_back({ glm::vec2(1.2f, 0.0f), glm::vec2(0.5f), -0.3f, globalData.m_defaultShader, globalData.m_texLogo });
-	mapDesc.push_back({ glm::vec2(1.2f, 0.0f), glm::vec2(0.5f), -0.3f, globalData.m_defaultShader, globalData.m_texLogo });
-	allMapDesc.push_back(mapDesc);
 
+	LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, globalData.m_defaultShader, globalData.m_texLogo);
+
+	// Init
 	SceneInitDesc initDesc;
 	initDesc.m_renderer = desc.m_renderer;
 	initDesc.m_collision = desc.m_collision;
@@ -89,14 +93,55 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	scene->Init(initDesc);
 
+	// Items
 	std::vector<std::shared_ptr<Item>> items;
-	for (float y = 1.0f; y < 3.0f; y += 0.1f)
+#if 0
+	for (float y = 1.0f; y < 3.0f; y += 0.5f)
 	{
-		for (float x = -1.0f; x < 1.0f; x += 0.1f)
+		for (float x = -1.0f; x < 1.0f; x += 0.5f)
 		{
 			items.emplace_back(std::make_shared<Disguise>());
 			dynamic_cast<Disguise*>(items.back().get())->Init(Disguise::Type::GAURD, glm::vec2(x, y), -0.0f, globalData.m_defaultShader);
 		}
 	}
+#endif
 	scene->GetItems().AddItem(items);
+}
+
+void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, NPC::Type type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
+{
+	// npc are from 0.0 - 0.2
+	// npcdir are from 0.3 - 0.5
+	GlobalData& globalData = GlobalData::Get();
+	NPCInitDesc npcDesc{};
+	std::vector<QuadInitDesc> npcQuad;
+	float index = npcMap->size() * 0.000001f;
+	npcQuad.push_back({ pos, glm::vec2(0.2f), -index, shader, texture});
+	npcQuad.push_back({ pos, glm::vec2(0.2f), -index, shader, texture });
+	npcQuad.push_back({ pos, glm::vec2(0.5f), -(0.3f + index), shader, globalData.m_texNPCDir });
+	npcDesc.m_desc = npcQuad;
+	npcDesc.m_route = route;
+	npcDesc.m_type = type;
+
+	npcMap->push_back(npcDesc);
+}
+
+void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture)
+{
+	GlobalData& globalData = GlobalData::Get();
+
+	playerDesc->push_back({ pos, glm::vec2(0.2f), -0.25f, shader, globalData.m_texLogo });
+	playerDesc->push_back({ pos, glm::vec2(0.1f), -1.0f, shader, globalData.m_texPlayerCursor });
+	playerDesc->push_back({ pos, glm::vec2(0.2f), -0.25f, shader, texture });
+}
+
+void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture)
+{
+	// map is from 0.6 - 0.9
+
+	std::vector<QuadInitDesc> mapDesc{};
+	float index = -(0.6f + (allMapDesc->size() * 0.000001f));
+	mapDesc.push_back({ pos, radius, index, shader, texture });
+	mapDesc.push_back({ pos, radius, index, shader, texture });
+	allMapDesc->push_back(mapDesc);
 }

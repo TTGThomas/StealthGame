@@ -260,5 +260,14 @@
     <Image Include="res\NPC\Dir.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\NPC\NPCDead.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\NPC\FormatInfo.txt" />
   </ItemGroup>
 </Project>
