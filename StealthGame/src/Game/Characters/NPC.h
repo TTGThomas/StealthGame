@@ -78,6 +78,7 @@ private:
 	// returns if it is at point or not
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
 	void PointAtPoint(glm::vec2 point);
+	glm::vec2 GetAddFromTarget(glm::vec2 target);
 private:
 	Player* m_player;
 	std::vector<NPC>* m_npcs;

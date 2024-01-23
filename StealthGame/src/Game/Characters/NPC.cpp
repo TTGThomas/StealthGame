@@ -233,36 +233,18 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	glm::vec2 add{};
 	float speed = m_speed * dt;
 
-	// perform BFS for shortest path
-	
-	const float BFSPrecision = 0.1f;
-	std::queue<glm::vec2> bfs;
-	bfs.push(GetQuad(0)->GetPos());
-	while (!bfs.empty())
-	{
-		glm::vec2 now = bfs.front();
-		bfs.pop();
-
-		if (m_collision->Collide(GetUUID(0)).m_hasHit)
-			continue;
-
-		float dx[] = { 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f };
-		float dy[] = { 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f, 0.0f, 1.0f };
-		for (int i = 0; i < 7; i++)
-		{
-			glm::vec2 newPos = now + (glm::vec2(dx[i], dy[i]) * BFSPrecision);
-			bfs.push(newPos);
-		}
-	}
-
-	//if (GetPos().x < point.x)
-	//	add.x += speed;
-	//if (GetPos().x > point.x)
-	//	add.x -= speed;
-	//if (GetPos().y < point.y)
-	//	add.y += speed;
-	//if (GetPos().y > point.y)
-	//	add.y -= speed;
+#if 1
+	add = GetAddFromTarget(point);
+#else
+	if (GetPos().x < point.x)
+		add.x += speed;
+	if (GetPos().x > point.x)
+		add.x -= speed;
+	if (GetPos().y < point.y)
+		add.y += speed;
+	if (GetPos().y > point.y)
+		add.y -= speed;
+#endif
 
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
@@ -284,4 +266,65 @@ void NPC::PointAtPoint(glm::vec2 point)
 
 	float degree = glm::degrees(glm::acos(glm::dot(point, front)));
 	m_targetDir = (point.x > 0.0f ? degree : 360.0f - degree);
+}
+
+glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
+{
+	const float BFSPrecision = 0.4f;
+
+	struct Node
+	{
+		glm::vec2 pos{};
+		int add;
+	};
+
+	bool assignAdd = true;
+	glm::vec2 pos = GetQuad(0)->GetPos();
+	Node finalNode{};
+	std::queue<Node> bfs;
+	bfs.push({ GetQuad(0)->GetPos(), {} });
+	//int countDown = 1000;
+
+	float dx[] = { 0.0f, 1.0f, 1.0f,  1.0f,  0.0f, -1.0f, -1.0f, -1.0f };
+	float dy[] = { 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f,  0.0f,  1.0f };
+
+	while (!bfs.empty())
+	{
+		Node curNode = bfs.front();
+		glm::vec2 now = curNode.pos;
+		bfs.pop();
+
+		GetQuad(0)->SetPos(now);
+		if (m_collision->Collide(GetUUID(0)).m_hasHit)
+			continue;
+
+		if (glm::distance(now, target) < BFSPrecision)
+		{
+			finalNode = curNode;
+			break;
+		}
+
+		for (int i = 0; i < 7; i++)
+		{
+			glm::vec2 newPos = now + (glm::vec2(dx[i], dy[i]) * BFSPrecision);
+			if (assignAdd)
+			{
+				bfs.push({ newPos, i });
+			}
+			else
+			{
+				bfs.push({ newPos, curNode.add });
+			}
+		}
+		assignAdd = false;
+		//countDown--;
+
+		//if (countDown == 0)
+		//{
+			//finalNode = { {}, glm::normalize(target - pos) };
+			//break;
+		//}
+	}
+	GetQuad(0)->SetPos(pos);
+	return { dx[finalNode.add], dy[finalNode.add] };
 }
