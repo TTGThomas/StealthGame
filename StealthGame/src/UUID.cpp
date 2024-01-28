@@ -23,3 +23,8 @@ UUID::UUID(uint64_t&& uuid)
 	: m_uuid(uuid)
 {
 }
+
+void UUID::RegenerateUUID()
+{
+	m_uuid = uniformDistribution(randomEngine);
+}

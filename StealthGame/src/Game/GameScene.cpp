@@ -2,20 +2,18 @@
 
 void GameScene::Init(SceneInitDesc& desc)
 {
+	GlobalData::Get().m_gameScene = this;
 	m_player.Init(*desc.m_player);
 	m_player.BindCamera(desc.m_playerCamera);
-	m_player.BindNPCs(&m_npcs);
 
-	m_npcs.reserve(desc.m_npcs->size());
 	for (NPCInitDesc& npcDesc : *desc.m_npcs)
 	{
-		m_npcs.push_back(NPC());
-		m_npcs.back().Init(npcDesc.m_desc);
-		m_npcs.back().BindPlayer(&m_player);
-		m_npcs.back().BindNPCs(&m_npcs);
-		m_npcs.back().BindCollision(desc.m_collision);
-		m_npcs.back().BindRoute(npcDesc.m_route);
-		m_npcs.back().SetType(npcDesc.m_type);
+		NPC npc;
+		npc.Init(npcDesc.m_desc);
+		npc.BindCollision(desc.m_collision);
+		npc.BindRoute(npcDesc.m_route);
+		npc.SetType(npcDesc.m_type);
+		m_npcs[npc.GetNPCUUID().GetUUID()] = std::move(npc);
 	}
 
 	m_map.reserve(desc.m_map->size());

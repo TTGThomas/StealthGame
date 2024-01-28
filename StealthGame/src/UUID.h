@@ -10,6 +10,8 @@ public:
 	UUID(const uint64_t& uuid);
 	UUID(uint64_t&& uuid);
 
+	void RegenerateUUID();
+
 	const uint64_t& GetUUID() { return m_uuid; }
 private:
 	uint64_t m_uuid;

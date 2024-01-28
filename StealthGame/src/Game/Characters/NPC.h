@@ -1,6 +1,8 @@
 #pragma once
 
 #include <queue>
+#include <unordered_set>
+#include <vector>
 
 #include <glm/glm.hpp>
 
@@ -10,6 +12,8 @@
 #include "../Engine/Entity.h"
 
 #include "../Desc.h"
+
+#include "../Items/Item.h"
 
 #include "../GlobalData.h"
 
@@ -42,8 +46,6 @@ public:
 
 	//inline void Init();
 
-	void BindPlayer(Player* player) { m_player = player; }
-	void BindNPCs(std::vector<NPC>* npcs) { m_npcs = npcs; }
 	void BindCollision(CollisionDetector* collision) { m_collision = collision; }
 
 	void BindRoute(std::vector<NPCRoutePoint>& route) { m_route = route; }
@@ -64,11 +66,19 @@ public:
 
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
+	UUID& GetNPCUUID() { return m_uuid; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
 	bool IsPlayerInSight();
 	void DetectPlayer();
+	void DetectItems();
+	void DetectNPCs();
+
+	// O(n^2 + n)
+	void DetectEverything();
+private:
+	void UpdateFrontVec();
 private:
 	void TickGuest(GameTickDesc& desc);
 	void TickGuard(GameTickDesc& desc);
@@ -80,8 +90,7 @@ private:
 	void PointAtPoint(glm::vec2 point);
 	glm::vec2 GetAddFromTarget(glm::vec2 target);
 private:
-	Player* m_player;
-	std::vector<NPC>* m_npcs;
+	UUID m_uuid;
 	CollisionDetector* m_collision;
 
 	bool m_isPlayerDetected = false;
@@ -96,6 +105,11 @@ private:
 
 	std::vector<NPCRoutePoint> m_route;
 	int m_targetRouteIndex = 0;
+
+	glm::vec2 m_frontVec{};
+	
+	std::vector<uint64_t> m_detectedItems;
+	std::vector<uint64_t> m_detectedNPCs;
 
 	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
 

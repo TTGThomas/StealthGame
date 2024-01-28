@@ -1,10 +1,11 @@
 #include "NPC.h"
 
 #include "Player.h"
+#include "../GameScene.h"
 
 void NPC::NPCTick(GameTickDesc& desc)
 {
-	DetectPlayer();
+	DetectEverything();
 	SetPos(GetPos());
 
 	if (m_health > 0)
@@ -62,27 +63,26 @@ void NPC::SetDirPos(glm::vec2 pos)
 
 bool NPC::IsPlayerInSight()
 {
-	glm::vec2 front{};
-	front.x += glm::sin(glm::radians(m_dir));
-	front.y += glm::cos(glm::radians(m_dir));
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
 
-	glm::vec2 player = glm::normalize(m_player->GetPos() - GetPos());
-
-	float cosTheta = glm::dot(front, player);
-
-	if (glm::acos(cosTheta) > glm::radians(30.0f))
+	float dst = glm::distance(GetPos(), player->GetPos());
+	if (dst > 3.0f)
 		return false;
 
-	float dst = glm::distance(GetPos(), m_player->GetPos());
-	if (dst > 3.0f)
+	glm::vec2 vPlayer = glm::normalize(player->GetPos() - GetPos());
+
+	float cosTheta = glm::dot(m_frontVec, vPlayer);
+
+	if (glm::acos(cosTheta) > glm::radians(30.0f))
 		return false;
 
 	Scene* scene = GlobalData::Get().m_scene;
 
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
-	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
-	bool ret = !m_collision->Collide(GetPos(), m_player->GetPos()).m_hasHit;
-	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
+	bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	return ret;
 }
@@ -109,11 +109,96 @@ void NPC::DetectPlayer()
 	m_isPlayerDetected = false;
 }
 
+void NPC::DetectItems()
+{
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+	GameScene& gameScene = *gData.m_gameScene;
+
+	for (auto& [uuid, item] : gameScene.GetItems().GetItems())
+	{
+		glm::vec2 itemPos = item->GetQuad().GetPos();
+
+		float dst = glm::distance(GetPos(), itemPos);
+		if (dst > 3.0f)
+			continue;
+
+		glm::vec2 vItem = glm::normalize(itemPos - GetPos());
+
+		float cosTheta = glm::dot(m_frontVec, vItem);
+
+		if (glm::acos(cosTheta) > glm::radians(30.0f))
+			continue;
+
+		Scene* scene = GlobalData::Get().m_scene;
+
+		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
+		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
+		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+		if (ret)
+			m_detectedItems.emplace_back(uuid);
+	}
+}
+
+void NPC::DetectNPCs()
+{
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+	GameScene& gameScene = *gData.m_gameScene;
+
+	for (auto& [uuid, npc] : gameScene.GetNPCs())
+	{
+		glm::vec2 npcPos = npc.GetPos();
+
+		float dst = glm::distance(GetPos(), npcPos);
+		if (dst > 3.0f)
+			continue;
+
+		glm::vec2 vNPC = glm::normalize(npcPos - GetPos());
+
+		float cosTheta = glm::dot(m_frontVec, vNPC);
+
+		// acos haves less overhead than cos
+		if (glm::acos(cosTheta) > glm::radians(30.0f))
+			continue;
+
+		Scene* scene = GlobalData::Get().m_scene;
+
+		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
+		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
+		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+		if (ret)
+			m_detectedNPCs.emplace_back(uuid);
+	}
+}
+
+void NPC::DetectEverything()
+{
+	UpdateFrontVec();
+	DetectPlayer();
+	DetectItems();
+	DetectNPCs();
+}
+
+void NPC::UpdateFrontVec()
+{
+	m_frontVec = {};
+	m_frontVec.x += glm::sin(glm::radians(m_dir));
+	m_frontVec.y += glm::cos(glm::radians(m_dir));
+}
+
 void NPC::TickGuest(GameTickDesc& desc)
 {
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+
 	if (IsPlayerDetected())
 	{
-		if (m_player->GetActionType() == Player::ActionType::ILLEGAL)
+		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
 			m_state = State::WITNESS;
 		}
@@ -129,9 +214,12 @@ void NPC::TickGuest(GameTickDesc& desc)
 
 void NPC::TickGuard(GameTickDesc& desc)
 {
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+
 	if (IsPlayerDetected())
 	{
-		if (m_player->GetActionType() == Player::ActionType::ILLEGAL)
+		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
 			m_state = State::WITNESS;
 			GlobalData::Get().m_globalState = GlobalState::ALERT;
@@ -141,30 +229,46 @@ void NPC::TickGuard(GameTickDesc& desc)
 	if (GlobalData::Get().m_globalState == GlobalState::ALERT)
 	{
 		m_state = State::WITNESS;
-		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - m_player->GetPos());
+		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
 		pos *= 1.5f;
-		MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos() + pos, false);
-		PointAtPoint(m_player->GetPos());
+		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos, false);
+		PointAtPoint(player->GetPos());
+	}
+
+	// goes through every item the npc sees
+	for (uint64_t& uuid : m_detectedItems)
+	{
+		Item* item = gData.m_gameScene->GetItems().GetItem(uuid).get();
+	}
+
+	// goes through every npc the npc sees
+	for (uint64_t& uuid : m_detectedNPCs)
+	{
+		NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
 	}
 }
 
 void NPC::TickNonStatic(GameTickDesc& desc)
 {
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+
 	if (m_state != State::WITNESS)
 	{
 		if (IsPlayerDetected())
 			m_state = State::NORMAL;
 
-		float dst = glm::distance(GetPos(), m_player->GetPos());
+		float dst = glm::distance(GetPos(), player->GetPos());
 		if (dst < 0.2f)
 		{
 			m_suspiciousMeter = 1.0f;
 		}
+
 		else if (dst < 0.5f)
 		{
-			if (glm::length(m_player->GetVelocity()) != 0.0f)
+			if (glm::length(player->GetVelocity()) != 0.0f)
 			{
-				if (!m_player->GetIsCrouching())
+				if (!player->GetIsCrouching())
 				{
 					m_suspiciousMeter = 1.0f;
 				}
@@ -184,7 +288,7 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 
 		if (m_state == State::SUSPICIOUS)
 		{
-			PointAtPoint(m_player->GetPos());
+			PointAtPoint(player->GetPos());
 		}
 
 		if (m_state == State::NORMAL)
@@ -194,8 +298,8 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 				if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
 				{
 					m_targetRouteIndex++;
-					if (m_targetRouteIndex >= m_route.size())
-						m_targetRouteIndex -= m_route.size();
+					if (m_targetRouteIndex >= (int)m_route.size())
+						m_targetRouteIndex -= (int)m_route.size();
 				}
 				PointAtPoint(m_route[m_targetRouteIndex].m_pos);
 			}
@@ -228,12 +332,14 @@ void NPC::TickDead(GameTickDesc& desc)
 
 bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 {
-	Scene* scene = GlobalData::Get().m_scene;
+	GlobalData& gData = GlobalData::Get();
+	Player* player = &gData.m_gameScene->GetPlayer();
+	Scene* scene = gData.m_scene;
 
 	glm::vec2 add{};
 	float speed = m_speed * dt;
 
-#if 1
+#if 0
 	add = GetAddFromTarget(point);
 #else
 	if (GetPos().x < point.x)
@@ -247,11 +353,11 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 #endif
 
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
-	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(false);
+	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 
 	Move(m_collision, add.x, add.y);
 
-	scene->GetAABBs()[m_player->GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	if (glm::distance(GetPos(), point) < 0.1f && snapp)
@@ -270,7 +376,7 @@ void NPC::PointAtPoint(glm::vec2 point)
 
 glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
 {
-	const float BFSPrecision = 0.4f;
+	const float BFSPrecision = 0.04f;
 
 	struct Node
 	{
@@ -288,6 +394,8 @@ glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
 	float dx[] = { 0.0f, 1.0f, 1.0f,  1.0f,  0.0f, -1.0f, -1.0f, -1.0f };
 	float dy[] = { 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f,  0.0f,  1.0f };
 
+	std::vector<glm::vec2> notedPos;
+
 	while (!bfs.empty())
 	{
 		Node curNode = bfs.front();
@@ -303,6 +411,21 @@ glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
 			finalNode = curNode;
 			break;
 		}
+		
+		bool repeated = false;
+		for (glm::vec2& i : notedPos)
+		{
+			if (glm::distance(i, now) < BFSPrecision)
+			{
+				repeated = true;
+				break;
+			}
+		}
+
+		if (repeated)
+			continue;
+		else
+			notedPos.emplace_back(pos);
 
 		for (int i = 0; i < 7; i++)
 		{

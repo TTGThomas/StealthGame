@@ -5,11 +5,6 @@ void Player::BindCamera(Camera* camera)
 	m_bindedCamera = camera;
 }
 
-void Player::BindNPCs(std::vector<NPC>* npcs)
-{
-	m_npcs = npcs;
-}
-
 void Player::PlayerTick(GameTickDesc& desc)
 {
 	m_actionType = ActionType::NORMAL;

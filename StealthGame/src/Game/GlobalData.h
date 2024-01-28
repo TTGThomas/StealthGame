@@ -22,6 +22,7 @@ public:
 	}
 public:
 	Scene* m_scene = nullptr;
+	class GameScene* m_gameScene = nullptr;
 
 	uint64_t m_defaultShader;
 	uint64_t m_texLogo;

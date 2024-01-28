@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <memory>
 
 #include "Items/ItemsManager.h"
@@ -43,12 +44,13 @@ public:
 	void Init(SceneInitDesc& desc);
 
 	std::vector<Object>& GetMap() { return m_map; }
-	std::vector<NPC>& GetNPCs() { return m_npcs; }
+	std::unordered_map<uint64_t, NPC>& GetNPCs() { return m_npcs; }
 	ItemsManager& GetItems() { return m_items; }
 	Player& GetPlayer() { return m_player; }
 private:
 	std::vector<Object> m_map;
-	std::vector<NPC> m_npcs;
+	//std::vector<NPC> m_npcs;
+	std::unordered_map<uint64_t, NPC> m_npcs;
 	ItemsManager m_items;
 	Player m_player;
 };

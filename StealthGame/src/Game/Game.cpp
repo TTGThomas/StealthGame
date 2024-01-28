@@ -21,14 +21,14 @@ void Game::Tick(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
-	for (NPC& npc : m_gameScene.GetNPCs())
+	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
 	m_gameScene.GetPlayer().PlayerTick(desc);
 
 	InteractTick(desc);
 
 	if (glm::length(m_gameScene.GetPlayer().GetVelocity()) != 0.0f || true)
-		for (NPC& npc : m_gameScene.GetNPCs())
+		for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 			npc.NPCTick(desc);
 }
 
@@ -60,7 +60,7 @@ void Game::InteractNPC()
 	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
 	NPC* victim;
 	float victimDst = -1.0f;
-	for (NPC& npc : m_gameScene.GetNPCs())
+	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 	{
 		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
 		float dst = glm::length(diff);

@@ -50,4 +50,3 @@ private:
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
 };
-

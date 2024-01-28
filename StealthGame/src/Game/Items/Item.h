@@ -18,6 +18,8 @@ public:
 
 	virtual void OnCollect(class GameScene* scene) {}
 
+	virtual bool IsIllegal() { return false; }
+
 	Quad& GetQuad() { return GlobalData::Get().m_scene->GetQuads()[m_uuid.GetUUID()]; }
 	UUID& GetUUID() { return m_uuid; }
 protected:

@@ -25,7 +25,7 @@ UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
 {
 	uint64_t ret = 0;
 	float retDist = -1.0f;
-	for (auto [uuid, item] : m_items)
+	for (auto& [uuid, item] : m_items)
 	{
 		if (GetItem(uuid).get() == nullptr)
 			continue;
@@ -43,5 +43,5 @@ UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
 std::shared_ptr<Item> ItemsManager::GetNearestItem(glm::vec2 pos)
 {
 	uint64_t index = GetNearestUUID(pos).GetUUID();
-	return m_items[index];
+	return (index == 0 ? nullptr : m_items[index]);
 }

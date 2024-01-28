@@ -26,7 +26,6 @@ public:
 	Player() = default;
 
 	void BindCamera(Camera* camera);
-	void BindNPCs(std::vector<NPC>* npcs);
 
 	void PlayerTick(GameTickDesc& desc);
 
@@ -49,7 +48,6 @@ private:
 	ActionType m_actionType = ActionType::NORMAL;
 	bool m_inputEnabled = true;
 	Camera* m_bindedCamera = nullptr;
-	std::vector<NPC>* m_npcs = nullptr;
 
 	bool m_isCrouching = false;
 
