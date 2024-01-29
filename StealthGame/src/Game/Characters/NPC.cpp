@@ -79,11 +79,9 @@ bool NPC::IsPlayerInSight()
 
 	Scene* scene = GlobalData::Get().m_scene;
 
-	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 	bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
 	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
-	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	return ret;
 }
 
@@ -111,6 +109,7 @@ void NPC::DetectPlayer()
 
 void NPC::DetectItems()
 {
+	m_detectedItems = {};
 	GlobalData& gData = GlobalData::Get();
 	Player* player = &gData.m_gameScene->GetPlayer();
 	GameScene& gameScene = *gData.m_gameScene;
@@ -132,11 +131,9 @@ void NPC::DetectItems()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
-		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 		if (ret)
 			m_detectedItems.emplace_back(uuid);
 	}
@@ -144,6 +141,7 @@ void NPC::DetectItems()
 
 void NPC::DetectNPCs()
 {
+	m_detectedNPCs = {};
 	GlobalData& gData = GlobalData::Get();
 	Player* player = &gData.m_gameScene->GetPlayer();
 	GameScene& gameScene = *gData.m_gameScene;
@@ -166,11 +164,9 @@ void NPC::DetectNPCs()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
-		scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 		if (ret)
 			m_detectedNPCs.emplace_back(uuid);
 	}
@@ -208,7 +204,7 @@ void NPC::TickGuest(GameTickDesc& desc)
 	{
 		//MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos(), false);
 		//PointAtPoint(m_player->GetPos());
-		EliminateMyself();
+		//EliminateMyself();
 	}
 }
 
@@ -245,6 +241,8 @@ void NPC::TickGuard(GameTickDesc& desc)
 	for (uint64_t& uuid : m_detectedNPCs)
 	{
 		NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
+		if (npc->GetHealth() < 1)
+			gData.m_globalState = GlobalState::ALERT;
 	}
 }
 

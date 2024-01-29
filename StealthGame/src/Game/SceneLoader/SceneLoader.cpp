@@ -80,7 +80,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	std::vector<QuadInitDesc> mapDesc{};
 
-	LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, globalData.m_defaultShader, globalData.m_texLogo);
+	//LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, globalData.m_defaultShader, globalData.m_texLogo);
 
 	// Init
 	SceneInitDesc initDesc;

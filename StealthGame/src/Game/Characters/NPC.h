@@ -67,6 +67,8 @@ public:
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
 	UUID& GetNPCUUID() { return m_uuid; }
+	int GetHealth() { return m_health; }
+	Type GetType() { return m_type; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
