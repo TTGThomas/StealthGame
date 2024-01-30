@@ -14,6 +14,9 @@ public:
 	Texture(const char* filePath);
 
 	void Init(const char* filePath);
+	void Init(unsigned char* data, int width, int height, GLenum type = GL_RGBA);
+
+	void Cleanup();
 
 	void Bind();
 	void Unbind();

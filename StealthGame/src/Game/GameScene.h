@@ -19,11 +19,13 @@
 
 #include "Desc.h"
 
+#include "GlobalData.h"
+
 struct NPCInitDesc
 {
 	std::vector<QuadInitDesc> m_desc;
 	std::vector<NPCRoutePoint> m_route;
-	NPC::Type m_type;
+	Identities m_type;
 };
 
 struct SceneInitDesc

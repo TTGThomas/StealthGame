@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include "quadRenderer/QuadRenderer.h"
 #include "quadRenderer/RenderQuad.h"
 #include "UUID.h"
 
@@ -48,12 +49,16 @@ public:
 
 	void DeleteQuad(uint64_t uuid);
 
+	uint64_t GetTextureFromText(QuadRenderer* renderer, const char* text);
+
 	std::unordered_map<uint64_t, Quad>& GetQuads() { return m_quads; }
 	std::unordered_map<uint64_t, RenderQuad>& GetRenderQuads() { return m_renderQuads; }
 	std::unordered_map<uint64_t, AABB>& GetAABBs() { return m_aabb; }
 
 	// from the largest to the smallest
 	std::vector<uint64_t>& GetDepthOrder() { return m_depthOrder; }
+private:
+	std::pair<int, int> FetchBoundOfAtlas(char character);
 private:
 	std::unordered_map<uint64_t, Quad> m_quads;
 	std::unordered_map<uint64_t, RenderQuad> m_renderQuads;

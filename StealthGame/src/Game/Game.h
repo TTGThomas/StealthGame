@@ -47,6 +47,8 @@ private:
 	void InteractNPC();
 	void InteracatItems();
 private:
+	void ShowStatsWindow();
+private:
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
 };

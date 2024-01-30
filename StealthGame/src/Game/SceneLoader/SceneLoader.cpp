@@ -30,6 +30,10 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texNPC2 = npc2.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc2);
 
+	Texture npc4("res/NPC/NPC4.png");
+	GlobalData::Get().m_texNPC4 = npc4.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(npc4);
+
 	Texture npcDir("res/NPC/Dir.png");
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDir);
@@ -37,11 +41,11 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	// layer 0 = objLayer
 	// layer 1 = UILayer
 
-	GlobalData& globalData = GlobalData::Get();
+	GlobalData& gData = GlobalData::Get();
 
 	// Player
 	std::vector<QuadInitDesc> playerDesc{};
-	SetPlayer(&playerDesc, { 0.0f, 0.0f }, globalData.m_defaultShader, globalData.m_texPlayer);
+	SetPlayer(&playerDesc, { 0.0f, 0.0f }, gData.m_defaultShader, gData.m_texPlayer);
 	
 	// NPC
 	std::vector<NPCInitDesc> allNpcDesc{};
@@ -53,7 +57,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ { 2.0f,  4.0f} });
 		npcRoute.push_back({ { 2.0f, -1.0f} });
 
-		LoadNPC(&allNpcDesc, { -2.0f, 0.0f }, NPC::Type::GUARD, globalData.m_defaultShader, globalData.m_texNPC2, npcRoute);
+		LoadNPC(&allNpcDesc, { -2.0f, 0.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
 	{
@@ -63,7 +67,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ {-2.0f,  4.0f} });
 		npcRoute.push_back({ {-2.0f,  0.0f} });
 
-		LoadNPC(&allNpcDesc, { -2.0f, -1.0f }, NPC::Type::GUARD, globalData.m_defaultShader, globalData.m_texNPC2, npcRoute);
+		LoadNPC(&allNpcDesc, { -2.0f, -1.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC2, npcRoute);
 	}
 
 	for (float y = 1.0f; y < 4.0f; y += 0.7f)
@@ -71,7 +75,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		for (float x = -2.0f; x < 2.0f; x += 0.7f)
 		{
 			std::vector<NPCRoutePoint> npcRoute;
-			LoadNPC(&allNpcDesc, { x, y }, NPC::Type::GUEST, globalData.m_defaultShader, globalData.m_texNPC0, npcRoute);
+			LoadNPC(&allNpcDesc, { x, y }, Identities::GUEST, gData.m_defaultShader, gData.m_texNPC0, npcRoute);
 		}
 	}
 
@@ -80,7 +84,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	std::vector<QuadInitDesc> mapDesc{};
 
-	//LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, globalData.m_defaultShader, globalData.m_texLogo);
+	LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, gData.m_defaultShader, gData.m_texLogo);
 
 	// Init
 	SceneInitDesc initDesc;
@@ -108,7 +112,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	scene->GetItems().AddItem(items);
 }
 
-void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, NPC::Type type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
+void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
 {
 	// npc are from 0.0 - 0.2
 	// npcdir are from 0.3 - 0.5

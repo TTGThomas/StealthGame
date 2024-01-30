@@ -16,19 +16,14 @@
 class Disguise : public Item
 {
 public:
-	enum class Type
-	{
-		STANDARD, GUEST, VIPGUEST, GAURD, VIPGAURD
-	};
-public:
 	Disguise() = default;
 
-	void Init(Type type, glm::vec2 pos, float depth, uint64_t shaderUUID);
+	void Init(Identities type, glm::vec2 pos, float depth, uint64_t shaderUUID);
 
 	virtual void OnCollect(class GameScene* scene) override;
 
-	Type GetType() { return m_type; }
+	Identities GetType() { return m_type; }
 private:
-	Type m_type;
+	Identities m_type;
 };
 

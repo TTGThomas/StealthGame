@@ -21,6 +21,8 @@ void Game::Tick(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
+	ShowStatsWindow();
+
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
 	m_gameScene.GetPlayer().PlayerTick(desc);
@@ -90,4 +92,13 @@ void Game::InteracatItems()
 			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
 		}
 	}
+}
+
+void Game::ShowStatsWindow()
+{
+	GlobalData& gData = GlobalData::Get();
+
+	ImGui::Begin("Game");
+	ImGui::Text("Bodies found: %i", gData.m_bodiesFound);
+	ImGui::End();
 }

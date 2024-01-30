@@ -43,6 +43,15 @@ void Texture::Init(const char* filePath)
 	stbi_image_free(data);
 }
 
+void Texture::Init(unsigned char* data, int width, int height, GLenum type)
+{
+}
+
+void Texture::Cleanup()
+{
+	glDeleteTextures(1, &m_id);
+}
+
 void Texture::Bind()
 {
 	glBindTexture(GL_TEXTURE_2D, m_id);

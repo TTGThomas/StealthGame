@@ -167,6 +167,7 @@
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\quadRenderer\Texture.cpp" />
+    <ClCompile Include="src\Game\UI\TaskBar.cpp" />
     <ClCompile Include="third\glad.c" />
     <ClCompile Include="third\ImGui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="third\ImGui\backends\imgui_impl_opengl3.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\quadRenderer\Texture.h" />
     <ClInclude Include="src\Utils\Timer.h" />
+    <ClInclude Include="src\Game\UI\TaskBar.h" />
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="third\ImGui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="third\ImGui\backends\imgui_impl_opengl3_loader.h" />
@@ -225,6 +227,7 @@
     <None Include="shaders\default\Vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />

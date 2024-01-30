@@ -117,6 +117,9 @@
     <ClCompile Include="src\Game\SceneLoader\SceneLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\UI\TaskBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -239,6 +242,9 @@
     <ClInclude Include="src\Game\SceneLoader\SceneLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\UI\TaskBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -264,6 +270,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\NPC\NPC2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Fonts\sample-atlas.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

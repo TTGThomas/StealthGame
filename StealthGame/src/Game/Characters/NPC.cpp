@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "../GameScene.h"
 
+std::unordered_set<uint64_t> NPC::m_detectedDeadNPCs;
+
 void NPC::NPCTick(GameTickDesc& desc)
 {
 	DetectEverything();
@@ -11,9 +13,9 @@ void NPC::NPCTick(GameTickDesc& desc)
 	if (m_health > 0)
 	{
 		TickNonStatic(desc);
-		if (m_type == Type::GUEST || m_type == Type::VIPGUEST)
+		if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
 			TickGuest(desc);
-		else if (m_type == Type::GUARD || m_type == Type::VIPGUARD)
+		else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
 			TickGuard(desc);
 	}
 	else
@@ -218,16 +220,17 @@ void NPC::TickGuard(GameTickDesc& desc)
 		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
 			m_state = State::WITNESS;
-			GlobalData::Get().m_globalState = GlobalState::ALERT;
+			gData.m_globalState = GlobalState::ALERT;
+			gData.m_disguiseStates[(int)Identities::STANDARD] = DisguiseState::ALERT;
 		}
 	}
 
-	if (GlobalData::Get().m_globalState == GlobalState::ALERT)
+	if (gData.m_globalState == GlobalState::ALERT)
 	{
 		m_state = State::WITNESS;
 		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
 		pos *= 1.5f;
-		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos, false);
+		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos);
 		PointAtPoint(player->GetPos());
 	}
 
@@ -242,7 +245,14 @@ void NPC::TickGuard(GameTickDesc& desc)
 	{
 		NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
 		if (npc->GetHealth() < 1)
+		{
 			gData.m_globalState = GlobalState::ALERT;
+			if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
+			{
+				m_detectedDeadNPCs.insert(uuid);
+				gData.m_bodiesFound++;
+			}
+		}
 	}
 }
 

@@ -9,6 +9,9 @@ QuadRenderer::~QuadRenderer()
 
 	for (auto& [key, val] : m_shaders)
 		val.Cleanup();
+
+	for (auto& [key, val] : m_textures)
+		val.Cleanup();
 }
 
 void QuadRenderer::BindCamera(Camera* camera)

@@ -2,3 +2,4 @@ NPC0 = Guest
 NPC1 = VIPGuest
 NPC2 = Guard
 NPC3 = VIPGuard
+NPC4 = Target

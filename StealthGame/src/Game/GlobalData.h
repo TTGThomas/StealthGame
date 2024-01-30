@@ -12,6 +12,11 @@ enum class DisguiseState
 	NORMAL, COMPROMISED, ALERT
 };
 
+enum class Identities
+{
+	STANDARD, GUEST, VIPGUEST, GUARD, VIPGUARD
+};
+
 class GlobalData
 {
 public:
@@ -32,9 +37,13 @@ public:
 	uint64_t m_texNPC1;
 	uint64_t m_texNPC2;
 	uint64_t m_texNPC3;
+	uint64_t m_texNPC4;
 	uint64_t m_texNPCDead;
 	uint64_t m_texNPCDir;
 
 	GlobalState m_globalState = GlobalState::NORMAL;
-};
 
+	DisguiseState m_disguiseStates[5];
+
+	int m_bodiesFound = 0;
+};

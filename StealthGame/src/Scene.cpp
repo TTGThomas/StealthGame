@@ -38,3 +38,13 @@ void Scene::DeleteQuad(uint64_t uuid)
 		}
 	}
 }
+
+uint64_t Scene::GetTextureFromText(QuadRenderer* renderer, const char* text)
+{
+	return 0;
+}
+
+std::pair<int, int> Scene::FetchBoundOfAtlas(char character)
+{
+	return std::pair<int, int>();
+}

@@ -32,11 +32,6 @@ struct NPCRoutePoint
 class NPC : public Entity
 {
 public:
-	enum class Type
-	{
-		GUEST, VIPGUEST, GUARD, VIPGUARD
-	};
-
 	enum class State
 	{
 		NORMAL, SUSPICIOUS, WITNESS
@@ -50,7 +45,7 @@ public:
 
 	void BindRoute(std::vector<NPCRoutePoint>& route) { m_route = route; }
 
-	void SetType(Type type) { m_type = type; }
+	void SetType(Identities type) { m_type = type; }
 	void SetState(State state) { m_state = state; }
 
 	void NPCTick(GameTickDesc& desc);
@@ -68,7 +63,7 @@ public:
 	State GetState() { return m_state; }
 	UUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
-	Type GetType() { return m_type; }
+	Identities GetType() { return m_type; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -100,7 +95,7 @@ private:
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;
 
-	Type m_type = Type::GUEST;
+	Identities m_type = Identities::GUEST;
 	State m_state = State::NORMAL;
 	float m_suspiciousMeter = 0;
 	int m_health = 100;
@@ -112,6 +107,8 @@ private:
 	
 	std::vector<uint64_t> m_detectedItems;
 	std::vector<uint64_t> m_detectedNPCs;
+
+	static std::unordered_set<uint64_t> m_detectedDeadNPCs;
 
 	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
 

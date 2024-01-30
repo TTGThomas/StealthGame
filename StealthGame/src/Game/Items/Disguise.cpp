@@ -1,6 +1,6 @@
 #include "Disguise.h"
 
-void Disguise::Init(Type type, glm::vec2 pos, float depth, uint64_t shaderUUID)
+void Disguise::Init(Identities type, glm::vec2 pos, float depth, uint64_t shaderUUID)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
