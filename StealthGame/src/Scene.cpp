@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include "quadRenderer/Texture.h"
+
 Scene::~Scene()
 {
 }
@@ -39,12 +41,33 @@ void Scene::DeleteQuad(uint64_t uuid)
 	}
 }
 
-uint64_t Scene::GetTextureFromText(QuadRenderer* renderer, const char* text)
+uint64_t Scene::GetTextureFromChar(QuadRenderer* renderer, char text)
 {
-	return 0;
-}
+	int aWidth, aHeight, nChannels;
+	unsigned char* data = Texture::GetDataFromFile("res/Fonts.sample-atlas.png", &aWidth, &aHeight, &nChannels);
+	const int width = 24, height = 24;
 
-std::pair<int, int> Scene::FetchBoundOfAtlas(char character)
-{
-	return std::pair<int, int>();
+	unsigned char* ret = new unsigned char[24 * 24 * sizeof(unsigned char)];
+	
+	int index = 0;
+	int texIndex = (int)(text - ' ');
+
+	int sourceX = (texIndex % 10) * 25;
+	int sourceY = (texIndex / 10) * 25;
+	for (int y = 0; y < 24; y++)
+	{
+		for (int x = 0; x < 24; x++)
+		{
+			int posX = sourceX + x;
+			int posY = sourceY + y;
+			ret[index] = data[posY * aHeight + posX];
+			++index;
+		}
+	}
+
+	Texture texture;
+	texture.Init(ret, width, height);
+	renderer->AddTexture(texture);
+	delete[] data, ret;
+	return texture.GetUUID().GetUUID();
 }

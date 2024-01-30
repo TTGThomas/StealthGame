@@ -32,6 +32,8 @@ public:
 	void AddShader(Shader& shader);
 	void AddTexture(Texture& texture);
 
+	void DeleteTexture(uint64_t key);
+
 	void Render(float ratio, int selectedIndex = -1);
 
 	void ShowStatsWindow();

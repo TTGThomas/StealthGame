@@ -368,8 +368,8 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
-	if (glm::distance(GetPos(), point) < 0.1f && snapp)
-		SetPos(point);
+	if (glm::distance(GetPos(), point) < 0.01f && snapp)
+		Move(m_collision, point.x - GetPos().x, point.y - GetPos().y);
 	return GetPos() == point;
 }
 

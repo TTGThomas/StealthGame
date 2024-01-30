@@ -232,6 +232,7 @@
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />
     <Image Include="res\NPC\NPC2.png" />
+    <Image Include="res\NPC\NPC4.png" />
     <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
     <Image Include="res\Player\player.png" />

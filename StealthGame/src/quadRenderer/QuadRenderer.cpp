@@ -29,6 +29,11 @@ void QuadRenderer::AddTexture(Texture& texture)
 	m_textures[texture.GetUUID().GetUUID()] = std::move(texture);
 }
 
+void QuadRenderer::DeleteTexture(uint64_t key)
+{
+	m_textures.erase(key);
+}
+
 void QuadRenderer::Render(float ratio, int selectedIndex)
 {
 	m_quadRendered = 0;

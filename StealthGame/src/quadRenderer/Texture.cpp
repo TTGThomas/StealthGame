@@ -45,6 +45,26 @@ void Texture::Init(const char* filePath)
 
 void Texture::Init(unsigned char* data, int width, int height, GLenum type)
 {
+	glGenTextures(1, &m_id);
+
+	m_width = width;
+	m_height = height;
+
+	glBindTexture(GL_TEXTURE_2D, m_id);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, type, m_width, m_height, 0, type, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	stbi_image_free(data);
 }
 
 void Texture::Cleanup()
@@ -65,4 +85,9 @@ void Texture::Unbind()
 void Texture::Activate(int index)
 {
 	glActiveTexture(GL_TEXTURE0 + index);
+}
+
+unsigned char* Texture::GetDataFromFile(const char* filePath, int* x, int* y, int* nChannels)
+{
+	return stbi_load(filePath, x, y, nChannels, 4);
 }

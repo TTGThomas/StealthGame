@@ -4,6 +4,6 @@ void TaskBar::Init(GameTickDesc& desc)
 {
 }
 
-void TaskBar::ShowTaskBar()
+void TaskBar::ShowTaskBar(GameTickDesc& desc)
 {
 }

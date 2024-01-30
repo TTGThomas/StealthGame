@@ -49,7 +49,7 @@ public:
 
 	void DeleteQuad(uint64_t uuid);
 
-	uint64_t GetTextureFromText(QuadRenderer* renderer, const char* text);
+	uint64_t GetTextureFromChar(QuadRenderer* renderer, char text);
 
 	std::unordered_map<uint64_t, Quad>& GetQuads() { return m_quads; }
 	std::unordered_map<uint64_t, RenderQuad>& GetRenderQuads() { return m_renderQuads; }
@@ -57,8 +57,6 @@ public:
 
 	// from the largest to the smallest
 	std::vector<uint64_t>& GetDepthOrder() { return m_depthOrder; }
-private:
-	std::pair<int, int> FetchBoundOfAtlas(char character);
 private:
 	std::unordered_map<uint64_t, Quad> m_quads;
 	std::unordered_map<uint64_t, RenderQuad> m_renderQuads;
