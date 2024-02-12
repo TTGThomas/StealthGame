@@ -43,23 +43,28 @@ private:
 class Scene
 {
 public:
+	Scene() = default;
 	~Scene();
 
 	void AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc);
 
 	void DeleteQuad(uint64_t uuid);
 
-	uint64_t GetTextureFromChar(QuadRenderer* renderer, char text);
+	uint64_t GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char text);
 
 	std::unordered_map<uint64_t, Quad>& GetQuads() { return m_quads; }
 	std::unordered_map<uint64_t, RenderQuad>& GetRenderQuads() { return m_renderQuads; }
 	std::unordered_map<uint64_t, AABB>& GetAABBs() { return m_aabb; }
 
-	// from the largest to the smallest
+	// biggest go first
 	std::vector<uint64_t>& GetDepthOrder() { return m_depthOrder; }
+
+	const int* GetLetterWidths() { return m_letterWidths; }
 private:
 	std::unordered_map<uint64_t, Quad> m_quads;
 	std::unordered_map<uint64_t, RenderQuad> m_renderQuads;
 	std::unordered_map<uint64_t, AABB> m_aabb;
 	std::vector<uint64_t> m_depthOrder{};
+
+	static int m_letterWidths[100];
 };

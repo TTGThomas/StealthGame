@@ -42,6 +42,8 @@ public:
 	void Init(GameTickDesc& desc);
 
 	void Tick(GameTickDesc& desc);
+
+	void OnResize(int width, int height);
 private:
 	void InteractTick(GameTickDesc& desc);
 	void InteractNPC();

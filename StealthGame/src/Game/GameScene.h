@@ -9,6 +9,8 @@
 #include "Characters/Player.h"
 #include "Characters/NPC.h"
 
+#include "UI/TaskBar.h"
+
 #include "Engine/Object.h"
 
 #include "../quadRenderer/Camera.h"
@@ -38,6 +40,8 @@ struct SceneInitDesc
 
 	std::vector<NPCInitDesc>* m_npcs;
 	std::vector<std::vector<QuadInitDesc>>* m_map;
+
+	GameTickDesc m_gameTickDesc;
 };
 
 class GameScene
@@ -49,10 +53,12 @@ public:
 	std::unordered_map<uint64_t, NPC>& GetNPCs() { return m_npcs; }
 	ItemsManager& GetItems() { return m_items; }
 	Player& GetPlayer() { return m_player; }
+	TaskBar& GetTaskbar() { return m_taskbar; }
 private:
 	std::vector<Object> m_map;
 	//std::vector<NPC> m_npcs;
 	std::unordered_map<uint64_t, NPC> m_npcs;
 	ItemsManager m_items;
 	Player m_player;
+	TaskBar m_taskbar;
 };

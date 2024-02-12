@@ -1,11 +1,12 @@
 #include "Window.h"
 
+static bool resized = false;
 static int x = 0, y = 0;
 static float ratio = 1.0f;
 
-Window::Window(const char* title, int width, int height, bool vSynch, bool fullScreen)
+Window::Window(const char* title, int width, int height, bool vSynch, bool fullScreen, bool maximize)
 {
-	if (!Init(title, width, height, vSynch, fullScreen))
+	if (!Init(title, width, height, vSynch, fullScreen, maximize))
 	{
 		glfwTerminate();
 	}
@@ -22,8 +23,9 @@ Window::~Window()
     glfwTerminate();
 }
 
-bool Window::Init(const char* title, int width, int height, bool vSynch, bool fullScreen)
+bool Window::Init(const char* title, int width, int height, bool vSynch, bool fullScreen, bool maximized)
 {
+    std::cout << "program started" << std::endl;
 	if (!glfwInit())
 	{
 		std::cout << "fail to init glfw" << std::endl;
@@ -34,7 +36,10 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    glfwWindowHint(GLFW_MAXIMIZED, (maximized ? GL_TRUE : GL_FALSE));
+    
     m_window = glfwCreateWindow(width, height, title, (fullScreen ? glfwGetPrimaryMonitor() : nullptr), nullptr);
+    
     if (!m_window)
     {
         std::cout << "fail to create window" << std::endl;
@@ -54,10 +59,10 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
 
     OnResize(m_window, x, y);
 
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    //glfwSetWindowContentScaleCallback(m_window, OnContentScaled);
     glfwSetFramebufferSizeCallback(m_window, OnResize);
     glfwSetKeyCallback(m_window, KeyBoard::KeyCallback);
     glfwSetCursorPosCallback(m_window, Mouse::MousePosCallback);
@@ -97,7 +102,7 @@ void Window::NewFrame()
     ImGui::NewFrame();
 #endif
     glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::EndFrame()
@@ -117,6 +122,16 @@ void Window::EndFrame()
     glfwSwapBuffers(m_window);
 }
 
+void Window::SetWindowPos(int x, int y)
+{
+    // retrieve menu bar height
+    int wndLeft, wndTop, wndRight, wndBottom;
+    glfwGetWindowFrameSize(m_window, &wndLeft, &wndTop, &wndRight, &wndBottom);
+    int menuBarWidth = wndTop;
+
+    glfwSetWindowMonitor(m_window, nullptr, x, y + menuBarWidth, GetWidth(), GetHeight(), GLFW_DONT_CARE);
+}
+
 int Window::GetWidth()
 {
 	return x;
@@ -125,6 +140,13 @@ int Window::GetWidth()
 int Window::GetHeight()
 {
 	return y;
+}
+
+bool Window::GetIsResized()
+{
+    bool ret = resized;
+    resized = false;
+    return ret;
 }
 
 float Window::GetRatio()
@@ -140,16 +162,13 @@ bool Window::GetShouldClose()
 void OnResize(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    resized = true;
 	x = width;
 	y = height;
     ratio = (float)y / (float)x;
 }
 
-void OnResize(GLFWwindow* window, int width, int height, int x, int y)
+void OnContentScaled(GLFWwindow* window, float width, float height)
 {
-    width /= 2;
-    glViewport(x, y, width, height);
-    x = width;
-    y = height;
-    ratio = (float)y / (float)x;
+    printf("hi");
 }

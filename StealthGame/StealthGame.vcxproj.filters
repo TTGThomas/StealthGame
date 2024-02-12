@@ -278,6 +278,12 @@
     <Image Include="res\NPC\NPC4.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Icons\Eliminate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Icons\Escape.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />

@@ -11,8 +11,6 @@ uniform int u_selected;
 void main()
 {
 	vec4 texColor = texture(u_texture, v_texCoord);
-	if (u_selected == 0)
-		fragColor = texColor;
-	else
-		fragColor = texColor + vec4(-0.2f);
+	fragColor = texColor;
+	//fragColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 }

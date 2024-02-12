@@ -20,8 +20,12 @@ void Game::Init(GameTickDesc& desc)
 void Game::Tick(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
+	GlobalData& gData = GlobalData::Get();
+
+	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
 
 	ShowStatsWindow();
+	m_gameScene.GetTaskbar().ShowStatsWindow();
 
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
@@ -32,6 +36,14 @@ void Game::Tick(GameTickDesc& desc)
 	if (glm::length(m_gameScene.GetPlayer().GetVelocity()) != 0.0f || true)
 		for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 			npc.NPCTick(desc);
+}
+
+void Game::OnResize(int width, int height)
+{
+	float ratio = (float)height / (float)width;
+	// x * ratio = 1
+	// x = 1 / ratio
+	m_gameScene.GetTaskbar().SetStartPos({ -1.0f / ratio, 1.0f });
 }
 
 void Game::InteractTick(GameTickDesc& desc)

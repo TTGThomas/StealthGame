@@ -37,6 +37,7 @@ struct RenderDesc
 
 struct RenderQuadInitDesc
 {
+	bool m_followCamera = true;
 	float m_depth;
 	uint64_t m_shaderUUID;
 	uint64_t m_textureUUID;
@@ -46,7 +47,7 @@ class RenderQuad
 {
 public:
 	RenderQuad() = default;
-	RenderQuad(RenderQuadInitDesc& desc);
+	RenderQuad(RenderQuadInitDesc& desc, UUID uuid);
 
 	void Init(float depth, uint64_t shaderUUID, uint64_t textureUUID);
 	void Cleanup();
@@ -60,11 +61,13 @@ public:
 	void SetShaderUUID(uint64_t uuid) { m_shaderUUID = uuid; }
 	void SetDepth(float depth) { m_depth = depth; }
 	void SetVisibility(bool visible) { m_visible = visible; }
+	void SetFollowCamera(bool follow) { m_followCamera = follow; }
 
 	uint64_t getShaderUUID() { return m_shaderUUID; }
 	uint64_t GetTextureUUID() { return m_textureUUID;; }
 	float GetDepth() { return m_depth; }
-	const bool& GetVisible() { return m_visible; }
+	bool GetVisible() { return m_visible; }
+	bool GetFollowCamera() { return m_followCamera; }
 private:
 	unsigned int m_vao = 0, m_vbo = 0, m_ebo = 0;
 	uint64_t m_shaderUUID = 0;
@@ -79,6 +82,7 @@ private:
 	float m_depth = 0.0f;
 
 	bool m_visible = true;
+	bool m_followCamera = true;
 
 	constexpr static Vertex m_vertices[4] = {
 		{{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f}},

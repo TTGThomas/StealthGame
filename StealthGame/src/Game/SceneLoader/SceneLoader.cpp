@@ -38,8 +38,8 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDir);
 
-	// layer 0 = objLayer
-	// layer 1 = UILayer
+	// UILayer > 0.9
+	// objLayer < 0.9
 
 	GlobalData& gData = GlobalData::Get();
 
@@ -94,6 +94,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	initDesc.m_playerCamera = desc.m_camera;
 	initDesc.m_npcs = &allNpcDesc;
 	initDesc.m_map = &allMapDesc;
+	initDesc.m_gameTickDesc = desc;
 
 	scene->Init(initDesc);
 
@@ -110,19 +111,24 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	}
 #endif
 	scene->GetItems().AddItem(items);
+
+	// targets
+	scene->GetTaskbar().AddTask({ TaskBar::TaskType::ELIMINATE, "Eliminate Joseph Clarence" });
+	scene->GetTaskbar().AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit" });
+	scene->GetTaskbar().PushTasks();
 }
 
 void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
 {
-	// npc are from 0.0 - 0.2
-	// npcdir are from 0.3 - 0.5
+	// npc are from 0.0 -- 0.2
+	// npcdir are from 0.3 -- 0.5
 	GlobalData& globalData = GlobalData::Get();
 	NPCInitDesc npcDesc{};
 	std::vector<QuadInitDesc> npcQuad;
 	float index = npcMap->size() * 0.000001f;
-	npcQuad.push_back({ pos, glm::vec2(0.2f), -index, shader, texture});
-	npcQuad.push_back({ pos, glm::vec2(0.2f), -index, shader, texture });
-	npcQuad.push_back({ pos, glm::vec2(0.5f), -(0.3f + index), shader, globalData.m_texNPCDir });
+	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture});
+	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture });
+	npcQuad.push_back({ pos, glm::vec2(0.5f), (0.3f + index), shader, globalData.m_texNPCDir });
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = route;
 	npcDesc.m_type = type;
@@ -134,17 +140,17 @@ void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos
 {
 	GlobalData& globalData = GlobalData::Get();
 
-	playerDesc->push_back({ pos, glm::vec2(0.2f), -0.25f, shader, globalData.m_texLogo });
-	playerDesc->push_back({ pos, glm::vec2(0.1f), -1.0f, shader, globalData.m_texPlayerCursor });
-	playerDesc->push_back({ pos, glm::vec2(0.2f), -0.25f, shader, texture });
+	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, globalData.m_texLogo });
+	playerDesc->push_back({ pos, glm::vec2(0.1f), 1.0f, shader, globalData.m_texPlayerCursor });
+	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, texture });
 }
 
 void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture)
 {
-	// map is from 0.6 - 0.9
+	// map is from 0.6 -- 0.9
 
 	std::vector<QuadInitDesc> mapDesc{};
-	float index = -(0.6f + (allMapDesc->size() * 0.000001f));
+	float index = (0.6f + (allMapDesc->size() * 0.000001f));
 	mapDesc.push_back({ pos, radius, index, shader, texture });
 	mapDesc.push_back({ pos, radius, index, shader, texture });
 	allMapDesc->push_back(mapDesc);

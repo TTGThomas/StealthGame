@@ -1,10 +1,13 @@
 #include "App.h"
 
 App::App()
-	: m_window("Stealth Game", 800, 600, false, false), 
+//				name		   x    y    vSynch fullscreen maximize
+	: m_window("Stealth Game", 800, 600, false, false,     true ), 
 	m_renderer(&m_scene), 
 	m_collision(&m_scene)
 {
+	m_window.SetWindowPos(0, 0);
+
 	m_renderer.BindCamera(&m_camera);
 
 	GameTickDesc desc;
@@ -58,6 +61,11 @@ void App::Tick()
 
 	UpdateGame();
 
+	if (m_window.GetIsResized())
+	{
+		m_game.OnResize(m_window.GetWidth(), m_window.GetHeight());
+	}
+
 	m_gpuTimer.Start();
 	m_renderer.Render(m_window.GetRatio(), m_hoveredIndex);
 	m_gpuTimer.Stop();
@@ -106,6 +114,7 @@ void App::UpdateGame()
 	desc.m_collision = &m_collision;
 	desc.m_camera = &m_camera;
 	desc.m_tickTimer = &m_tickTimer;
+	desc.m_scene = &m_scene;
 	m_game.Tick(desc);
 }
 

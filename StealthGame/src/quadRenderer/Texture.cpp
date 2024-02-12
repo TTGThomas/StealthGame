@@ -63,8 +63,6 @@ void Texture::Init(unsigned char* data, int width, int height, GLenum type)
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	stbi_image_free(data);
 }
 
 void Texture::Cleanup()

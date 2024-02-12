@@ -3,6 +3,8 @@
 void GameScene::Init(SceneInitDesc& desc)
 {
 	GlobalData::Get().m_gameScene = this;
+
+	m_taskbar.Init(desc.m_gameTickDesc);
 	m_player.Init(*desc.m_player);
 	m_player.BindCamera(desc.m_playerCamera);
 

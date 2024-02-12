@@ -2,8 +2,10 @@
 
 #include "../Scene.h"
 
-RenderQuad::RenderQuad(RenderQuadInitDesc& desc)
+RenderQuad::RenderQuad(RenderQuadInitDesc& desc, UUID uuid)
 {
+	m_uuid = uuid;
+	m_followCamera = desc.m_followCamera;
 	Init(desc.m_depth, desc.m_shaderUUID, desc.m_textureUUID);
 }
 
@@ -54,8 +56,11 @@ void RenderQuad::Draw(RenderDesc& desc)
 	glm::mat4 matrix = glm::identity<glm::mat4>();
 
 	// view
-	matrix = glm::scale(matrix, glm::vec3(desc.m_camera->GetZoom()));
-	matrix = glm::translate(matrix, {-desc.m_camera->GetPosX(), -desc.m_camera->GetPosY(), 0.0f});
+	if (m_followCamera)
+	{
+		matrix = glm::scale(matrix, glm::vec3(glm::vec2(desc.m_camera->GetZoom()), 1.0f));
+		matrix = glm::translate(matrix, { -desc.m_camera->GetPosX(), -desc.m_camera->GetPosY(), 0.0f });
+	}
 
 	// model
 	matrix = glm::translate(matrix, { m_pos.x, m_pos.y, 0.0f });

@@ -48,7 +48,7 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 		renderQuad.UpdateRenderQuad(m_parent);
 
 		Quad& quad = m_parent->GetQuads()[uuid];
-		if (InWindow(quad, ratio))
+		if (InWindow(quad, ratio) || renderQuad.GetFollowCamera() == false)
 		{
 			desc.m_shader = &m_shaders[renderQuad.getShaderUUID()];
 			desc.m_texture = &m_textures[renderQuad.GetTextureUUID()];
@@ -67,6 +67,8 @@ void QuadRenderer::ShowStatsWindow()
 	ImGui::Begin("Renderer");
 	ImGui::Text("Quad count: %u", m_parent->GetQuads().size());
 	ImGui::Text("Quad Rendered: %u", m_quadRendered);
+	ImGui::Text("Shaders Allocated: %u", m_shaders.size());
+	ImGui::Text("Textures Allocated: %u", m_textures.size());
 	ImGui::End();
 #endif
 }

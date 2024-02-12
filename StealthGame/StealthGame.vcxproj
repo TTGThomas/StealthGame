@@ -228,6 +228,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Fonts\sample-atlas.png" />
+    <Image Include="res\Icons\Eliminate.png" />
+    <Image Include="res\Icons\Escape.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />
