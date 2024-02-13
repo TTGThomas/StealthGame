@@ -29,7 +29,14 @@ void Game::Tick(GameTickDesc& desc)
 
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
+
 	m_gameScene.GetPlayer().PlayerTick(desc);
+
+	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+		m_gameScene.GetPlayer().OnTrespassZone();
+
+	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+		m_gameScene.GetPlayer().OnHostileZone();
 
 	InteractTick(desc);
 
@@ -78,7 +85,7 @@ void Game::InteractNPC()
 	{
 		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
 		float dst = glm::length(diff);
-		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f))
+		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc.GetIsBeingDragged())
 		{
 			victim = &npc;
 			victimDst = glm::length(diff);
@@ -88,7 +95,7 @@ void Game::InteractNPC()
 	if (victimDst != -1.0f)
 	{
 		m_interact.reset();
-		m_interact = std::make_shared<KillInteract>(&m_gameScene.GetPlayer(), victim);
+		m_interact = std::make_shared<NPCInteract>(&m_gameScene, victim);
 	}
 }
 

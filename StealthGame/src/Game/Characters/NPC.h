@@ -39,7 +39,7 @@ public:
 public:
 	NPC() = default;
 
-	//inline void Init();
+	void Init(std::vector<QuadInitDesc> desc, const char* name);
 
 	void BindCollision(CollisionDetector* collision) { m_collision = collision; }
 
@@ -59,11 +59,15 @@ public:
 
 	bool IsPlayerDetected();
 
+	void SetIsBeingDragged(bool isBeingDragged) { m_isBeingDragged = isBeingDragged; }
+
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
 	UUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
 	Identities GetType() { return m_type; }
+	const char* GetName() { return m_name; }
+	bool GetIsBeingDragged() { return m_isBeingDragged; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -82,15 +86,22 @@ private:
 	void TickNonStatic(GameTickDesc& desc);
 	void TickDead(GameTickDesc& desc);
 private:
+	inline bool IsThetaInView(float cosTheta);
+private:
 	// returns if it is at point or not
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
 	void PointAtPoint(glm::vec2 point);
+	float AngleFromPoint(glm::vec2 point);;
 	glm::vec2 GetAddFromTarget(glm::vec2 target);
 private:
 	UUID m_uuid;
 	CollisionDetector* m_collision;
 
+	const char* m_name;
+
 	bool m_isPlayerDetected = false;
+
+	bool m_isBeingDragged = false;
 
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;

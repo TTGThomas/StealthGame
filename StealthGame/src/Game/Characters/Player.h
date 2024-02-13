@@ -34,6 +34,9 @@ public:
 	void SetInputEnabled(bool newInput) { m_inputEnabled = newInput; }
 	void SetIsCrouching(bool newInput) { m_isCrouching = newInput; }
 	
+	void OnTrespassZone() { m_actionType = ActionType::ILLEGAL; }
+	void OnHostileZone() { m_actionType = ActionType::ILLEGAL; }
+
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 	const glm::vec2& GetVelocity() { return m_velocity; }
 	bool GetInputEnabled() { return m_inputEnabled; }

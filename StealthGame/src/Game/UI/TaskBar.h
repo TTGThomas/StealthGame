@@ -30,8 +30,8 @@ public:
 	void Init(GameTickDesc& desc);
 
 	void AddTask(Task task);
-	// this will display the tasks and flush the old tasks
-	void PushTasks();
+
+	void CompleteTask(int index);
 
 	void SetStartPos(glm::vec2 sPos);
 
@@ -55,7 +55,6 @@ private:
 	std::vector<UUID> m_uuids;
 	std::vector<uint64_t> m_textures;
 	std::vector<uint64_t> m_iconTextures;
-	std::vector<Task> m_readyTasks;
 	std::vector<Task> m_tasks;
 
 	float m_fontSize = 0.05f;

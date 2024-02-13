@@ -26,13 +26,13 @@ void TaskBar::Init(GameTickDesc& desc)
 void TaskBar::AddTask(Task task)
 {
 	m_changed = true;
-	m_readyTasks.emplace_back(std::move(task));
+	m_tasks.emplace_back(task);
 }
 
-void TaskBar::PushTasks()
+void TaskBar::CompleteTask(int index)
 {
-	m_tasks = std::move(m_readyTasks);
-	m_readyTasks = {};
+	m_changed = true;
+	m_tasks.erase(m_tasks.begin() + index);
 }
 
 void TaskBar::SetStartPos(glm::vec2 sPos)
@@ -49,8 +49,10 @@ void TaskBar::UpdateTaskbar(GameTickDesc& desc)
 		ClearQuads(desc);
 		int taskIndex = 0;
 		glm::vec3 color = { 1.0f, 1.0f, 1.0f };
-		for (Task& task : m_tasks)
+		for (int i = 0; i < m_tasks.size(); i++)
 		{
+			Task& task = m_tasks[i];
+
 			glm::vec2 pos = m_startPos;
 			pos.y -= (float)taskIndex * m_fontSize * 2.0f;
 
@@ -83,6 +85,8 @@ void TaskBar::AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec
 	Scene* scene = desc.m_scene;
 
 	int letterIndex = letter - ' ';
+	if (letterIndex < 0)
+		letterIndex = 95;
 
 	Quad quad;
 	uint64_t uuid = quad.GetUUID().GetUUID();

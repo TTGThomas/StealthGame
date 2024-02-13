@@ -64,6 +64,8 @@ uint64_t Scene::GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char
 	unsigned char* data = Texture::GetDataFromFile("res/Fonts/sample-atlas.png", &aWidth, &aHeight, &nChannels);
 
 	int texIndex = (int)(text - ' ');
+	if (texIndex < 0)
+		texIndex = 95;
 
 	const int width = m_letterWidths[texIndex], height = 24;
 	//const int width = 24, height = 24;

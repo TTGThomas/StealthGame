@@ -96,7 +96,7 @@
     <ClCompile Include="src\Game\Items\ItemsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Interact\KillInteract.cpp">
+    <ClCompile Include="src\Game\Interact\NPCInteract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Interact\ItemInteract.cpp">
@@ -118,6 +118,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\UI\TaskBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Zones\Zone.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,7 +224,7 @@
     <ClInclude Include="src\Game\Interact\Interaction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Interact\KillInteract.h">
+    <ClInclude Include="src\Game\Interact\NPCInteract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Interact\ItemInteract.h">
@@ -245,10 +248,14 @@
     <ClInclude Include="src\Game\UI\TaskBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Zones\Zone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
     <None Include="shaders\default\Fragment.glsl" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\logo.png">

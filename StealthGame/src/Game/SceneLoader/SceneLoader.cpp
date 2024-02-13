@@ -57,9 +57,9 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ { 2.0f,  4.0f} });
 		npcRoute.push_back({ { 2.0f, -1.0f} });
 
-		LoadNPC(&allNpcDesc, { -2.0f, 0.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
+		LoadNPC(&allNpcDesc, "Robert Knox", true, {-2.0f, 0.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
-
+	
 	{
 		std::vector<NPCRoutePoint> npcRoute;
 		npcRoute.push_back({ { 2.0f, -1.0f} });
@@ -67,24 +67,36 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ {-2.0f,  4.0f} });
 		npcRoute.push_back({ {-2.0f,  0.0f} });
 
-		LoadNPC(&allNpcDesc, { -2.0f, -1.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC2, npcRoute);
+		LoadNPC(&allNpcDesc, "Sierra Knox", true, {-2.0f, -1.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
-	for (float y = 1.0f; y < 4.0f; y += 0.7f)
 	{
-		for (float x = -2.0f; x < 2.0f; x += 0.7f)
-		{
-			std::vector<NPCRoutePoint> npcRoute;
-			LoadNPC(&allNpcDesc, { x, y }, Identities::GUEST, gData.m_defaultShader, gData.m_texNPC0, npcRoute);
-		}
+		std::vector<NPCRoutePoint> npcRoute;
+		npcRoute.push_back({ { -0.4f, 1.5f} });
+		npcRoute.push_back({ { 0.4f,  1.5f} });
+		npcRoute.push_back({ { 0.4f,  2.5f} });
+		npcRoute.push_back({ { -0.4f,  2.5f} });
+
+		LoadNPC(&allNpcDesc, "Chad Bingham", true, { -0.4f, 1.5f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
 	// Map
 	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
-
+	
 	std::vector<QuadInitDesc> mapDesc{};
 
-	LoadMap(&allMapDesc, { 1.2, 0.0f }, { 0.5f, 0.5f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap(&allMapDesc, { 0.9f, 2.0f }, { 0.1f, 1.0f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap(&allMapDesc, { -0.9f, 2.0f }, { 0.1f, 1.0f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap(&allMapDesc, { 0.0f, 3.0f }, { 1.0f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap(&allMapDesc, { 0.65f, 1.0f }, { 0.35f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap(&allMapDesc, { -0.65f, 1.0f }, { 0.35f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
+
+	// trespassing zones
+	std::vector<AABB> trespassingZones = {};
+	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.8f, 4.0f }, UUID()));
+
+	// hostile zones
+	std::vector<AABB> hostileZones = {};
 
 	// Init
 	SceneInitDesc initDesc;
@@ -95,6 +107,8 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	initDesc.m_npcs = &allNpcDesc;
 	initDesc.m_map = &allMapDesc;
 	initDesc.m_gameTickDesc = desc;
+	initDesc.m_trespassingZones = &trespassingZones;
+	initDesc.m_hostileZones = &hostileZones;
 
 	scene->Init(initDesc);
 
@@ -110,15 +124,12 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		}
 	}
 #endif
+
 	scene->GetItems().AddItem(items);
 
-	// targets
-	scene->GetTaskbar().AddTask({ TaskBar::TaskType::ELIMINATE, "Eliminate Joseph Clarence" });
-	scene->GetTaskbar().AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit" });
-	scene->GetTaskbar().PushTasks();
 }
 
-void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
+void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bool isTarget, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
 {
 	// npc are from 0.0 -- 0.2
 	// npcdir are from 0.3 -- 0.5
@@ -132,6 +143,8 @@ void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, glm::vec2 pos, Ident
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = route;
 	npcDesc.m_type = type;
+	npcDesc.m_name = name;
+	npcDesc.m_isTarget = isTarget;
 
 	npcMap->push_back(npcDesc);
 }

@@ -5,16 +5,18 @@
 #include "../Characters/Player.h"
 #include "../Characters/NPC.h"
 
-class KillInteract : public Interaction
+#include "../GameScene.h"
+
+class NPCInteract : public Interaction
 {
 public:
-	KillInteract(Player* player, NPC* npc)
-		: m_player(player), m_npc(npc) {}
+	NPCInteract(GameScene* gameScene, NPC* npc)
+		: m_gameScene(gameScene), m_npc(npc) {}
 
 	virtual void OnInteract() override;
 	virtual glm::vec2 OnTick() override;
 private:
-	Player* m_player = nullptr;
+	GameScene* m_gameScene = nullptr;
 	NPC* m_npc = nullptr;
 };
 

@@ -5,6 +5,12 @@
 
 std::unordered_set<uint64_t> NPC::m_detectedDeadNPCs;
 
+void NPC::Init(std::vector<QuadInitDesc> desc, const char* name)
+{
+	Entity::Init(desc);
+	m_name = name;
+}
+
 void NPC::NPCTick(GameTickDesc& desc)
 {
 	DetectEverything();
@@ -76,7 +82,7 @@ bool NPC::IsPlayerInSight()
 
 	float cosTheta = glm::dot(m_frontVec, vPlayer);
 
-	if (glm::acos(cosTheta) > glm::radians(30.0f))
+	if (!IsThetaInView(cosTheta))
 		return false;
 
 	Scene* scene = GlobalData::Get().m_scene;
@@ -128,7 +134,7 @@ void NPC::DetectItems()
 
 		float cosTheta = glm::dot(m_frontVec, vItem);
 
-		if (glm::acos(cosTheta) > glm::radians(30.0f))
+		if (!IsThetaInView(cosTheta))
 			continue;
 
 		Scene* scene = GlobalData::Get().m_scene;
@@ -150,6 +156,9 @@ void NPC::DetectNPCs()
 
 	for (auto& [uuid, npc] : gameScene.GetNPCs())
 	{
+		if (uuid == m_uuid.GetUUID())
+			continue;
+
 		glm::vec2 npcPos = npc.GetPos();
 
 		float dst = glm::distance(GetPos(), npcPos);
@@ -160,14 +169,13 @@ void NPC::DetectNPCs()
 
 		float cosTheta = glm::dot(m_frontVec, vNPC);
 
-		// acos haves less overhead than cos
-		if (glm::acos(cosTheta) > glm::radians(30.0f))
+		if (!IsThetaInView(cosTheta))
 			continue;
 
 		Scene* scene = GlobalData::Get().m_scene;
 
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
-		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+		bool ret = !m_collision->Collide(GetPos(), npcPos).m_hasHit;
 		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 		if (ret)
 			m_detectedNPCs.emplace_back(uuid);
@@ -336,6 +344,30 @@ void NPC::TickDead(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texNPCDead);
+	
+	if (m_isBeingDragged)
+	{
+		// do stuffs related to being dragged
+		Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+		if (!player->GetIsCrouching())
+			m_isBeingDragged = false;
+		if (glm::distance(GetPos(), player->GetPos()) > 0.5f)
+		{
+			glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
+			pos *= 0.5f;
+			SetPos(player->GetPos() + pos);
+		}
+		scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(AngleFromPoint(player->GetPos()) + 90.0f);
+	}
+}
+
+bool NPC::IsThetaInView(float cosTheta)
+{
+	//return glm::acos(cosTheta) < glm::radians(30.0f);
+	//return cosTheta < glm::cos(glm::radians(30.0f));
+	// cos(radians(30.0f)) = 0.866025388;
+	// somehow i need to flip the result to be correct;
+	return cosTheta > 0.866025388f;
 }
 
 bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
@@ -375,11 +407,16 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 
 void NPC::PointAtPoint(glm::vec2 point)
 {
+	m_targetDir = AngleFromPoint(point);
+}
+
+float NPC::AngleFromPoint(glm::vec2 point)
+{
 	point = glm::normalize(point - GetPos());
 	glm::vec2 front = glm::vec2(0.0f, 1.0f);
 
 	float degree = glm::degrees(glm::acos(glm::dot(point, front)));
-	m_targetDir = (point.x > 0.0f ? degree : 360.0f - degree);
+	return (point.x > 0.0f ? degree : 360.0f - degree);
 }
 
 glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
