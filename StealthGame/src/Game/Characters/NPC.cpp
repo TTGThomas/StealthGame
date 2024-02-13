@@ -349,8 +349,7 @@ void NPC::TickDead(GameTickDesc& desc)
 	{
 		// do stuffs related to being dragged
 		Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
-		if (!player->GetIsCrouching())
-			m_isBeingDragged = false;
+		m_isBeingDragged = player->GetIsDragging();
 		if (glm::distance(GetPos(), player->GetPos()) > 0.5f)
 		{
 			glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());

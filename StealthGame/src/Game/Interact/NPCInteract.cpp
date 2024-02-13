@@ -11,6 +11,7 @@ void NPCInteract::OnInteract()
 	else
 	{
 		m_gameScene->GetPlayer().SetIsCrouching(true);
+		m_gameScene->GetPlayer().SetIsDragging(true);
 		m_npc->SetIsBeingDragged(true);
 	}
 }

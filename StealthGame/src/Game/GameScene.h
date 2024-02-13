@@ -20,6 +20,8 @@
 #include "Interact/NPCInteract.h"
 #include "Interact/ItemInteract.h"
 
+#include "SpecialBlock/SpecialBlockManager.h"
+
 #include "UI/PopUps/PopUpManager.h"
 
 #include "UI/ZonePopUp.h"
@@ -76,12 +78,14 @@ public:
 	TaskBar& GetTaskbar() { return m_taskbar; }
 	Zone& GetTrespassZone() { return m_trespassZone; }
 	Zone& GetHostileZone() { return m_hostileZone; }
+	SpecialBlockManager& GetSpecialBlockManager() { return m_specialBlockManager; }
 private:
 	VisualLayers m_visualLayers;
 	std::vector<Object> m_map;
 	std::unordered_map<uint64_t, NPC> m_npcs;
 	std::vector<uint64_t> m_targets;
 	ItemsManager m_items;
+	SpecialBlockManager m_specialBlockManager;
 	Player m_player;
 	TaskBar m_taskbar;
 

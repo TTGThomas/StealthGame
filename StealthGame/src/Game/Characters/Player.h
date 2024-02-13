@@ -33,6 +33,7 @@ public:
 	void ChangePos(glm::vec2 pos) { GetQuad(0)->ChangePos(pos); }
 	void SetInputEnabled(bool newInput) { m_inputEnabled = newInput; }
 	void SetIsCrouching(bool newInput) { m_isCrouching = newInput; }
+	void SetIsDragging(bool newInput) { m_isDragging = newInput; }
 	
 	void OnTrespassZone() { m_actionType = ActionType::ILLEGAL; }
 	void OnHostileZone() { m_actionType = ActionType::ILLEGAL; }
@@ -41,6 +42,7 @@ public:
 	const glm::vec2& GetVelocity() { return m_velocity; }
 	bool GetInputEnabled() { return m_inputEnabled; }
 	bool GetIsCrouching() { return m_isCrouching; }
+	bool GetIsDragging() { return m_isDragging; }
 	void EliminateNPC(NPC& victim);
 	ActionType GetActionType() { return m_actionType; }
 private:
@@ -53,6 +55,7 @@ private:
 	Camera* m_bindedCamera = nullptr;
 
 	bool m_isCrouching = false;
+	bool m_isDragging = false;
 
 	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
 	constexpr static glm::vec2 m_crouchScale = { 0.2f, 0.15f };

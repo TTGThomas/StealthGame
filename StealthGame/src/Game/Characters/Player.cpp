@@ -13,6 +13,9 @@ void Player::PlayerTick(GameTickDesc& desc)
 		return;
 
 	MovePlayer(desc);
+
+	if (!m_isCrouching)
+		m_isDragging = false;
 }
 
 void Player::EliminateNPC(NPC& victim)

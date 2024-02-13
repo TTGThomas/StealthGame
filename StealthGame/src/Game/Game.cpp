@@ -72,7 +72,8 @@ void Game::InteractTick(GameTickDesc& desc)
 
 	m_interact.reset();
 	InteractNPC();
-	InteracatItems();
+	InteractItems();
+	InteractSpecialBlocks();
 
 	if (m_interact.get() != nullptr)
 	{
@@ -92,6 +93,10 @@ void Game::InteractNPC()
 
 	// get possible interactive NPC
 	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
+	
+	if (m_gameScene.GetPlayer().GetIsDragging())
+		return;
+
 	NPC* victim;
 	float victimDst = -1.0f;
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
@@ -112,7 +117,7 @@ void Game::InteractNPC()
 	}
 }
 
-void Game::InteracatItems()
+void Game::InteractItems()
 {
 	// get possible interactive items
 	Item* item = m_gameScene.GetItems().GetNearestItem(m_gameScene.GetPlayer().GetPos()).get();
@@ -123,6 +128,16 @@ void Game::InteracatItems()
 			m_interact.reset();
 			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
 		}
+	}
+}
+
+void Game::InteractSpecialBlocks()
+{
+	std::shared_ptr<Interaction> interact = m_gameScene.GetSpecialBlockManager().GetClosestEventWithinRange(m_gameScene.GetPlayer().GetPos(), 0.5f);
+	if (interact != nullptr)
+	{
+		m_interact.reset();
+		m_interact = interact;
 	}
 }
 

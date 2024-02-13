@@ -47,7 +47,8 @@ public:
 private:
 	void InteractTick(GameTickDesc& desc);
 	void InteractNPC();
-	void InteracatItems();
+	void InteractItems();
+	void InteractSpecialBlocks();
 private:
 	void ShowStatsWindow();
 private:
