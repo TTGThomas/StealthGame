@@ -15,8 +15,20 @@ int Scene::m_letterWidths[100] = {
 		 8, 5, 3, 5, 9,13,10,13, 6, 7,
 };
 
+unsigned char* Scene::m_letterAtlas = nullptr;
+int Scene::m_atlasWidth = -1;
+int Scene::m_atlasHeight = -1;
+int Scene::m_atlasNChannels = -1;
+std::array<uint64_t, 100> Scene::m_letterTextures; 
+
+Scene::Scene()
+{
+	m_letterTextures.fill(0);
+}
+
 Scene::~Scene()
 {
+	delete[] m_letterAtlas;
 }
 
 void Scene::AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc)
@@ -60,37 +72,41 @@ void Scene::DeleteQuad(uint64_t uuid)
 
 uint64_t Scene::GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char text)
 {
-	int aWidth, aHeight, nChannels;
-	unsigned char* data = Texture::GetDataFromFile("res/Fonts/sample-atlas.png", &aWidth, &aHeight, &nChannels);
+	if (m_letterAtlas == nullptr)
+		m_letterAtlas = Texture::GetDataFromFile("res/Fonts/sample-atlas.png", &m_atlasWidth, &m_atlasHeight, &m_atlasNChannels);
 
 	int texIndex = (int)(text - ' ');
 	if (texIndex < 0)
 		texIndex = 95;
 
-	const int width = m_letterWidths[texIndex], height = 24;
-	//const int width = 24, height = 24;
-	unsigned char* ret = new unsigned char[width * height * sizeof(unsigned char) * 4];
-
-	int index = 0;
-	int sourceX = (texIndex % 10) * 25 + 1;
-	int sourceY = (texIndex / 10) * 25 + 1;
-	for (int y = 0; y < height; y++)
+	if (m_letterTextures[texIndex] == 0)
 	{
-		for (int x = 0; x < width; x++)
-		{
-			int posX = sourceX + x;
-			int posY = sourceY + y;
-			ret[index + 0] = (unsigned char)((float)data[(posY * aHeight + posX) * 4 + 0] * color.r);
-			ret[index + 1] = (unsigned char)((float)data[(posY * aHeight + posX) * 4 + 1] * color.g);
-			ret[index + 2] = (unsigned char)((float)data[(posY * aHeight + posX) * 4 + 2] * color.b);
-			ret[index + 3] = (unsigned char)((float)data[(posY * aHeight + posX) * 4 + 3] * 1.0f);
-			index += 4;
-		}
-	}
+		const int width = m_letterWidths[texIndex], height = 24;
+		//const int width = 24, height = 24;
+		unsigned char* ret = new unsigned char[width * height * sizeof(unsigned char) * 4];
 
-	Texture texture;
-	texture.Init(ret, width, height);
-	renderer->AddTexture(texture);
-	delete[] data, ret;
-	return texture.GetUUID().GetUUID();
+		int index = 0;
+		int sourceX = (texIndex % 10) * 25 + 1;
+		int sourceY = (texIndex / 10) * 25 + 1;
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				int posX = sourceX + x;
+				int posY = sourceY + y;
+				ret[index + 0] = (unsigned char)((float)m_letterAtlas[(posY * m_atlasHeight + posX) * 4 + 0] * color.r);
+				ret[index + 1] = (unsigned char)((float)m_letterAtlas[(posY * m_atlasHeight + posX) * 4 + 1] * color.g);
+				ret[index + 2] = (unsigned char)((float)m_letterAtlas[(posY * m_atlasHeight + posX) * 4 + 2] * color.b);
+				ret[index + 3] = (unsigned char)((float)m_letterAtlas[(posY * m_atlasHeight + posX) * 4 + 3] * 1.0f);
+				index += 4;
+			}
+		}
+
+		Texture texture;
+		texture.Init(ret, width, height);
+		renderer->AddTexture(texture);
+		delete[] ret;
+		m_letterTextures[texIndex] = texture.GetUUID().GetUUID();
+	}
+	return m_letterTextures[texIndex];
 }

@@ -15,6 +15,8 @@ void Game::Init(GameTickDesc& desc)
 	desc.m_camera->SetZoom(0.5f);
 
 	SceneLoader::Get().LoadDebugScene(desc, &m_gameScene);
+
+	m_zonePopUp.Init(desc, &m_popUpManager);
 }
 
 void Game::Tick(GameTickDesc& desc)
@@ -23,6 +25,7 @@ void Game::Tick(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 
 	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
+	m_popUpManager.UpdatePopUps(desc);
 
 	ShowStatsWindow();
 	m_gameScene.GetTaskbar().ShowStatsWindow();
@@ -33,10 +36,19 @@ void Game::Tick(GameTickDesc& desc)
 	m_gameScene.GetPlayer().PlayerTick(desc);
 
 	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+	{
 		m_gameScene.GetPlayer().OnTrespassZone();
-
-	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+		m_zonePopUp.OnTrespass();
+	}
+	else if (m_gameScene.GetHostileZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+	{
 		m_gameScene.GetPlayer().OnHostileZone();
+		m_zonePopUp.OnHostile();
+	}
+	else
+	{
+		m_zonePopUp.OnExit(desc);
+	}
 
 	InteractTick(desc);
 
@@ -51,6 +63,7 @@ void Game::OnResize(int width, int height)
 	// x * ratio = 1
 	// x = 1 / ratio
 	m_gameScene.GetTaskbar().SetStartPos({ -1.0f / ratio, 1.0f });
+	m_zonePopUp.SetStartPos({ -1.0f / ratio, -1.0f + m_zonePopUp.GetFontSize() * 2.0f });
 }
 
 void Game::InteractTick(GameTickDesc& desc)

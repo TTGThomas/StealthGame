@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <unordered_map>
 #include <map>
 
@@ -44,7 +45,7 @@ private:
 class Scene
 {
 public:
-	Scene() = default;
+	Scene();
 	~Scene();
 
 	void AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc);
@@ -68,4 +69,9 @@ private:
 	std::vector<uint64_t> m_depthOrder{};
 
 	static int m_letterWidths[100];
+	static unsigned char* m_letterAtlas;
+	static int m_atlasWidth;
+	static int m_atlasHeight;
+	static int m_atlasNChannels;
+	static std::array<uint64_t, 100> m_letterTextures;
 };

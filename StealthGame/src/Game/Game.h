@@ -53,4 +53,7 @@ private:
 private:
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
+
+	PopUpManager m_popUpManager;
+	ZonePopUp m_zonePopUp;
 };

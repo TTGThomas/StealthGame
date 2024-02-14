@@ -2,7 +2,6 @@
 
 void TaskBar::Init(GameTickDesc& desc)
 {
-	m_textures.resize(10 * 10);
 	// creates icon textures
 
 	/*
@@ -98,12 +97,7 @@ void TaskBar::AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec
 	renderDesc.m_followCamera = false;
 	renderDesc.m_depth = 1.0f;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
-
-	if (m_textures[letterIndex] == 0)
-	{
-		m_textures[letterIndex] = desc.m_scene->GetTextureFromChar(desc.m_renderer, color, letter);
-	}
-	renderDesc.m_textureUUID = m_textures[letterIndex];
+	renderDesc.m_textureUUID = desc.m_scene->GetTextureFromChar(desc.m_renderer, color, letter);
 
 	scene->AddQuad(quad, renderDesc);
 	scene->GetRenderQuads().at(uuid).UpdateRenderQuad(scene, uuid);

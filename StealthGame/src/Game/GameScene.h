@@ -20,6 +20,10 @@
 #include "Interact/NPCInteract.h"
 #include "Interact/ItemInteract.h"
 
+#include "UI/PopUps/PopUpManager.h"
+
+#include "UI/ZonePopUp.h"
+
 #include "Zones/Zone.h"
 
 #include "Desc.h"

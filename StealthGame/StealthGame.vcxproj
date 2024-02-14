@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\UI\PopUps\PopUp.cpp" />
+    <ClCompile Include="src\Game\UI\PopUps\PopUpManager.cpp" />
     <ClCompile Include="src\Game\SceneLoader\SceneLoader.cpp" />
     <ClCompile Include="src\Game\GlobalData.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -179,8 +181,11 @@
     <ClCompile Include="src\windows\Window.cpp" />
     <ClCompile Include="src\UUID.cpp" />
     <ClCompile Include="src\Game\Zones\Zone.cpp" />
+    <ClCompile Include="src\Game\UI\ZonePopUp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\UI\PopUps\PopUp.h" />
+    <ClInclude Include="src\Game\UI\PopUps\PopUpManager.h" />
     <ClInclude Include="src\Game\SceneLoader\SceneLoader.h" />
     <ClInclude Include="src\Game\GlobalData.h" />
     <ClInclude Include="src\Scene.h" />
@@ -223,6 +228,7 @@
     <ClInclude Include="src\windows\Window.h" />
     <ClInclude Include="src\UUID.h" />
     <ClInclude Include="src\Game\Zones\Zone.h" />
+    <ClInclude Include="src\Game\UI\ZonePopUp.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />

@@ -53,7 +53,6 @@ private:
 	bool m_changed = true;
 
 	std::vector<UUID> m_uuids;
-	std::vector<uint64_t> m_textures;
 	std::vector<uint64_t> m_iconTextures;
 	std::vector<Task> m_tasks;
 

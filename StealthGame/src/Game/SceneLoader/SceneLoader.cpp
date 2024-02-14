@@ -93,10 +93,11 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	// trespassing zones
 	std::vector<AABB> trespassingZones = {};
-	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.8f, 4.0f }, UUID()));
+	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0f, 3.0f }, UUID()));
 
 	// hostile zones
 	std::vector<AABB> hostileZones = {};
+	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, UUID()));
 
 	// Init
 	SceneInitDesc initDesc;
