@@ -182,6 +182,7 @@
     <ClCompile Include="src\UUID.cpp" />
     <ClCompile Include="src\Game\Zones\Zone.cpp" />
     <ClCompile Include="src\Game\UI\ZonePopUp.cpp" />
+    <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\UI\PopUps\PopUp.h" />
@@ -229,6 +230,7 @@
     <ClInclude Include="src\UUID.h" />
     <ClInclude Include="src\Game\Zones\Zone.h" />
     <ClInclude Include="src\Game\UI\ZonePopUp.h" />
+    <ClInclude Include="src\Game\VisualLayers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />
@@ -239,6 +241,7 @@
     <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
+    <Image Include="res\Levels\DebugLevel.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />

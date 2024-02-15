@@ -26,6 +26,8 @@
 
 #include "Zones/Zone.h"
 
+#include "VisualLayers.h"
+
 #include "Desc.h"
 
 #include "GlobalData.h"
@@ -54,6 +56,9 @@ struct SceneInitDesc
 	std::vector<AABB>* m_hostileZones;
 
 	GameTickDesc m_gameTickDesc;
+
+	uint64_t m_foregroundTexID;
+	uint64_t m_backgroundTexID;
 };
 
 class GameScene
@@ -72,6 +77,7 @@ public:
 	Zone& GetTrespassZone() { return m_trespassZone; }
 	Zone& GetHostileZone() { return m_hostileZone; }
 private:
+	VisualLayers m_visualLayers;
 	std::vector<Object> m_map;
 	std::unordered_map<uint64_t, NPC> m_npcs;
 	std::vector<uint64_t> m_targets;

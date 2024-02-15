@@ -24,6 +24,8 @@ public:
 	void Activate(int index);
 
 	UUID& GetUUID() { return m_uuid; }
+	int GetWidth() { return m_width; }
+	int GetHeight() { return m_height; }
 public:
 	static unsigned char* GetDataFromFile(const char* filePath, int* x, int* y, int* nChannels);
 private:

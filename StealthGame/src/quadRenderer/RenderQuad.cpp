@@ -64,8 +64,8 @@ void RenderQuad::Draw(RenderDesc& desc)
 
 	// model
 	matrix = glm::translate(matrix, { m_pos.x, m_pos.y, 0.0f });
-	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
 	matrix = glm::rotate(matrix, glm::radians(-m_rotation), {0.0f, 0.0f, 1.0f});
+	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
 
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
 	glUniformMatrix4fv(LOCATION(*desc.m_shader, "u_matrix"), 1, GL_FALSE, glm::value_ptr(matrix));

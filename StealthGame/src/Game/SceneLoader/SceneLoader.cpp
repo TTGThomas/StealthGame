@@ -38,8 +38,21 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDir);
 
+
+	//Texture foreground("res/NPC/Dir.png");
+	//uint64_t foregroundID = foreground.GetUUID().GetUUID();
+	uint64_t foregroundID = 0;
+	//desc.m_renderer->AddTexture(foreground);
+
+	Texture background("res/Levels/DebugLevel.png");
+	uint64_t backgroundID = background.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(background);
+
 	// UILayer > 0.9
 	// objLayer < 0.9
+
+	// map background = -0.1
+	// map foreground = 0.99
 
 	GlobalData& gData = GlobalData::Get();
 
@@ -72,12 +85,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	{
 		std::vector<NPCRoutePoint> npcRoute;
-		npcRoute.push_back({ { -0.4f, 1.5f} });
-		npcRoute.push_back({ { 0.4f,  1.5f} });
-		npcRoute.push_back({ { 0.4f,  2.5f} });
-		npcRoute.push_back({ { -0.4f,  2.5f} });
-
-		LoadNPC(&allNpcDesc, "Chad Bingham", true, { -0.4f, 1.5f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
+		LoadNPC(&allNpcDesc, "Chad Bingham", true, { 0.0f, 2.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
 	// Map
@@ -110,6 +118,8 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	initDesc.m_gameTickDesc = desc;
 	initDesc.m_trespassingZones = &trespassingZones;
 	initDesc.m_hostileZones = &hostileZones;
+	initDesc.m_foregroundTexID = foregroundID;
+	initDesc.m_backgroundTexID = backgroundID;
 
 	scene->Init(initDesc);
 
@@ -140,7 +150,7 @@ void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bo
 	float index = npcMap->size() * 0.000001f;
 	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture});
 	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture });
-	npcQuad.push_back({ pos, glm::vec2(0.5f), (0.3f + index), shader, globalData.m_texNPCDir });
+	npcQuad.push_back({ pos, glm::vec2(0.7f, 0.2f), (0.3f + index), shader, globalData.m_texNPCDir });
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = route;
 	npcDesc.m_type = type;
@@ -159,6 +169,7 @@ void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos
 	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, texture });
 }
 
+// actually the map hitbox
 void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture)
 {
 	// map is from 0.6 -- 0.9

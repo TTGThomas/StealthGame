@@ -7,9 +7,7 @@ static float ratio = 1.0f;
 Window::Window(const char* title, int width, int height, bool vSynch, bool fullScreen, bool maximize)
 {
 	if (!Init(title, width, height, vSynch, fullScreen, maximize))
-	{
 		glfwTerminate();
-	}
 }
 
 Window::~Window()
@@ -86,6 +84,10 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
+
+    ImFontConfig fontConfig;
+    fontConfig.SizePixels = 40.0f;
+    ImGui::GetIO().Fonts->AddFontDefault(&fontConfig);
 
     std::cout << "ImGui context created" << std::endl;
 #endif

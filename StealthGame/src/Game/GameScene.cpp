@@ -9,6 +9,7 @@ void GameScene::Init(SceneInitDesc& desc)
 	m_trespassZone = Zone(*desc.m_trespassingZones);
 	m_hostileZone = Zone(*desc.m_hostileZones);
 	
+	m_visualLayers.Init(desc.m_gameTickDesc, desc.m_backgroundTexID, desc.m_foregroundTexID);
 	m_taskbar.Init(desc.m_gameTickDesc);
 	m_player.Init(*desc.m_player);
 	m_player.BindCamera(desc.m_playerCamera);

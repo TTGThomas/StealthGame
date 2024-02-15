@@ -34,7 +34,7 @@ class NPC : public Entity
 public:
 	enum class State
 	{
-		NORMAL, SUSPICIOUS, WITNESS
+		NORMAL, SUSPICIOUS, PANIC, WITNESS
 	};
 public:
 	NPC() = default;

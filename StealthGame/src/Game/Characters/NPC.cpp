@@ -63,8 +63,8 @@ void NPC::SetDirPos(glm::vec2 pos)
 		return;
 	}
 	glm::vec2 p = pos;
-	p.x += glm::sin(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().x;
-	p.y += glm::cos(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().x;
+	p.x += glm::sin(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().y;
+	p.y += glm::cos(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().y;
 	scene->GetQuads()[GetUUID(2).GetUUID()].SetPos(p);
 	scene->GetQuads()[GetUUID(2).GetUUID()].SetRotation(m_dir);
 }
@@ -363,11 +363,11 @@ void NPC::TickDead(GameTickDesc& desc)
 
 bool NPC::IsThetaInView(float cosTheta)
 {
-	//return glm::acos(cosTheta) < glm::radians(30.0f);
-	//return cosTheta < glm::cos(glm::radians(30.0f));
-	// cos(radians(30.0f)) = 0.866025388;
+	//return glm::acos(cosTheta) < glm::radians(70.0f);
+	//return cosTheta < glm::cos(glm::radians(70.0f));
+	// cos(radians(70.0f)) = 0.342020154;
 	// somehow i need to flip the result to be correct;
-	return cosTheta > 0.866025388f;
+	return cosTheta > 0.342020154f;
 }
 
 bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
