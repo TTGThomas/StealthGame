@@ -23,10 +23,19 @@ public:
 
 	struct Task
 	{
+		Task(TaskType type, char* text)
+			: m_type(type), m_text(text) {}
+
+		Task(TaskType type, const char* text)
+			: m_type(type), m_text(const_cast<char*>(text)) {}
+
 		TaskType m_type;
-		const char* m_text;
+		char* m_text;
 	};
 public:
+	TaskBar() = default;
+	~TaskBar();
+
 	void Init(GameTickDesc& desc);
 
 	void AddTask(Task task);

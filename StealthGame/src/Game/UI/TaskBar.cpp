@@ -1,5 +1,12 @@
 #include "TaskBar.h"
 
+TaskBar::~TaskBar()
+{
+	for (Task& task : m_tasks)
+		delete[] task.m_text;
+	m_tasks = {};
+}
+
 void TaskBar::Init(GameTickDesc& desc)
 {
 	// creates icon textures
@@ -25,12 +32,16 @@ void TaskBar::Init(GameTickDesc& desc)
 void TaskBar::AddTask(Task task)
 {
 	m_changed = true;
-	m_tasks.emplace_back(task);
+	char* originText = task.m_text;
+	task.m_text = new char[strlen(originText) + 1];
+	memcpy(task.m_text, originText, strlen(originText) + 1);
+	m_tasks.push_back(task);
 }
 
 void TaskBar::CompleteTask(int index)
 {
 	m_changed = true;
+	delete[] m_tasks[index].m_text;
 	m_tasks.erase(m_tasks.begin() + index);
 }
 

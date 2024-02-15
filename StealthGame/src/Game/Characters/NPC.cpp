@@ -333,7 +333,7 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 		amount = t0;
 	else
 		amount = (m_dir + t1 > 360.0f ? t1 : -t1);
-	float dirSpeed = desc.m_tickTimer->Second() * 500.0f;
+	float dirSpeed = desc.m_tickTimer->Second() * 200.0f;
 	if (amount > 0.0f)
 		m_dir += glm::min(dirSpeed, amount);
 	else

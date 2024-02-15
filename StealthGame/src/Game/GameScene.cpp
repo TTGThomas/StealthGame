@@ -1,5 +1,7 @@
 #include "GameScene.h"
 
+#include <string>
+
 void GameScene::Init(SceneInitDesc& desc)
 {
 	GlobalData::Get().m_gameScene = this;
@@ -36,6 +38,7 @@ void GameScene::Init(SceneInitDesc& desc)
 
 	for (uint64_t& targetID : m_targets)
 	{
+		
 		const char* prefix = "Eliminate ";
 		const int prefixLen = (int)strlen(prefix);
 
@@ -49,9 +52,9 @@ void GameScene::Init(SceneInitDesc& desc)
 			text[i] = (i < 10 ? prefix[i] : name[i - 10]);
 
 		m_taskbar.AddTask({ TaskBar::TaskType::ELIMINATE, text });
-		//delete[] text;
+		delete[] text;
 	}
-	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit"});
+	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit" });
 }
 
 void GameScene::DeleteTarget(uint64_t target)
