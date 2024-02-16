@@ -387,10 +387,16 @@ void NPC::TickDead(GameTickDesc& desc)
 		if (glm::distance(GetPos(), player->GetPos()) > 0.5f)
 		{
 			glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
+			if (pos.x == FP_NAN || pos.y == FP_NAN)
+				pos = { 0.0f, 1.0f };
 			pos *= 0.5f;
 			SetPos(player->GetPos() + pos);
 		}
-		float angle = AngleFromPoint(player->GetPos());
+		float angle;
+		if (glm::length(player->GetPos() - GetQuad(0)->GetPos()) != 0.0f)
+			angle = AngleFromPoint(player->GetPos());
+		else
+			angle = 90.0f;
 		scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(angle + 90.0f);
 		
 		{
@@ -526,6 +532,8 @@ void NPC::PointAtPoint(glm::vec2 point)
 float NPC::AngleFromPoint(glm::vec2 point)
 {
 	point = glm::normalize(point - GetPos());
+	if (point.x == FP_NAN || point.y == FP_NAN)
+		point = { 0.0f, 1.0f };
 	glm::vec2 front = glm::vec2(0.0f, 1.0f);
 
 	float degree = glm::degrees(glm::acos(glm::dot(point, front)));
