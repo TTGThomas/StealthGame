@@ -52,9 +52,15 @@ bool AABB::Collide(AABB& other)
 bool AABB::CollideLines(glm::vec2 a0, glm::vec2 a1, glm::vec2 b0, glm::vec2 b1)
 {
 	// from https://www.jeffreythompson.org/collision-detection/line-line.php
-	float inv = 1.0f / ((b1.y - b0.y) * (a1.x - a0.x) - (b1.x - b0.x) * (a1.y - a0.y));
-	float uA = ((b1.x - b0.x) * (a0.y - b0.y) - (b1.y - b0.y) * (a0.x - b0.x)) * inv;
-	float uB = ((a1.x - a0.x) * (a0.y - b0.y) - (a1.y - a0.y) * (a0.x - b0.x)) * inv;
+	float b1ymb0y = (b1.y - b0.y);
+	float a1xma0x = (a1.x - a0.x);
+	float b1xmb0x = (b1.x - b0.x);
+	float a1yma0y = (a1.y - a0.y);
+	float a0ymb0y = (a0.y - b0.y);
+	float a0xmb0x = (a0.x - b0.x);
+	float inv = 1.0f / (b1ymb0y * a1xma0x - b1xmb0x * a1yma0y);
+	float uA = (b1xmb0x * a0ymb0y - b1ymb0y * a0xmb0x) * inv;
+	float uB = (a1xma0x * a0ymb0y - a1yma0y * a0xmb0x) * inv;
 
 	return uA >= 0.0f && uA <= 1.0f && uB >= 0.0f && uB <= 1.0f;
 }
