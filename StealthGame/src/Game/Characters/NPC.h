@@ -60,6 +60,7 @@ public:
 	bool IsPlayerDetected();
 
 	void SetIsBeingDragged(bool isBeingDragged) { m_isBeingDragged = isBeingDragged; }
+	void SetIsDisposed(bool val) { m_isDisposed = val; }
 
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
@@ -68,6 +69,7 @@ public:
 	Identities GetType() { return m_type; }
 	const char* GetName() { return m_name; }
 	bool GetIsBeingDragged() { return m_isBeingDragged; }
+	bool GetIsDisposed() { return m_isDisposed; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -102,6 +104,7 @@ private:
 	bool m_isPlayerDetected = false;
 
 	bool m_isBeingDragged = false;
+	bool m_isDisposed = false;
 
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;

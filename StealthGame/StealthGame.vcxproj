@@ -218,6 +218,7 @@
     <ClInclude Include="src\input\Mouse.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\quadRenderer\Texture.h" />
+    <ClInclude Include="src\Utils\MemoryCounter.h" />
     <ClInclude Include="src\Utils\Timer.h" />
     <ClInclude Include="src\Game\UI\TaskBar.h" />
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h" />

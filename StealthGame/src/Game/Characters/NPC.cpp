@@ -356,7 +356,23 @@ void NPC::TickDead(GameTickDesc& desc)
 			pos *= 0.5f;
 			SetPos(player->GetPos() + pos);
 		}
-		scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(AngleFromPoint(player->GetPos()) + 90.0f);
+		float angle = AngleFromPoint(player->GetPos());
+		scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(angle + 90.0f);
+		
+		{
+			glm::vec2 pos;
+			pos = scene->GetQuads()[GetUUID(0).GetUUID()].GetPos();
+			pos.x += glm::sin(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
+			pos.y += glm::cos(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
+			scene->GetQuads()[GetUUID(1).GetUUID()].SetPos(pos);
+		}
+	}
+
+	if (m_isDisposed)
+	{
+		GetQuad(0)->SetRadius({});
+		GetQuad(1)->SetRadius({});
+		GetQuad(2)->SetRadius({});
 	}
 }
 

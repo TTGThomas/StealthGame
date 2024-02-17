@@ -86,7 +86,7 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     ImGui_ImplOpenGL3_Init("#version 330");
 
     ImFontConfig fontConfig;
-#if 1
+#if 0
     fontConfig.SizePixels = 40.0f;
 #endif
     ImGui::GetIO().Fonts->AddFontDefault(&fontConfig);

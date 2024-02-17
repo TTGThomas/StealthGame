@@ -12,6 +12,7 @@ void NPCInteract::OnInteract()
 	{
 		m_gameScene->GetPlayer().SetIsCrouching(true);
 		m_gameScene->GetPlayer().SetIsDragging(true);
+		m_gameScene->GetPlayer().SetDraggedNPCID(m_npc->GetNPCUUID().GetUUID());
 		m_npc->SetIsBeingDragged(true);
 	}
 }

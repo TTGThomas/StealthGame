@@ -9,6 +9,8 @@
 #include "../Items/Item.h"
 #include "../Items/Disguise.h"
 
+#include "../Interact/ContainerInteract.h"
+
 #include "../GameScene.h"
 
 #include "../GlobalData.h"

@@ -1,3 +1,5 @@
+#define ENABLEMEMORYCOUNTER
+#include "Utils/MemoryCounter.h"
 #include "App.h"
 
 int main()

@@ -107,6 +107,21 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	std::vector<AABB> hostileZones = {};
 	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, UUID()));
 
+	// special objects
+	int specialBlockIndex = 0;
+	{
+		Object object;
+		std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
+		std::vector<QuadInitDesc> objectDesc;
+		float index = (0.6f + (allMapDesc.size() * 0.000001f));
+		objectDesc.push_back({ {3.0f, 0.0f}, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ {3.0f, 0.0f}, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
+		object.Init(objectDesc);
+		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+		specialBlockIndex++;
+	}
+
+
 	// Init
 	SceneInitDesc initDesc;
 	initDesc.m_renderer = desc.m_renderer;
@@ -137,7 +152,6 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 #endif
 
 	scene->GetItems().AddItem(items);
-
 }
 
 void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bool isTarget, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
