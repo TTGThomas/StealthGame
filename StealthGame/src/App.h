@@ -14,6 +14,7 @@
 #include "Scene.h"
 
 #include "Utils/Timer.h"
+#include "Utils/MemoryCounter.h"
 
 #include "Game/Game.h"
 

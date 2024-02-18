@@ -172,6 +172,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\quadRenderer\Texture.cpp" />
     <ClCompile Include="src\Game\UI\TaskBar.cpp" />
+    <ClCompile Include="src\Utils\MemoryCounter.cpp" />
     <ClCompile Include="third\glad.c" />
     <ClCompile Include="third\ImGui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="third\ImGui\backends\imgui_impl_opengl3.cpp" />

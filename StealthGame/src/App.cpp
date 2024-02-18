@@ -58,6 +58,7 @@ void App::Tick()
 
 	m_renderer.ShowStatsWindow();
 	m_camera.ShowStatsWindow();
+	MemoryCounter::ShowStatsWindow();
 
 	UpdateGame();
 

@@ -1,30 +1,21 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
-#ifdef ENABLEMEMORYCOUNTER
+#include <imgui.h>
 
-static unsigned int allocated = 0, freed = 0;
-
-void PrintStats()
+class MemoryCounter
 {
-	printf("Alloc: %u | freed: %u | leaked: %u\n", allocated, freed, allocated - freed);
-}
+public:
+	static void ShowStatsWindow();
 
-void* operator new(size_t size)
-{
-	allocated += size;
-	printf("Alloc: %u\n", size);
-	PrintStats();
-	return malloc(size);
-}
+	static void AddLog(const char* text, ...);
 
-void operator delete(void* block, size_t size)
-{
-	freed += size;
-	printf("Freed: %u\n", size);
-	PrintStats();
-	free(block);
-}
-
-#endif
+	static void AddAllocate(size_t size) { m_allocate += size; }
+	static void AddFree(size_t size) { m_free += size; }
+private:
+	static std::vector<char> m_buffer;
+	static size_t m_allocate;
+	static size_t m_free;
+};
