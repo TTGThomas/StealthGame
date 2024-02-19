@@ -38,6 +38,10 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDir);
 
+	Texture container("res/SpecialObjects/Container.png");
+	GlobalData::Get().m_texContainer = container.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(container);
+
 
 	//Texture foreground("res/NPC/Dir.png");
 	//uint64_t foregroundID = foreground.GetUUID().GetUUID();
@@ -113,9 +117,23 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		Object object;
 		std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
 		std::vector<QuadInitDesc> objectDesc;
-		float index = (0.6f + (allMapDesc.size() * 0.000001f));
-		objectDesc.push_back({ {3.0f, 0.0f}, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
-		objectDesc.push_back({ {3.0f, 0.0f}, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
+		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+		glm::vec2 pos = {0.6f, 1.3f};
+		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texContainer });
+		object.Init(objectDesc);
+		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+		specialBlockIndex++;
+	}
+
+	{
+		Object object;
+		std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
+		std::vector<QuadInitDesc> objectDesc;
+		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+		glm::vec2 pos = { -0.6f, 1.3f };
+		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texContainer });
 		object.Init(objectDesc);
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;

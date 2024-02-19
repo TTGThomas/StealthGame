@@ -70,6 +70,8 @@ void Game::InteractTick(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
+	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
+
 	m_interact.reset();
 	InteractNPC();
 	InteractItems();
@@ -77,8 +79,10 @@ void Game::InteractTick(GameTickDesc& desc)
 
 	if (m_interact.get() != nullptr)
 	{
-		scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(true);
-		scene->GetQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetPos(m_interact->OnTick());
+		bool showCursor = true;
+		scene->GetQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetPos(m_interact->OnTick(&showCursor));
+		if (showCursor)
+			scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(true);
 
 		if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
 		{
@@ -92,8 +96,6 @@ void Game::InteractNPC()
 	Scene* scene = GlobalData::Get().m_scene;
 
 	// get possible interactive NPC
-	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
-	
 	if (m_gameScene.GetPlayer().GetIsDragging())
 		return;
 
@@ -102,7 +104,8 @@ void Game::InteractNPC()
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 	{
 		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
-		float dst = glm::length(diff);
+		float dst = glm::length(diff); // pythagoras
+		//float dst = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc.GetIsBeingDragged())
 		{
 			victim = &npc;
@@ -123,7 +126,10 @@ void Game::InteractItems()
 	Item* item = m_gameScene.GetItems().GetNearestItem(m_gameScene.GetPlayer().GetPos()).get();
 	if (item != nullptr)
 	{
-		if (glm::distance(item->GetQuad().GetPos(), m_gameScene.GetPlayer().GetPos()) < 0.5f)
+		glm::vec2 diff = item->GetQuad().GetPos() - m_gameScene.GetPlayer().GetPos();
+		float dist = glm::length(diff); // pythagoras
+		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
+		if (dist < 0.5f)
 		{
 			m_interact.reset();
 			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);

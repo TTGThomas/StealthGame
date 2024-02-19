@@ -366,12 +366,19 @@ void NPC::TickDead(GameTickDesc& desc)
 			pos.y += glm::cos(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
 			scene->GetQuads()[GetUUID(1).GetUUID()].SetPos(pos);
 		}
+
+		if (!m_isBeingDragged)
+		{
+			if (!m_isDisposed)
+				GetQuad(0)->SetPos(GetQuad(1)->GetPos());
+		}
 	}
 
 	if (m_isDisposed)
 	{
 		GetQuad(0)->SetRadius({});
-		GetQuad(1)->SetRadius({});
+		GetQuad(1)->SetRadius({ m_normalScale.x, m_normalScale.y });
+		GetQuad(1)->SetRotation(90);
 		GetQuad(2)->SetRadius({});
 	}
 }

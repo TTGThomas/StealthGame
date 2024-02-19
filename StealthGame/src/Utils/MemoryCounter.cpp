@@ -1,31 +1,45 @@
 #include "MemoryCounter.h"
 
-#define ENABLEMEMORYCOUNTER
+//#define ENABLEMEMORYCOUNTER
 
 std::vector<char> MemoryCounter::m_buffer;
 size_t MemoryCounter::m_allocate = 0;
 size_t MemoryCounter::m_free = 0;
+bool MemoryCounter::m_changed = true;
 
 #ifdef ENABLEMEMORYCOUNTER
 void* operator new(size_t size)
 {
 	MemoryCounter::AddAllocate(size);
+	MemoryCounter::SetChanged(true);
 	return malloc(size);
 }
 
 void operator delete(void* block, size_t size)
 {
 	MemoryCounter::AddFree(size);
+	MemoryCounter::SetChanged(true);
 	free(block);
 }
 #endif
+
+MemoryCounter::~MemoryCounter()
+{
+}
 
 void MemoryCounter::ShowStatsWindow()
 {
 #ifdef ENABLEMEMORYCOUNTER
 	ImGui::Begin("MemoryCounter");
 
-	AddLog("Allocated: %u | freed: %u | unfreed: %u", m_allocate, m_free, m_allocate - m_free);
+	if (m_changed)
+	{
+		m_changed = false;
+		AddLog("Allocated:%ukb|Freed:%ukb|Dangling:%ukb", 
+			m_allocate / 1000, 
+			m_free / 1000, 
+			(m_allocate - m_free) / 1000);
+	}
 
 	if (!m_buffer.empty())
 		ImGui::TextUnformatted(&m_buffer[0], &m_buffer[m_buffer.size() - 1]);
@@ -33,6 +47,18 @@ void MemoryCounter::ShowStatsWindow()
 	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		ImGui::SetScrollHereY(1.0f);
 	ImGui::End();
+#endif
+}
+
+void MemoryCounter::LogToFile(const char* filePath)
+{
+#ifdef ENABLEMEMORYCOUNTER
+	std::ofstream file;
+	file.open(filePath);
+	if (!file.is_open())
+		return;
+	file << m_buffer.data();
+	file.close();
 #endif
 }
 

@@ -256,8 +256,10 @@
     <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
     <Image Include="res\Player\player.png" />
+    <Image Include="res\SpecialObjects\Container.png" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Logs\Log.txt" />
     <Text Include="res\NPC\FormatInfo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -40,6 +40,7 @@ public:
 	uint64_t m_texNPC4;
 	uint64_t m_texNPCDead;
 	uint64_t m_texNPCDir;
+	uint64_t m_texContainer;
 
 	GlobalState m_globalState = GlobalState::NORMAL;
 

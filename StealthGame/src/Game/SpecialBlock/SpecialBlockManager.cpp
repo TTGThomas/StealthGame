@@ -15,7 +15,9 @@ std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm
 		Object& obj = m_objects[i];
 
 		glm::vec2 objPos = obj.GetQuad(0)->GetPos();
-		float dist = glm::distance(pos, objPos);
+		glm::vec2 diff = pos - objPos;
+		float dist = glm::length(diff); // pythagoras
+		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dist < retDist)
 		{
 			retDist = dist;

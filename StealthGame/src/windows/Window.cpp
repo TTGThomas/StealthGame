@@ -88,6 +88,8 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     ImFontConfig fontConfig;
 #if 0
     fontConfig.SizePixels = 40.0f;
+#else
+    fontConfig.SizePixels = 20.0f;
 #endif
     ImGui::GetIO().Fonts->AddFontDefault(&fontConfig);
 

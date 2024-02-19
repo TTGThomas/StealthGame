@@ -6,5 +6,6 @@ class Interaction
 {
 public:
 	virtual void OnInteract() {}
-	virtual glm::vec2 OnTick() { return {}; } // return where you want your cursor to be at
+	// bool* show : indicates if you want to show the cursor or not
+	virtual glm::vec2 OnTick(bool* show) { return {}; } // return where you want your cursor to be at
 };

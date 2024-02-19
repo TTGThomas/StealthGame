@@ -13,7 +13,7 @@ public:
 	virtual void OnInteract() override;
 
 	// returns where you want the cursor to be at
-	virtual glm::vec2 OnTick() override;
+	virtual glm::vec2 OnTick(bool* show) override;
 private:
 	Item* m_item = nullptr;
 	GameScene* m_scene = nullptr;

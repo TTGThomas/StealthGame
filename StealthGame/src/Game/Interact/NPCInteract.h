@@ -14,7 +14,7 @@ public:
 		: m_gameScene(gameScene), m_npc(npc) {}
 
 	virtual void OnInteract() override;
-	virtual glm::vec2 OnTick() override;
+	virtual glm::vec2 OnTick(bool* show) override;
 private:
 	GameScene* m_gameScene = nullptr;
 	NPC* m_npc = nullptr;

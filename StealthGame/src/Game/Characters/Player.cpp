@@ -16,6 +16,26 @@ void Player::PlayerTick(GameTickDesc& desc)
 
 	if (!m_isCrouching)
 		m_isDragging = false;
+
+	if (KeyBoard::IsKeyPressDown(GLFW_KEY_SPACE))
+	{
+		if (m_isHidden)
+			UnHidePlayer();
+	}
+}
+
+void Player::HidePlayer(glm::vec2 pos)
+{
+	m_isHidden = true;
+	m_posBeforeHidden = GetPos();
+	SetPos(pos);
+}
+
+void Player::UnHidePlayer()
+{
+	SetPos(m_posBeforeHidden);
+	m_isHidden = false;
+	m_isCrouching = false;
 }
 
 void Player::EliminateNPC(NPC& victim)

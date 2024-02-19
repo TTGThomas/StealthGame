@@ -2,6 +2,9 @@
 
 void NPCInteract::OnInteract()
 {
+	if (m_npc->GetIsDisposed())
+		return;
+
 	if (m_npc->GetHealth() > 0)
 	{
 		m_gameScene->GetPlayer().EliminateNPC(*m_npc);
@@ -17,7 +20,9 @@ void NPCInteract::OnInteract()
 	}
 }
 
-glm::vec2 NPCInteract::OnTick()
+glm::vec2 NPCInteract::OnTick(bool* show)
 {
+	if (m_npc->GetIsDisposed())
+		*show = false;
 	return m_npc->GetPos();
 }
