@@ -42,6 +42,9 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 	GlobalData::Get().m_texContainer = container.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(container);
 
+	Texture door("res/SpecialObjects/Door.png");
+	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(door);
 
 	//Texture foreground("res/NPC/Dir.png");
 	//uint64_t foregroundID = foreground.GetUUID().GetUUID();
@@ -74,7 +77,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ { 2.0f,  4.0f} });
 		npcRoute.push_back({ { 2.0f, -1.0f} });
 
-		LoadNPC(&allNpcDesc, "Robert Knox", true, {-2.0f, 0.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
+		LoadNPC(&allNpcDesc, "1", true, {-2.0f, 0.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 	
 	{
@@ -84,12 +87,12 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		npcRoute.push_back({ {-2.0f,  4.0f} });
 		npcRoute.push_back({ {-2.0f,  0.0f} });
 
-		LoadNPC(&allNpcDesc, "Sierra Knox", true, {-2.0f, -1.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
+		LoadNPC(&allNpcDesc, "2", true, {-2.0f, -1.0f}, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
 	{
 		std::vector<NPCRoutePoint> npcRoute;
-		LoadNPC(&allNpcDesc, "Chad Bingham", true, { 0.0f, 2.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
+		LoadNPC(&allNpcDesc, "3", true, { 0.0f, 2.0f }, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
 	}
 
 	// Map
@@ -105,7 +108,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	// trespassing zones
 	std::vector<AABB> trespassingZones = {};
-	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0f, 3.0f }, UUID()));
+	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0001f, 3.0f }, UUID()));
 
 	// hostile zones
 	std::vector<AABB> hostileZones = {};
@@ -113,6 +116,8 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 
 	// special objects
 	int specialBlockIndex = 0;
+
+	// containers
 	{
 		Object object;
 		std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
@@ -134,6 +139,21 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene)
 		glm::vec2 pos = { -0.6f, 1.3f };
 		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texLogo });
 		objectDesc.push_back({ pos, {0.2f, 0.2f}, index, gData.m_defaultShader, gData.m_texContainer });
+		object.Init(objectDesc);
+		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+		specialBlockIndex++;
+	}
+
+	// doors
+	{
+		Object object;
+		glm::vec2 pos = { 0.0f, 1.0f };
+		glm::vec2 radius = { 0.2999f, 0.05f };
+		std::shared_ptr<DoorInteract> event = std::make_shared<DoorInteract>(scene, specialBlockIndex, radius);
+		std::vector<QuadInitDesc> objectDesc;
+		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
 		object.Init(objectDesc);
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;

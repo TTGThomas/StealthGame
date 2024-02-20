@@ -39,7 +39,6 @@ void GameScene::Init(SceneInitDesc& desc)
 
 	for (uint64_t& targetID : m_targets)
 	{
-		
 		const char* prefix = "Eliminate ";
 		const int prefixLen = (int)strlen(prefix);
 
@@ -52,10 +51,10 @@ void GameScene::Init(SceneInitDesc& desc)
 		for (int i = 0; i < nameLen + prefixLen; i++)
 			text[i] = (i < 10 ? prefix[i] : name[i - 10]);
 
-		m_taskbar.AddTask({ TaskBar::TaskType::ELIMINATE, text });
+		m_taskbar.AddTask({ TaskBar::TaskType::ELIMINATE, text, UUID(targetID) });
 		delete[] text;
 	}
-	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit" });
+	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit", 0 });
 }
 
 void GameScene::DeleteTarget(uint64_t target)
@@ -68,6 +67,6 @@ void GameScene::DeleteTarget(uint64_t target)
 	if (index != -1)
 	{
 		m_targets.erase(m_targets.begin() + index);
-		m_taskbar.CompleteTask(0);
+		m_taskbar.CompleteTask(target);
 	}
 }

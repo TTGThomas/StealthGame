@@ -28,6 +28,7 @@ public:
 public:
 	Scene* m_scene = nullptr;
 	class GameScene* m_gameScene = nullptr;
+	class CollisionDetector* m_collision = nullptr;
 
 	uint64_t m_defaultShader;
 	uint64_t m_texLogo;
@@ -41,6 +42,7 @@ public:
 	uint64_t m_texNPCDead;
 	uint64_t m_texNPCDir;
 	uint64_t m_texContainer;
+	uint64_t m_texDoor;
 
 	GlobalState m_globalState = GlobalState::NORMAL;
 

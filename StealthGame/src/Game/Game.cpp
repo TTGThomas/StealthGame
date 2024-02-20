@@ -11,6 +11,7 @@ Game::~Game()
 void Game::Init(GameTickDesc& desc)
 {
 	GlobalData::Get().m_scene = desc.m_scene;
+	GlobalData::Get().m_collision = desc.m_collision;
 
 	desc.m_camera->SetZoom(0.5f);
 
@@ -139,7 +140,7 @@ void Game::InteractItems()
 
 void Game::InteractSpecialBlocks()
 {
-	std::shared_ptr<Interaction> interact = m_gameScene.GetSpecialBlockManager().GetClosestEventWithinRange(m_gameScene.GetPlayer().GetPos(), 0.5f);
+	std::shared_ptr<Interaction> interact = m_gameScene.GetSpecialBlockManager().GetClosestEventWithinRange(m_gameScene.GetPlayer().GetPos(), 0.6f);
 	if (interact != nullptr)
 	{
 		m_interact.reset();

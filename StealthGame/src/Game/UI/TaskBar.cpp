@@ -2,9 +2,10 @@
 
 TaskBar::~TaskBar()
 {
-	for (Task& task : m_tasks)
+	for (auto& [id, task] : m_tasks)
 		delete[] task.m_text;
-	m_tasks = {};
+	m_tasks.clear();
+	m_taskOrder = {};
 }
 
 void TaskBar::Init(GameTickDesc& desc)
@@ -35,14 +36,14 @@ void TaskBar::AddTask(Task task)
 	char* originText = task.m_text;
 	task.m_text = new char[strlen(originText) + 1];
 	memcpy(task.m_text, originText, strlen(originText) + 1);
-	m_tasks.push_back(task);
+	m_tasks[task.m_uuid.GetUUID()] = task;
 }
 
-void TaskBar::CompleteTask(int index)
+void TaskBar::CompleteTask(uint64_t taskID)
 {
 	m_changed = true;
-	delete[] m_tasks[index].m_text;
-	m_tasks.erase(m_tasks.begin() + index);
+	delete[] m_tasks[taskID].m_text;
+	m_tasks.erase(taskID);
 }
 
 void TaskBar::SetStartPos(glm::vec2 sPos)
@@ -59,9 +60,9 @@ void TaskBar::UpdateTaskbar(GameTickDesc& desc)
 		ClearQuads(desc);
 		int taskIndex = 0;
 		glm::vec3 color = { 1.0f, 1.0f, 1.0f };
-		for (int i = 0; i < m_tasks.size(); i++)
+		for (uint64_t taskOrder : m_taskOrder)
 		{
-			Task& task = m_tasks[i];
+			Task& task = m_tasks[taskOrder];
 
 			glm::vec2 pos = m_startPos;
 			pos.y -= (float)taskIndex * m_fontSize * 2.0f;

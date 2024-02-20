@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Interact\DoorInteract.cpp" />
     <ClCompile Include="src\Game\Interact\ContainerInteract.cpp" />
     <ClCompile Include="src\Game\SpecialBlock\SpecialBlockManager.cpp" />
     <ClCompile Include="src\Game\UI\PopUps\PopUp.cpp" />
@@ -188,6 +189,7 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Interact\DoorInteract.h" />
     <ClInclude Include="src\Game\Interact\ContainerInteract.h" />
     <ClInclude Include="src\Game\SpecialBlock\SpecialBlockManager.h" />
     <ClInclude Include="src\Game\UI\PopUps\PopUp.h" />
@@ -257,6 +259,7 @@
     <Image Include="res\Player\Cursor.png" />
     <Image Include="res\Player\player.png" />
     <Image Include="res\SpecialObjects\Container.png" />
+    <Image Include="res\SpecialObjects\Door.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Logs\Log.txt" />

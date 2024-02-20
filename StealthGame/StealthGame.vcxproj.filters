@@ -144,6 +144,9 @@
     <ClCompile Include="src\Utils\MemoryCounter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Interact\DoorInteract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -293,6 +296,9 @@
     <ClInclude Include="src\Utils\MemoryCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Interact\DoorInteract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -337,6 +343,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SpecialObjects\Container.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SpecialObjects\Door.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

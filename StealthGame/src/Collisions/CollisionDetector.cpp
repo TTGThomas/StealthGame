@@ -58,7 +58,7 @@ CollisionPayload CollisionDetector::Collide(UUID& uuid)
 		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
 		if (aabb.Collide(m_parent->GetAABBs()[uuid.GetUUID()]))
-			return { true, UUID(uuid) };
+			return { true, UUID(id) };
 	}
 	return { false, UUID(0) };
 }

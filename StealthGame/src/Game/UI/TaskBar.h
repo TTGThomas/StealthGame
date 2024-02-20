@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -23,14 +24,17 @@ public:
 
 	struct Task
 	{
-		Task(TaskType type, char* text)
-			: m_type(type), m_text(text) {}
+		Task() = default;
 
-		Task(TaskType type, const char* text)
-			: m_type(type), m_text(const_cast<char*>(text)) {}
+		Task(TaskType type, char* text, UUID taskUUID)
+			: m_type(type), m_text(text), m_uuid(taskUUID) {}
 
-		TaskType m_type;
-		char* m_text;
+		Task(TaskType type, const char* text, UUID taskUUID)
+			: m_type(type), m_text(const_cast<char*>(text)), m_uuid(taskUUID) {}
+
+		TaskType m_type = TaskType::ELIMINATE;
+		char* m_text = nullptr;
+		UUID m_uuid = 1;
 	};
 public:
 	TaskBar() = default;
@@ -40,7 +44,7 @@ public:
 
 	void AddTask(Task task);
 
-	void CompleteTask(int index);
+	void CompleteTask(uint64_t taskID);
 
 	void SetStartPos(glm::vec2 sPos);
 
@@ -63,7 +67,8 @@ private:
 
 	std::vector<UUID> m_uuids;
 	std::vector<uint64_t> m_iconTextures;
-	std::vector<Task> m_tasks;
+	std::unordered_map<uint64_t, Task> m_tasks;
+	std::vector<uint64_t> m_taskOrder;
 
 	float m_fontSize = 0.05f;
 	glm::vec2 m_startPos = { -1.0f, 1.0f };
