@@ -13,11 +13,10 @@ void NPC::Init(std::vector<QuadInitDesc> desc, const char* name)
 
 void NPC::NPCTick(GameTickDesc& desc)
 {
-	DetectEverything();
-	SetPos(GetPos());
-
 	if (m_health > 0)
 	{
+		SetPos(GetPos());
+		DetectEverything();
 		TickNonStatic(desc);
 		if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
 			TickGuest(desc);
@@ -39,14 +38,16 @@ void NPC::SetPos(glm::vec2 newPos)
 {
 	GetQuad(0)->SetPos(newPos);
 	GetQuad(1)->SetPos(newPos);
-	SetDirPos(newPos);
+	if (m_health > 0)
+		SetDirPos(newPos);
 }
 
 void NPC::ChangePos(glm::vec2 pos)
 {
 	GetQuad(0)->ChangePos(pos);
 	GetQuad(1)->ChangePos(pos);
-	SetDirPos(GetQuad(0)->GetPos());
+	if (m_health > 0)
+		SetDirPos(GetQuad(0)->GetPos());
 }
 
 void NPC::EliminateMyself()
@@ -57,11 +58,7 @@ void NPC::EliminateMyself()
 void NPC::SetDirPos(glm::vec2 pos)
 {
 	Scene* scene = GlobalData::Get().m_scene;
-	if (m_health == 0)
-	{
-		scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
-		return;
-	}
+
 	glm::vec2 p = pos;
 	p.x += glm::sin(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().y;
 	p.y += glm::cos(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().y;
@@ -344,8 +341,10 @@ void NPC::TickDead(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texNPCDead);
-	
-	if (m_isBeingDragged)
+
+	scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
+
+	if (m_isBeingDragged && !m_isDisposed)
 	{
 		// do stuffs related to being dragged
 		Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
@@ -369,8 +368,7 @@ void NPC::TickDead(GameTickDesc& desc)
 
 		if (!m_isBeingDragged)
 		{
-			if (!m_isDisposed)
-				GetQuad(0)->SetPos(GetQuad(1)->GetPos());
+			GetQuad(0)->SetPos(GetQuad(1)->GetPos());
 		}
 	}
 
@@ -379,7 +377,6 @@ void NPC::TickDead(GameTickDesc& desc)
 		GetQuad(0)->SetRadius({});
 		GetQuad(1)->SetRadius({ m_normalScale.x, m_normalScale.y });
 		GetQuad(1)->SetRotation(90);
-		GetQuad(2)->SetRadius({});
 	}
 }
 

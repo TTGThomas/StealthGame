@@ -74,9 +74,14 @@ void Game::InteractTick(GameTickDesc& desc)
 	scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(false);
 
 	m_interact.reset();
+
+	GlobalData::Get().m_scene->GetAABBs()[m_gameScene.GetPlayer().GetUUID(0).GetUUID()].SetEnabled(false);
+
 	InteractNPC();
 	InteractItems();
 	InteractSpecialBlocks();
+
+	GlobalData::Get().m_scene->GetAABBs()[m_gameScene.GetPlayer().GetUUID(0).GetUUID()].SetEnabled(true);
 
 	if (m_interact.get() != nullptr)
 	{
@@ -109,8 +114,11 @@ void Game::InteractNPC()
 		//float dst = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc.GetIsBeingDragged())
 		{
-			victim = &npc;
-			victimDst = glm::length(diff);
+			if (!GlobalData::Get().m_collision->Collide(m_gameScene.GetPlayer().GetPos(), npc.GetPos()).m_hasHit)
+			{
+				victim = &npc;
+				victimDst = glm::length(diff);
+			}
 		}
 	}
 
@@ -132,8 +140,11 @@ void Game::InteractItems()
 		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dist < 0.5f)
 		{
-			m_interact.reset();
-			m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
+			if (!GlobalData::Get().m_collision->Collide(m_gameScene.GetPlayer().GetPos(), item->GetQuad().GetPos()).m_hasHit)
+			{
+				m_interact.reset();
+				m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
+			}
 		}
 	}
 }

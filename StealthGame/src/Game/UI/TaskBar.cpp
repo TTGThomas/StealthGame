@@ -37,12 +37,20 @@ void TaskBar::AddTask(Task task)
 	task.m_text = new char[strlen(originText) + 1];
 	memcpy(task.m_text, originText, strlen(originText) + 1);
 	m_tasks[task.m_uuid.GetUUID()] = task;
+	m_taskOrder.emplace_back(task.m_uuid.GetUUID());
 }
 
 void TaskBar::CompleteTask(uint64_t taskID)
 {
 	m_changed = true;
 	delete[] m_tasks[taskID].m_text;
+	int index = 0;
+	for (uint64_t& id : m_taskOrder)
+	{
+		if (id == taskID)
+			m_taskOrder.erase(m_taskOrder.begin() + index);
+		index++;
+	}
 	m_tasks.erase(taskID);
 }
 

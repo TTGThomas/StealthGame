@@ -16,8 +16,9 @@ void ContainerInteract::OnInteract()
 		NPC* npc = &m_scene->GetNPCs()[player->GetDraggedNPCID().GetUUID()];
 
 		glm::vec2 pos = obj.GetQuad(0)->GetPos();
-		pos.x -= npc->GetQuad(1)->GetRadius().x / 2.0f;
-		pos.x += (2 - m_spaceLeft) * npc->GetQuad(1)->GetRadius().x;
+		float spacing = npc->GetQuad(1)->GetRadius().x * 0.25f;
+		pos.x -= spacing;
+		pos.x += (2 - m_spaceLeft) * spacing * 2.0f;
 		npc->SetPos(pos);
 		npc->SetIsDisposed(true);
 
