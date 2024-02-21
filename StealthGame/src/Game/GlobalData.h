@@ -2,13 +2,11 @@
 
 #include "../Scene.h"
 
-enum class GlobalState
-{
-	NORMAL, SEARCHING, ALERT
-};
-
 enum class DisguiseState
 {
+	// NORMAL = normal
+	// COMPROMISED = takes time to recognize
+	// ALERT = immediantley recognize
 	NORMAL, COMPROMISED, ALERT
 };
 
@@ -43,10 +41,6 @@ public:
 	uint64_t m_texNPCDir;
 	uint64_t m_texContainer;
 	uint64_t m_texDoor;
-
-	GlobalState m_globalState = GlobalState::NORMAL;
-
-	DisguiseState m_disguiseStates[5];
 
 	int m_bodiesFound = 0;
 };

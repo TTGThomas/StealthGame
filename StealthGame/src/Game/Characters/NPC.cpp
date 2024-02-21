@@ -17,11 +17,11 @@ void NPC::NPCTick(GameTickDesc& desc)
 	{
 		SetPos(GetPos());
 		DetectEverything();
-		TickNonStatic(desc);
 		if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
 			TickGuest(desc);
 		else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
 			TickGuard(desc);
+		TickNonStatic(desc);
 	}
 	else
 	{
@@ -203,11 +203,11 @@ void NPC::TickGuest(GameTickDesc& desc)
 	{
 		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
-			m_state = State::WITNESS;
+			m_isWitness = true;
 		}
 	}
 
-	if (m_state == State::WITNESS)
+	if (m_isWitness)
 	{
 		//MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos(), false);
 		//PointAtPoint(m_player->GetPos());
@@ -224,19 +224,39 @@ void NPC::TickGuard(GameTickDesc& desc)
 	{
 		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
-			m_state = State::WITNESS;
-			gData.m_globalState = GlobalState::ALERT;
-			gData.m_disguiseStates[(int)Identities::STANDARD] = DisguiseState::ALERT;
+			m_state = State::PANIC;
+			m_disguiseStates[(int)Identities::STANDARD] = DisguiseState::ALERT;
 		}
 	}
 
-	if (gData.m_globalState == GlobalState::ALERT)
+	if (m_state == State::PANIC)
 	{
-		m_state = State::WITNESS;
 		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
 		pos *= 1.5f;
 		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos);
 		PointAtPoint(player->GetPos());
+	}
+	else if (m_state == State::SEARCHING)
+	{
+		m_searchingMeter -= desc.m_tickTimer->Second();
+		if (glm::distance(player->GetPos(), m_searchPos) < 1.0f && IsPlayerDetected())
+			m_state = State::PANIC;
+
+		PointAtPoint(m_miniSearchPos);
+		if (MoveToTarget(desc.m_tickTimer->Second(), m_miniSearchPos))
+		{
+			glm::vec2 add = {};
+			add.x = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+			add.y = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+			add *= 0.7f;
+			m_miniSearchPos = m_searchPos + add;
+		}
+
+		if (m_searchingMeter < 0.0f)
+		{
+			m_state = State::NORMAL;
+			m_searchingMeter = 0.0f;
+		}
 	}
 
 	// goes through every item the npc sees
@@ -251,12 +271,23 @@ void NPC::TickGuard(GameTickDesc& desc)
 		NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
 		if (npc->GetHealth() < 1)
 		{
-			gData.m_globalState = GlobalState::ALERT;
 			if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
 			{
 				m_detectedDeadNPCs.insert(uuid);
 				gData.m_bodiesFound++;
+
+				m_state = State::SEARCHING;
+				m_searchingMeter = 20.0f;
+				m_searchPos = npc->GetPos();
+				m_miniSearchPos = m_searchPos;
 			}
+		}
+		else
+		{
+			if (npc->GetState() == State::PANIC)
+				m_state = State::PANIC;
+			else if (npc->GetState() == State::SEARCHING && m_state != State::PANIC)
+				m_state = State::SEARCHING;
 		}
 	}
 }
@@ -266,17 +297,14 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 	Player* player = &gData.m_gameScene->GetPlayer();
 
-	if (m_state != State::WITNESS)
+	if (m_state != State::PANIC && m_state != State::SEARCHING)
 	{
-		if (IsPlayerDetected())
-			m_state = State::NORMAL;
-
 		float dst = glm::distance(GetPos(), player->GetPos());
 		if (dst < 0.2f)
 		{
 			m_suspiciousMeter = 1.0f;
+			m_state = State::SUSPICIOUS;
 		}
-
 		else if (dst < 0.5f)
 		{
 			if (glm::length(player->GetVelocity()) != 0.0f)
@@ -284,19 +312,19 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 				if (!player->GetIsCrouching())
 				{
 					m_suspiciousMeter = 1.0f;
+					m_state = State::SUSPICIOUS;
 				}
 			}
 		}
 
-		if (m_suspiciousMeter > 0.0f)
+		if (m_state == State::SUSPICIOUS)
 		{
-			m_state = State::SUSPICIOUS;
 			m_suspiciousMeter -= desc.m_tickTimer->Second();
-		}
-		else
-		{
-			m_suspiciousMeter = 0.0f;
-			m_state = State::NORMAL;
+			if (m_suspiciousMeter < 0.0f)
+			{
+				m_suspiciousMeter = 0.0f;
+				m_state = State::NORMAL;
+			}
 		}
 
 		if (m_state == State::SUSPICIOUS)

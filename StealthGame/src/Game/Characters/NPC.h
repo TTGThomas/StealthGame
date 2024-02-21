@@ -34,7 +34,7 @@ class NPC : public Entity
 public:
 	enum class State
 	{
-		NORMAL, SUSPICIOUS, PANIC, WITNESS
+		NORMAL, SUSPICIOUS, SEARCHING, PANIC
 	};
 public:
 	NPC() = default;
@@ -106,12 +106,18 @@ private:
 	bool m_isBeingDragged = false;
 	bool m_isDisposed = false;
 
+	bool m_isWitness = false;
+
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;
 
 	Identities m_type = Identities::GUEST;
 	State m_state = State::NORMAL;
-	float m_suspiciousMeter = 0;
+	glm::vec2 m_searchPos = {};
+	glm::vec2 m_miniSearchPos = {};
+	DisguiseState m_disguiseStates[5];
+	float m_suspiciousMeter = 0.0f;
+	float m_searchingMeter = 0.0f;
 	int m_health = 100;
 
 	std::vector<NPCRoutePoint> m_route;
