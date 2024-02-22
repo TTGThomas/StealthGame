@@ -238,25 +238,12 @@ void NPC::TickGuard(GameTickDesc& desc)
 	}
 	else if (m_state == State::SEARCHING)
 	{
-		m_searchingMeter -= desc.m_tickTimer->Second();
-		if (glm::distance(player->GetPos(), m_searchPos) < 1.0f && IsPlayerDetected())
-			m_state = State::PANIC;
-
-		PointAtPoint(m_miniSearchPos);
-		if (MoveToTarget(desc.m_tickTimer->Second(), m_miniSearchPos))
-		{
-			glm::vec2 add = {};
-			add.x = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-			add.y = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-			add *= 0.7f;
-			m_miniSearchPos = m_searchPos + add;
-		}
-
-		if (m_searchingMeter < 0.0f)
-		{
-			m_state = State::NORMAL;
-			m_searchingMeter = 0.0f;
-		}
+		if (m_searchType == SearchType::DEADBODY)
+			TickGuardSearchBody(desc);
+		else if (m_searchType == SearchType::GUNSHOT)
+			TickGuardSearchGunShot(desc);
+		else if (m_searchType == SearchType::ILLEGALWEAPON)
+			TickGuardSearchILLEGALWEAPON(desc);
 	}
 
 	// goes through every item the npc sees
@@ -276,10 +263,7 @@ void NPC::TickGuard(GameTickDesc& desc)
 				m_detectedDeadNPCs.insert(uuid);
 				gData.m_bodiesFound++;
 
-				m_state = State::SEARCHING;
-				m_searchingMeter = 20.0f;
-				m_searchPos = npc->GetPos();
-				m_miniSearchPos = m_searchPos;
+				Search(npc->GetPos(), 20.0f, SearchType::DEADBODY);
 			}
 		}
 		else
@@ -406,6 +390,65 @@ void NPC::TickDead(GameTickDesc& desc)
 		GetQuad(1)->SetRadius({ m_normalScale.x, m_normalScale.y });
 		GetQuad(1)->SetRotation(90);
 	}
+}
+
+void NPC::TickGuardSearchBody(GameTickDesc& desc)
+{
+	// TODO: Make guards drag the body to somewhere safe after pathfinding is done
+
+	Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+
+	m_searchingMeter -= desc.m_tickTimer->Second();
+	if (IsPlayerDetected())
+	{
+		static bool first = true;
+		if (first)
+		{
+			first = false;
+			if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
+				m_state = State::PANIC;
+		}
+	}
+
+	m_speed = m_runningSpeed;
+
+	static float m_miniSearchingMeter = 4.0f;
+
+	if (MoveToTarget(desc.m_tickTimer->Second(), m_miniSearchPos))
+	{
+		if (m_miniSearchingMeter > 0.0f)
+		{
+			m_miniSearchingMeter -= desc.m_tickTimer->Second();
+		}
+		else
+		{
+			glm::vec2 add = {};
+			float deg = (float)rand() / (float)RAND_MAX * glm::radians(360.0f);
+			add.x = 0.5f * glm::sin(deg);
+			add.y = 0.5f * glm::cos(deg);
+			m_miniSearchPos = m_searchPos + add;
+			m_miniSearchingMeter = 2.0f;
+		}
+	}
+	else
+	{
+		PointAtPoint(m_miniSearchPos);
+	}
+
+	if (m_searchingMeter < 0.0f)
+	{
+		m_state = State::NORMAL;
+		m_searchingMeter = 0.0f;
+		m_speed = m_normalSpeed;
+	}
+}
+
+void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
+{
+}
+
+void NPC::TickGuardSearchILLEGALWEAPON(GameTickDesc& desc)
+{
 }
 
 bool NPC::IsThetaInView(float cosTheta)

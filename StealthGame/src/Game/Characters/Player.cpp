@@ -22,6 +22,9 @@ void Player::PlayerTick(GameTickDesc& desc)
 		if (m_isHidden)
 			UnHidePlayer();
 	}
+
+	if (m_isDragging)
+		m_actionType = ActionType::ILLEGAL;
 }
 
 void Player::HidePlayer(glm::vec2 pos)

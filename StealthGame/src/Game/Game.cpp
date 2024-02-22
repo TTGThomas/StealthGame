@@ -77,6 +77,8 @@ void Game::InteractTick(GameTickDesc& desc)
 
 	GlobalData::Get().m_scene->GetAABBs()[m_gameScene.GetPlayer().GetUUID(0).GetUUID()].SetEnabled(false);
 
+	m_interactDist = FLT_MAX;
+
 	InteractNPC();
 	InteractItems();
 	InteractSpecialBlocks();
@@ -122,10 +124,11 @@ void Game::InteractNPC()
 		}
 	}
 
-	if (victimDst != -1.0f)
+	if (victimDst != -1.0f && victimDst < m_interactDist)
 	{
 		m_interact.reset();
 		m_interact = std::make_shared<NPCInteract>(&m_gameScene, victim);
+		m_interactDist = victimDst;
 	}
 }
 
@@ -142,8 +145,12 @@ void Game::InteractItems()
 		{
 			if (!GlobalData::Get().m_collision->Collide(m_gameScene.GetPlayer().GetPos(), item->GetQuad().GetPos()).m_hasHit)
 			{
-				m_interact.reset();
-				m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
+				if (dist < m_interactDist)
+				{
+					m_interact.reset();
+					m_interact = std::make_shared<ItemInteract>(&m_gameScene, item);
+					m_interactDist = dist;
+				}
 			}
 		}
 	}
@@ -151,11 +158,16 @@ void Game::InteractItems()
 
 void Game::InteractSpecialBlocks()
 {
-	std::shared_ptr<Interaction> interact = m_gameScene.GetSpecialBlockManager().GetClosestEventWithinRange(m_gameScene.GetPlayer().GetPos(), 0.6f);
+	float dist = 0.0f;
+	std::shared_ptr<Interaction> interact = m_gameScene.GetSpecialBlockManager().GetClosestEventWithinRange(m_gameScene.GetPlayer().GetPos(), 0.6f, &dist);
 	if (interact != nullptr)
 	{
-		m_interact.reset();
-		m_interact = interact;
+		if (dist < m_interactDist)
+		{
+			m_interact.reset();
+			m_interact = interact;
+			m_interactDist = dist;
+		}
 	}
 }
 

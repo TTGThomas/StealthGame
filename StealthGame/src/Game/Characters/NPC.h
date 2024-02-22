@@ -36,6 +36,11 @@ public:
 	{
 		NORMAL, SUSPICIOUS, SEARCHING, PANIC
 	};
+
+	enum class SearchType
+	{
+		DEADBODY, ILLEGALWEAPON, GUNSHOT
+	};
 public:
 	NPC() = default;
 
@@ -62,6 +67,10 @@ public:
 	void SetIsBeingDragged(bool isBeingDragged) { m_isBeingDragged = isBeingDragged; }
 	void SetIsDisposed(bool val) { m_isDisposed = val; }
 
+	void SetSpeed(float speed) { m_speed = speed; }
+
+	void SetSearchType(SearchType type) { m_searchType = type; }
+
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
 	UUID& GetNPCUUID() { return m_uuid; }
@@ -70,6 +79,8 @@ public:
 	const char* GetName() { return m_name; }
 	bool GetIsBeingDragged() { return m_isBeingDragged; }
 	bool GetIsDisposed() { return m_isDisposed; }
+	float GetSpeed() { return m_speed; }
+	SearchType GetSearchType() { return m_searchType; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -88,7 +99,20 @@ private:
 	void TickNonStatic(GameTickDesc& desc);
 	void TickDead(GameTickDesc& desc);
 private:
+	void TickGuardSearchBody(GameTickDesc& desc);
+	void TickGuardSearchGunShot(GameTickDesc& desc);
+	void TickGuardSearchILLEGALWEAPON(GameTickDesc& desc);
+private:
 	inline bool IsThetaInView(float cosTheta);
+private:
+	void Search(glm::vec2 where, float time, SearchType type)
+	{
+		m_state = State::SEARCHING;
+		m_searchingMeter = time;
+		m_searchPos = where;
+		m_miniSearchPos = m_searchPos;
+		m_searchType = type;
+	}
 private:
 	// returns if it is at point or not
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
@@ -113,6 +137,7 @@ private:
 
 	Identities m_type = Identities::GUEST;
 	State m_state = State::NORMAL;
+	SearchType m_searchType = SearchType::DEADBODY;
 	glm::vec2 m_searchPos = {};
 	glm::vec2 m_miniSearchPos = {};
 	DisguiseState m_disguiseStates[5];
@@ -130,7 +155,10 @@ private:
 
 	static std::unordered_set<uint64_t> m_detectedDeadNPCs;
 
-	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
+	float m_speed = 0.8f;
 
-	constexpr static float m_speed = 0.8f;
+	constexpr static float m_normalSpeed = 0.8f;
+	constexpr static float m_runningSpeed = 1.2f;
+
+	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
 };

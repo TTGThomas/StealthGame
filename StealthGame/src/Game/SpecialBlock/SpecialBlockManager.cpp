@@ -6,7 +6,7 @@ void SpecialBlockManager::AddSpecialBlock(Object& object, std::shared_ptr<Intera
 	m_interacts.emplace_back(event);
 }
 
-std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm::vec2 pos, float range)
+std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm::vec2 pos, float range, float* dist)
 {
 	int retIndex = -1;
 	float retDist = range;
@@ -33,5 +33,6 @@ std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm
 	if (retIndex == -1)
 		return nullptr;
 
+	*dist = retDist;
 	return m_interacts[retIndex];
 }
