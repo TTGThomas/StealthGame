@@ -34,10 +34,11 @@ public:
 
 	void DeleteTexture(uint64_t key);
 
+	void ClearResources();
+
 	void Render(float ratio, int selectedIndex = -1);
 
 	void ShowStatsWindow();
-
 
 	std::unordered_map<uint64_t, Shader>&  GetShaders() { return m_shaders; }
 	std::unordered_map<uint64_t, Texture>& GetTextures() { return m_textures; }

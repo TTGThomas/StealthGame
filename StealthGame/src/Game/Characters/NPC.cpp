@@ -235,6 +235,10 @@ void NPC::TickGuard(GameTickDesc& desc)
 		pos *= 1.5f;
 		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos);
 		PointAtPoint(player->GetPos());
+		if (IsPlayerDetected())
+		{
+			// shoot
+		}
 	}
 	else if (m_state == State::SEARCHING)
 	{
@@ -246,32 +250,35 @@ void NPC::TickGuard(GameTickDesc& desc)
 			TickGuardSearchILLEGALWEAPON(desc);
 	}
 
-	// goes through every item the npc sees
-	for (uint64_t& uuid : m_detectedItems)
+	if (m_state != State::PANIC && m_state != State::SEARCHING)
 	{
-		Item* item = gData.m_gameScene->GetItems().GetItem(uuid).get();
-	}
-
-	// goes through every npc the npc sees
-	for (uint64_t& uuid : m_detectedNPCs)
-	{
-		NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
-		if (npc->GetHealth() < 1)
+		// goes through every item the npc sees
+		for (uint64_t& uuid : m_detectedItems)
 		{
-			if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
-			{
-				m_detectedDeadNPCs.insert(uuid);
-				gData.m_bodiesFound++;
-
-				Search(npc->GetPos(), 20.0f, SearchType::DEADBODY);
-			}
+			Item* item = gData.m_gameScene->GetItems().GetItem(uuid).get();
 		}
-		else
+
+		// goes through every npc the npc sees
+		for (uint64_t& uuid : m_detectedNPCs)
 		{
-			if (npc->GetState() == State::PANIC)
-				m_state = State::PANIC;
-			else if (npc->GetState() == State::SEARCHING && m_state != State::PANIC)
-				m_state = State::SEARCHING;
+			NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
+			if (npc->GetHealth() < 1)
+			{
+				if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
+				{
+					m_detectedDeadNPCs.insert(uuid);
+					gData.m_bodiesFound++;
+
+					Search(npc->GetPos(), 20.0f, SearchType::DEADBODY);
+				}
+			}
+			else
+			{
+				if (npc->GetState() == State::PANIC)
+					m_state = State::PANIC;
+				else if (npc->GetState() == State::SEARCHING && m_state != State::PANIC)
+					m_state = State::SEARCHING;
+			}
 		}
 	}
 }
@@ -411,7 +418,7 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 	}
 
 	m_speed = m_runningSpeed;
-
+	
 	static float m_miniSearchingMeter = 4.0f;
 
 	if (MoveToTarget(desc.m_tickTimer->Second(), m_miniSearchPos))

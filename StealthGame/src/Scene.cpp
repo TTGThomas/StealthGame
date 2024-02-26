@@ -70,6 +70,15 @@ void Scene::DeleteQuad(uint64_t uuid)
 	}
 }
 
+void Scene::ClearResources()
+{
+	m_quads.clear();
+	m_renderQuads.clear();
+	m_aabb.clear();
+	m_depthOrder.clear();
+	m_letterTextures = {};
+}
+
 uint64_t Scene::GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char text)
 {
 	if (m_letterAtlas == nullptr)

@@ -70,6 +70,7 @@ void RenderQuad::Draw(RenderDesc& desc)
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
 	glUniformMatrix4fv(LOCATION(*desc.m_shader, "u_matrix"), 1, GL_FALSE, glm::value_ptr(matrix));
 
+	glUniform1f(LOCATION(*desc.m_shader, "u_alpha"), m_alpha);
 	glUniform1f(LOCATION(*desc.m_shader, "u_depth"), m_depth);
 
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);

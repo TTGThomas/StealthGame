@@ -19,6 +19,8 @@
 class PopUpManager
 {
 public:
+	void ClearResources();
+
 	void AddPopUp(GameTickDesc& desc, PopUp& popUp);
 	void DeletePopUp(GameTickDesc& desc, uint64_t id);
 

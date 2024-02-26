@@ -51,6 +51,7 @@ public:
 	void AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc);
 
 	void DeleteQuad(uint64_t uuid);
+	void ClearResources();
 
 	uint64_t GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char text);
 

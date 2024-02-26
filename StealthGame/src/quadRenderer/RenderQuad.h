@@ -62,6 +62,7 @@ public:
 	void SetDepth(float depth) { m_depth = depth; }
 	void SetVisibility(bool visible) { m_visible = visible; }
 	void SetFollowCamera(bool follow) { m_followCamera = follow; }
+	void SetAlpha(float alpha) { m_alpha = alpha; }
 
 	uint64_t getShaderUUID() { return m_shaderUUID; }
 	uint64_t GetTextureUUID() { return m_textureUUID;; }
@@ -79,6 +80,8 @@ private:
 
 	UUID m_uuid;
 
+	// if alpha is -1, it will use the texture alpha
+	float m_alpha = -1.0f;
 	float m_depth = 0.0f;
 
 	bool m_visible = true;

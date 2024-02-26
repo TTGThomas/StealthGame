@@ -15,9 +15,7 @@ void Game::Init(GameTickDesc& desc)
 
 	desc.m_camera->SetZoom(0.5f);
 
-	SceneLoader::Get().LoadDebugScene(desc, &m_gameScene);
-
-	m_zonePopUp.Init(desc, &m_popUpManager);
+	SceneLoader::Get().LoadMenu(desc, &m_gameScene, this);
 }
 
 void Game::Tick(GameTickDesc& desc)
@@ -56,6 +54,22 @@ void Game::Tick(GameTickDesc& desc)
 	if (glm::length(m_gameScene.GetPlayer().GetVelocity()) != 0.0f || true)
 		for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 			npc.NPCTick(desc);
+
+	if (m_exiting)
+	{
+		float time = (float)glfwGetTime() - m_exitStartTime;
+
+		m_exitPopUp.StartEnd(desc, &m_popUpManager);
+
+		if (time > 0.5f)
+		{
+			m_exiting = false;
+			ClearCurrentScene(desc);
+			SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_exitMap);
+			m_gameScene.GetPlayer().SetInputEnabled(true);
+			m_exitPopUp.StartStart(desc, &m_popUpManager);
+		}
+	}
 }
 
 void Game::OnResize(int width, int height)
@@ -65,6 +79,25 @@ void Game::OnResize(int width, int height)
 	// x = 1 / ratio
 	m_gameScene.GetTaskbar().SetStartPos({ -1.0f / ratio, 1.0f });
 	m_zonePopUp.SetStartPos({ -1.0f / ratio, -1.0f + m_zonePopUp.GetFontSize() * 2.0f });
+}
+
+void Game::OnExit(int level)
+{
+	m_gameScene.GetTaskbar().CompleteTask(0);
+	m_gameScene.GetPlayer().SetInputEnabled(false);
+	m_exiting = true;
+	m_exitStartTime = (float)glfwGetTime();
+	m_exitMap = level;
+}
+
+void Game::ClearCurrentScene(GameTickDesc& desc)
+{
+	desc.m_renderer->ClearResources();
+	desc.m_scene->ClearResources();
+	m_gameScene.ClearResources();
+	m_popUpManager.ClearResources();
+	m_zonePopUp.ClearResources();
+	m_exitPopUp.ClearResources();
 }
 
 void Game::InteractTick(GameTickDesc& desc)
@@ -87,14 +120,16 @@ void Game::InteractTick(GameTickDesc& desc)
 
 	if (m_interact.get() != nullptr)
 	{
-		bool showCursor = true;
-		scene->GetQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetPos(m_interact->OnTick(&showCursor));
-		if (showCursor)
-			scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(true);
-
-		if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
+		bool show = true;
+		scene->GetQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetPos(m_interact->OnTick(&show));
+		if (show)
 		{
-			m_interact->OnInteract();
+			scene->GetRenderQuads()[m_gameScene.GetPlayer().GetUUID(1).GetUUID()].SetVisibility(true);
+			
+			if (KeyBoard::IsKeyPressDown(GLFW_KEY_E))
+			{
+				m_interact->OnInteract();
+			}
 		}
 	}
 }

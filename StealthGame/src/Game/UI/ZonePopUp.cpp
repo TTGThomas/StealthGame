@@ -97,7 +97,14 @@ void ZonePopUp::Init(GameTickDesc& desc, PopUpManager* manager)
 	m_manager = manager;
 	m_popUp.Init(OnCreate, OnTick, OnDelete);
 
+	yellowTexture = 0;
 	m_manager->AddPopUp(desc, m_popUp);
+}
+
+void ZonePopUp::ClearResources()
+{
+	m_manager = nullptr;
+	m_popUp = {};
 }
 
 void ZonePopUp::SetStartPos(glm::vec2 pos)

@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Inventory\Inventory.cpp" />
+    <ClCompile Include="src\Game\UI\ExitCurtainPopUp.cpp" />
+    <ClCompile Include="src\Game\Interact\ExitInteract.cpp" />
     <ClCompile Include="src\Game\Interact\DoorInteract.cpp" />
     <ClCompile Include="src\Game\Interact\ContainerInteract.cpp" />
     <ClCompile Include="src\Game\SpecialBlock\SpecialBlockManager.cpp" />
@@ -189,6 +192,9 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Inventory\Inventory.h" />
+    <ClInclude Include="src\Game\UI\ExitCurtainPopUp.h" />
+    <ClInclude Include="src\Game\Interact\ExitInteract.h" />
     <ClInclude Include="src\Game\Interact\DoorInteract.h" />
     <ClInclude Include="src\Game\Interact\ContainerInteract.h" />
     <ClInclude Include="src\Game\SpecialBlock\SpecialBlockManager.h" />

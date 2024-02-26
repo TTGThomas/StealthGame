@@ -57,6 +57,11 @@ void GameScene::Init(SceneInitDesc& desc)
 	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit", 0 });
 }
 
+void GameScene::ClearResources()
+{
+	*this = {};
+}
+
 void GameScene::DeleteTarget(uint64_t target)
 {
 	int index = -1;

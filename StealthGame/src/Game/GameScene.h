@@ -24,8 +24,6 @@
 
 #include "UI/PopUps/PopUpManager.h"
 
-#include "UI/ZonePopUp.h"
-
 #include "Zones/Zone.h"
 
 #include "VisualLayers.h"
@@ -67,6 +65,8 @@ class GameScene
 {
 public:
 	void Init(SceneInitDesc& desc);
+
+	void ClearResources();
 
 	void DeleteTarget(uint64_t target);
 

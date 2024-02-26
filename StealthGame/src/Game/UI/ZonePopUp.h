@@ -12,6 +12,8 @@ public:
 public:
 	void Init(GameTickDesc& desc, PopUpManager* manager);
 
+	void ClearResources();
+
 	void SetStartPos(glm::vec2 pos);
 
 	void OnTrespass();

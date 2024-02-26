@@ -4,14 +4,7 @@
 
 QuadRenderer::~QuadRenderer()
 {
-	for (auto& [key, val] : m_parent->GetRenderQuads())
-		val.Cleanup();
-
-	for (auto& [key, val] : m_shaders)
-		val.Cleanup();
-
-	for (auto& [key, val] : m_textures)
-		val.Cleanup();
+	ClearResources();
 }
 
 void QuadRenderer::BindCamera(Camera* camera)
@@ -31,7 +24,23 @@ void QuadRenderer::AddTexture(Texture& texture)
 
 void QuadRenderer::DeleteTexture(uint64_t key)
 {
+	m_textures[key].Cleanup();
 	m_textures.erase(key);
+}
+
+void QuadRenderer::ClearResources()
+{
+	for (auto& [key, val] : m_parent->GetRenderQuads())
+		val.Cleanup();
+
+	for (auto& [key, val] : m_shaders)
+		val.Cleanup();
+
+	for (auto& [key, val] : m_textures)
+		val.Cleanup();
+
+	m_shaders.clear();
+	m_textures.clear();
 }
 
 void QuadRenderer::Render(float ratio, int selectedIndex)

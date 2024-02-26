@@ -1,9 +1,14 @@
 #include "PopUpManager.h"
 
+void PopUpManager::ClearResources()
+{
+	m_popUps.clear();
+}
+
 void PopUpManager::AddPopUp(GameTickDesc& desc, PopUp& popUp)
 {
-	m_popUps[popUp.GetPopUUID().GetUUID()] = popUp;
 	popUp.OnCreate(desc);
+	m_popUps[popUp.GetPopUUID().GetUUID()] = popUp;
 }
 
 void PopUpManager::DeletePopUp(GameTickDesc& desc, uint64_t id)

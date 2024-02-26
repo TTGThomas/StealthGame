@@ -26,6 +26,9 @@
 #include "Items/Item.h"
 #include "Items/Disguise.h"
 
+#include "UI/ZonePopUp.h"
+#include "UI/ExitCurtainPopUp.h"
+
 #include "GameScene.h"
 #include "SceneLoader/SceneLoader.h"
 
@@ -44,6 +47,12 @@ public:
 	void Tick(GameTickDesc& desc);
 
 	void OnResize(int width, int height);
+
+	void OnExit(int level);
+
+	void ClearCurrentScene(GameTickDesc& desc);
+
+	void InitZonePopUp(GameTickDesc& desc) { m_zonePopUp.Init(desc, &m_popUpManager); }
 private:
 	void InteractTick(GameTickDesc& desc);
 	void InteractNPC();
@@ -56,6 +65,11 @@ private:
 	std::shared_ptr<Interaction> m_interact;
 	float m_interactDist = 0.0f;
 
+	bool m_exiting = false;
+	float m_exitStartTime = -1.0f;
+	int m_exitMap = 0;
+
 	PopUpManager m_popUpManager;
 	ZonePopUp m_zonePopUp;
+	ExitCurtainPopUp m_exitPopUp;
 };

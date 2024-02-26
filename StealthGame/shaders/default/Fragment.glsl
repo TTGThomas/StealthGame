@@ -8,9 +8,13 @@ uniform sampler2D u_texture;
 
 uniform int u_selected;
 
+uniform float u_alpha;
+
 void main()
 {
 	vec4 texColor = texture(u_texture, v_texCoord);
 	fragColor = texColor;
+	if (u_alpha != -1.0f)
+		fragColor.w = u_alpha;
 	//fragColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 }
