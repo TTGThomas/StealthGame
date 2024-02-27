@@ -37,7 +37,7 @@ struct RenderDesc
 
 struct RenderQuadInitDesc
 {
-	bool m_followCamera = true;
+	bool m_followCameraOffset = true;
 	float m_depth;
 	uint64_t m_shaderUUID;
 	uint64_t m_textureUUID;

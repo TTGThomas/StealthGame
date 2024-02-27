@@ -35,7 +35,7 @@ public:
 
 	void LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game);
 private:
-	void LoadConstants(GameTickDesc& desc, Game* game);
+	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
 	void LoadTextures(GameTickDesc& desc);
 private:
 	void LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bool isTarget, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route);

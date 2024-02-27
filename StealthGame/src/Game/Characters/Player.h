@@ -7,6 +7,8 @@
 
 #include "../Engine/Entity.h"
 
+#include "../Inventory/Inventory.h"
+
 #include "NPC.h"
 
 #include "../Desc.h"
@@ -23,7 +25,7 @@ public:
 		NORMAL, ILLEGAL
 	};
 public:
-	Player() = default;
+	Player();
 
 	void BindCamera(Camera* camera);
 
@@ -51,9 +53,11 @@ public:
 	UUID GetDraggedNPCID() { return m_draggedNPC; }
 	void EliminateNPC(NPC& victim);
 	ActionType GetActionType() { return m_actionType; }
+	Inventory& GetInventory() { return m_inventory; }
 private:
 	void MovePlayer(GameTickDesc& desc);
 private:
+	Inventory m_inventory;
 	glm::vec2 m_velocity{};
 
 	ActionType m_actionType = ActionType::NORMAL;

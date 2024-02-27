@@ -114,7 +114,7 @@ void TaskBar::AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
 	m_uuids.emplace_back(UUID(uuid));
 	RenderQuadInitDesc renderDesc;
-	renderDesc.m_followCamera = false;
+	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
 	renderDesc.m_textureUUID = desc.m_scene->GetTextureFromChar(desc.m_renderer, color, letter);
@@ -134,7 +134,7 @@ void TaskBar::AddQuad(GameTickDesc& desc, uint64_t textureID, glm::vec2 pos)
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
 	m_uuids.emplace_back(UUID(uuid));
 	RenderQuadInitDesc renderDesc;
-	renderDesc.m_followCamera = false;
+	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
 	renderDesc.m_textureUUID = textureID;

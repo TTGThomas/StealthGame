@@ -23,7 +23,7 @@ uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float depth, uint64_t texID)
 	quad.SetPos({ 0.0f, 0.0f });
 	uint64_t ret = uuid;
 	RenderQuadInitDesc renderDesc;
-	renderDesc.m_followCamera = true;
+	renderDesc.m_followCameraOffset = true;
 	renderDesc.m_depth = depth;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
 	renderDesc.m_textureUUID = texID;

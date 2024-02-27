@@ -23,7 +23,7 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene, Game* gam
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadConstants(desc, game);
+	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -190,7 +190,7 @@ void SceneLoader::LoadTestLevel(GameTickDesc& desc, GameScene* scene, Game* game
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadConstants(desc, game);
+	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -341,7 +341,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 {
 	desc.m_camera->SetZoom(0.5f);
 
-	LoadConstants(desc, game);
+	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -417,9 +417,10 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	scene->Init(initDesc);
 }
 
-void SceneLoader::LoadConstants(GameTickDesc& desc, Game* game)
+void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
 {
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
+	scene->GetPlayer().GetInventory().GiveEverything();
 }
 
 void SceneLoader::LoadTextures(GameTickDesc& desc)

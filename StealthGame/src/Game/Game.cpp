@@ -12,6 +12,7 @@ void Game::Init(GameTickDesc& desc)
 {
 	GlobalData::Get().m_scene = desc.m_scene;
 	GlobalData::Get().m_collision = desc.m_collision;
+	GlobalData::Get().m_renderer = desc.m_renderer;
 
 	desc.m_camera->SetZoom(0.5f);
 

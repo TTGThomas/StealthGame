@@ -43,7 +43,7 @@ void PopUp::AddLetter(GameTickDesc& desc, char letter, float fontSize, glm::vec2
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
 	m_uuids.emplace_back(UUID(uuid));
 	RenderQuadInitDesc renderDesc;
-	renderDesc.m_followCamera = false;
+	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
 
@@ -64,7 +64,7 @@ void PopUp::AddQuad(GameTickDesc& desc, uint64_t textureID, glm::vec2 radius, gl
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
 	m_uuids.emplace_back(UUID(uuid));
 	RenderQuadInitDesc renderDesc;
-	renderDesc.m_followCamera = false;
+	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
 	renderDesc.m_shaderUUID = GlobalData::Get().m_defaultShader;
 	renderDesc.m_textureUUID = textureID;

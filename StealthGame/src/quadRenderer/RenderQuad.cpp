@@ -5,7 +5,7 @@
 RenderQuad::RenderQuad(RenderQuadInitDesc& desc, UUID uuid)
 {
 	m_uuid = uuid;
-	m_followCamera = desc.m_followCamera;
+	m_followCamera = desc.m_followCameraOffset;
 	Init(desc.m_depth, desc.m_shaderUUID, desc.m_textureUUID);
 }
 

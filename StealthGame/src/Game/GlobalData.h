@@ -27,6 +27,7 @@ public:
 	Scene* m_scene = nullptr;
 	class GameScene* m_gameScene = nullptr;
 	class CollisionDetector* m_collision = nullptr;
+	class QuadRenderer* m_renderer = nullptr;
 
 	uint64_t m_defaultShader;
 	uint64_t m_texLogo;

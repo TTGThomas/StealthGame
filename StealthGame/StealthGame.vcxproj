@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Inventory\InventoryItems\FiberWire.cpp" />
+    <ClCompile Include="src\Game\Inventory\InventoryItems\Gun.cpp" />
+    <ClCompile Include="src\Game\Inventory\InventoryItems\Fist.cpp" />
     <ClCompile Include="src\Game\Inventory\Inventory.cpp" />
     <ClCompile Include="src\Game\UI\ExitCurtainPopUp.cpp" />
     <ClCompile Include="src\Game\Interact\ExitInteract.cpp" />
@@ -192,7 +195,11 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Inventory\InventoryItems\FiberWire.h" />
+    <ClInclude Include="src\Game\Inventory\InventoryItems\Gun.h" />
+    <ClInclude Include="src\Game\Inventory\InventoryItems\Fist.h" />
     <ClInclude Include="src\Game\Inventory\Inventory.h" />
+    <ClInclude Include="src\Game\Inventory\InventoryItems\InventoryItem.h" />
     <ClInclude Include="src\Game\UI\ExitCurtainPopUp.h" />
     <ClInclude Include="src\Game\Interact\ExitInteract.h" />
     <ClInclude Include="src\Game\Interact\DoorInteract.h" />
@@ -255,6 +262,8 @@
     <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
+    <Image Include="res\Inventories\fist.png" />
+    <Image Include="res\Inventories\fistHUD.png" />
     <Image Include="res\Levels\DebugLevel.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />

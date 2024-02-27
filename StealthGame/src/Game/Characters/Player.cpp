@@ -1,5 +1,9 @@
 #include "Player.h"
 
+Player::Player()
+{
+}
+
 void Player::BindCamera(Camera* camera)
 {
 	m_bindedCamera = camera;
@@ -22,6 +26,8 @@ void Player::PlayerTick(GameTickDesc& desc)
 		if (m_isHidden)
 			UnHidePlayer();
 	}
+
+	m_inventory.InventoryTick(desc);
 
 	if (m_isDragging)
 		m_actionType = ActionType::ILLEGAL;
