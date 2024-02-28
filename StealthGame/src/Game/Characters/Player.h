@@ -27,6 +27,8 @@ public:
 public:
 	Player();
 
+	void ClearResources();
+
 	void BindCamera(Camera* camera);
 
 	void PlayerTick(GameTickDesc& desc);
@@ -37,6 +39,7 @@ public:
 	void SetIsCrouching(bool newInput) { m_isCrouching = newInput; }
 	void SetIsDragging(bool newInput) { m_isDragging = newInput; }
 	void SetDraggedNPCID(uint64_t input) { m_draggedNPC = input; }
+	void SetActionType(ActionType type) { m_actionType = type; }
 
 	void HidePlayer(glm::vec2 pos);
 	void UnHidePlayer();

@@ -4,6 +4,11 @@ Player::Player()
 {
 }
 
+void Player::ClearResources()
+{
+	m_inventory.ClearResources();
+}
+
 void Player::BindCamera(Camera* camera)
 {
 	m_bindedCamera = camera;

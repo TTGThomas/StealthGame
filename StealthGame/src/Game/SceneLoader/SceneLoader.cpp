@@ -23,8 +23,8 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene, Game* gam
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
+	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
 	//uint64_t foregroundID = foreground.GetUUID().GetUUID();
@@ -190,8 +190,8 @@ void SceneLoader::LoadTestLevel(GameTickDesc& desc, GameScene* scene, Game* game
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
+	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
 	//uint64_t foregroundID = foreground.GetUUID().GetUUID();
@@ -341,8 +341,8 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 {
 	desc.m_camera->SetZoom(0.5f);
 
-	LoadConstants(desc, scene, game);
 	LoadTextures(desc);
+	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
 	//uint64_t foregroundID = foreground.GetUUID().GetUUID();

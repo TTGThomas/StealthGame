@@ -17,6 +17,7 @@ public:
 	virtual void OnEquip() {}
 	virtual void OnUnequip() {}
 	virtual void OnEquipping() {}
+	virtual void OnResize(int x, int y) {}
 protected:
 	uint64_t CreateTexture(const char* path)
 	{

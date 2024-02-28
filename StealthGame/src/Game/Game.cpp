@@ -80,6 +80,7 @@ void Game::OnResize(int width, int height)
 	// x = 1 / ratio
 	m_gameScene.GetTaskbar().SetStartPos({ -1.0f / ratio, 1.0f });
 	m_zonePopUp.SetStartPos({ -1.0f / ratio, -1.0f + m_zonePopUp.GetFontSize() * 2.0f });
+	m_gameScene.GetPlayer().GetInventory().OnResize(width, height);
 }
 
 void Game::OnExit(int level)

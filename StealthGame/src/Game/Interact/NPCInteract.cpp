@@ -22,7 +22,7 @@ void NPCInteract::OnInteract()
 
 glm::vec2 NPCInteract::OnTick(bool* show)
 {
-	if (m_npc->GetIsDisposed())
+	if (m_npc->GetIsDisposed() || m_gameScene->GetPlayer().GetInventory().GetEquippiedType() != Inventory::Type::FIBERWIRE)
 		*show = false;
 	return m_npc->GetPos();
 }

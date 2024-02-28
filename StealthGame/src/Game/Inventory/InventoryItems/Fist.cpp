@@ -23,8 +23,26 @@ void Fist::OnUnequip()
 
 	gData.m_scene->DeleteQuad(m_uuids[0].GetUUID());
 	gData.m_scene->DeleteQuad(m_uuids[1].GetUUID());
+	m_uuids = {};
 }
 
 void Fist::OnEquipping()
 {
+	GlobalData gData = GlobalData::Get();
+
+	gData.m_scene->GetQuads()[m_uuids[0].GetUUID()].SetPos(m_HUDpos);
+}
+
+void Fist::ClearResources()
+{
+	m_texHUD = 0;
+	m_texInGame = 0;
+}
+
+void Fist::OnResize(int x, int y)
+{
+	GlobalData gData = GlobalData::Get();
+
+	float ratio = (float)y / (float)x;
+	m_HUDpos = { (1.0f / ratio) - 0.2f, -0.8f };
 }

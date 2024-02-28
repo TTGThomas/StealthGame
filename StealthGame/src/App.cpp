@@ -6,8 +6,6 @@ App::App()
 	m_renderer(&m_scene), 
 	m_collision(&m_scene)
 {
-	m_window.SetWindowPos(0, 0);
-
 	m_renderer.BindCamera(&m_camera);
 
 	GameTickDesc desc;

@@ -34,9 +34,11 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    glfwWindowHint(GLFW_MAXIMIZED, (maximized ? GL_TRUE : GL_FALSE));
-    
+    if (maximized && !fullScreen)
+        glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+
     m_window = glfwCreateWindow(width, height, title, (fullScreen ? glfwGetPrimaryMonitor() : nullptr), nullptr);
+    //m_window = glfwCreateWindow(1, 17, title, glfwGetPrimaryMonitor(), nullptr);
     
     if (!m_window)
     {
