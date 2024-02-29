@@ -9,6 +9,7 @@ Inventory::Inventory()
 void Inventory::ClearResources()
 {
 	Fist::ClearResources();
+	FiberWire::ClearResources();
 }
 
 void Inventory::GiveEverything()

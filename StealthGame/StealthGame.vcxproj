@@ -262,6 +262,8 @@
     <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
+    <Image Include="res\Inventories\fiberWire.png" />
+    <Image Include="res\Inventories\fiberWireHUD.png" />
     <Image Include="res\Inventories\fist.png" />
     <Image Include="res\Inventories\fistHUD.png" />
     <Image Include="res\Levels\DebugLevel.png" />
