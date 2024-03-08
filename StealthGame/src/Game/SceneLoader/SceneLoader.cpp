@@ -461,6 +461,10 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDir);
 
+	Texture bullet("res/Inventories/Bullet.png");
+	GlobalData::Get().m_texBullet = bullet.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(bullet);
+
 	Texture container("res/SpecialObjects/Container.png");
 	GlobalData::Get().m_texContainer = container.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(container);

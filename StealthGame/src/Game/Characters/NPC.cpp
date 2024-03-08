@@ -22,6 +22,7 @@ void NPC::NPCTick(GameTickDesc& desc)
 		else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
 			TickGuard(desc);
 		TickNonStatic(desc);
+		ApplyDamage();
 	}
 	else
 	{
@@ -53,6 +54,7 @@ void NPC::ChangePos(glm::vec2 pos)
 void NPC::EliminateMyself()
 {
 	m_health = 0;
+	GlobalData::Get().m_gameScene->DeleteTarget(GetNPCUUID().GetUUID());
 }
 
 void NPC::SetDirPos(glm::vec2 pos)
@@ -64,6 +66,16 @@ void NPC::SetDirPos(glm::vec2 pos)
 	p.y += glm::cos(glm::radians(m_dir)) * scene->GetQuads()[GetUUID(2).GetUUID()].GetRadius().y;
 	scene->GetQuads()[GetUUID(2).GetUUID()].SetPos(p);
 	scene->GetQuads()[GetUUID(2).GetUUID()].SetRotation(m_dir);
+}
+
+void NPC::ApplyDamage()
+{
+	CollisionPayload payload = m_collision->Collide(GetUUID(0));
+	if (payload.m_hasHit)
+	{
+		if (payload.m_uuid.GetUUID() != GlobalData::Get().m_gameScene->GetPlayer().GetUUID(0).GetUUID())
+			EliminateMyself();
+	}
 }
 
 bool NPC::IsPlayerInSight()
@@ -492,13 +504,13 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 
-	Move(m_collision, add.x, add.y);
+	NPCMove(add);
 
 	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	if (glm::distance(GetPos(), point) < 0.01f && snapp)
-		Move(m_collision, point.x - GetPos().x, point.y - GetPos().y);
+		NPCMove(point - GetPos());
 	return GetPos() == point;
 }
 
@@ -592,4 +604,9 @@ glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
 	}
 	GetQuad(0)->SetPos(pos);
 	return { dx[finalNode.add], dy[finalNode.add] };
+}
+
+void NPC::NPCMove(glm::vec2 vec)
+{
+	Move(m_collision, vec.x, vec.y);
 }

@@ -9,7 +9,6 @@ void NPCInteract::OnInteract()
 	{
 		m_gameScene->GetPlayer().EliminateNPC(*m_npc);
 		m_npc->EliminateMyself();
-		m_gameScene->DeleteTarget(m_npc->GetNPCUUID().GetUUID());
 	}
 	else
 	{
@@ -22,7 +21,7 @@ void NPCInteract::OnInteract()
 
 glm::vec2 NPCInteract::OnTick(bool* show)
 {
-	if (m_npc->GetIsDisposed() || m_gameScene->GetPlayer().GetInventory().GetEquippiedType() != Inventory::Type::FIBERWIRE)
+	if (m_npc->GetIsDisposed() || (m_gameScene->GetPlayer().GetInventory().GetEquippiedType() != Inventory::Type::FIBERWIRE && m_npc->GetHealth() > 0))
 		*show = false;
 	return m_npc->GetPos();
 }

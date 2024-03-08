@@ -165,6 +165,9 @@
     <ClCompile Include="src\Game\Inventory\InventoryItems\Gun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Engine\Projectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -338,6 +341,9 @@
     <ClInclude Include="src\Game\Inventory\InventoryItems\Gun.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Engine\Projectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -397,6 +403,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Inventories\fiberWireHUD.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\Gun.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\GunHUD.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\Bullet.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

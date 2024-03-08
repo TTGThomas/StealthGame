@@ -61,6 +61,7 @@ public:
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 
 	void EliminateMyself();
+	void WhenHitBullet() { m_health -= 40; }
 
 	bool IsPlayerDetected();
 
@@ -83,6 +84,8 @@ public:
 	SearchType GetSearchType() { return m_searchType; }
 private:
 	void SetDirPos(glm::vec2 pos);
+private:
+	void ApplyDamage();
 private:
 	bool IsPlayerInSight();
 	void DetectPlayer();
@@ -117,8 +120,9 @@ private:
 	// returns if it is at point or not
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
 	void PointAtPoint(glm::vec2 point);
-	float AngleFromPoint(glm::vec2 point);;
+	float AngleFromPoint(glm::vec2 point);
 	glm::vec2 GetAddFromTarget(glm::vec2 target);
+	void NPCMove(glm::vec2 vec);
 private:
 	UUID m_uuid;
 	CollisionDetector* m_collision;

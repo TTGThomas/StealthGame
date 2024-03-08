@@ -10,6 +10,7 @@ void Inventory::ClearResources()
 {
 	Fist::ClearResources();
 	FiberWire::ClearResources();
+	Gun::ClearResources();
 }
 
 void Inventory::GiveEverything()
@@ -38,6 +39,8 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 		m_items[1]->OnResize(m_resize.second.x, m_resize.second.y);
 		m_items[2]->OnResize(m_resize.second.x, m_resize.second.y);
 	}
+
+	Gun::ProjectileTick();
 
 	if (GetEquippiedType() != Type::FIST)
 		GlobalData::Get().m_gameScene->GetPlayer().SetActionType(Player::ActionType::ILLEGAL);
