@@ -421,6 +421,8 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 {
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
+
+	GlobalData::Get().m_bodiesFound = 0;
 }
 
 void SceneLoader::LoadTextures(GameTickDesc& desc)

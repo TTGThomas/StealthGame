@@ -53,7 +53,9 @@ void NPC::ChangePos(glm::vec2 pos)
 
 void NPC::EliminateMyself()
 {
+	m_isPlayerDetected = false;
 	m_health = 0;
+	m_state = State::NORMAL;
 	GlobalData::Get().m_gameScene->DeleteTarget(GetNPCUUID().GetUUID());
 }
 
@@ -74,7 +76,9 @@ void NPC::ApplyDamage()
 	if (payload.m_hasHit)
 	{
 		if (payload.m_uuid.GetUUID() != GlobalData::Get().m_gameScene->GetPlayer().GetUUID(0).GetUUID())
+		{
 			EliminateMyself();
+		}
 	}
 }
 
