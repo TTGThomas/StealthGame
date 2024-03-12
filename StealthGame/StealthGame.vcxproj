@@ -271,7 +271,8 @@
     <Image Include="res\Inventories\fistHUD.png" />
     <Image Include="res\Inventories\Gun.png" />
     <Image Include="res\Inventories\GunHUD.png" />
-    <Image Include="res\Levels\DebugLevel.png" />
+    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png" />
+    <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />
@@ -285,6 +286,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Logs\Log.txt" />
+    <Text Include="res\Levels\DebugLevel\5#14.txt" />
+    <Text Include="res\Levels\DebugLevel\6#15.txt" />
+    <Text Include="res\Levels\DebugLevel\10#10.txt" />
+    <Text Include="res\Levels\DebugLevel\DebugLevel.txt" />
+    <Text Include="res\Levels\LevelFormat.txt" />
     <Text Include="res\NPC\FormatInfo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

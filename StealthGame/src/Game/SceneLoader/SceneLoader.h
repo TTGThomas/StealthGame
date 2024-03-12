@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fstream>
+#include <string>
+
 #include <vector>
 #include <unordered_map>
 
@@ -34,6 +37,8 @@ public:
 	void LoadTestLevel(GameTickDesc& desc, GameScene* scene, class Game* game);
 
 	void LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game);
+
+	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name);
 private:
 	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
 	void LoadTextures(GameTickDesc& desc);

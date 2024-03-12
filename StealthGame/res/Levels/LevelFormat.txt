@@ -1,0 +1,17 @@
+ : nothing
+#: wall
+p: player
+q: guest
+w: vip guest
+e: guard
+r: vip guard
+Q: guest - target
+W: vip guest - target
+E: guard - target
+R: vip guard - target
+t: exit
+y: door
+u: containers
+
+world is split into quads that are 0.3f in radius
+each quad gets 20 pixels

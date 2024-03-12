@@ -384,7 +384,7 @@
     <Image Include="res\Icons\Escape.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Levels\DebugLevel.png">
+    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SpecialObjects\Container.png">
@@ -414,9 +414,17 @@
     <Image Include="res\Inventories\Bullet.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />
     <Text Include="Logs\Log.txt" />
+    <Text Include="res\Levels\LevelFormat.txt" />
+    <Text Include="res\Levels\DebugLevel\DebugLevel.txt" />
+    <Text Include="res\Levels\DebugLevel\10#10.txt" />
+    <Text Include="res\Levels\DebugLevel\6#15.txt" />
+    <Text Include="res\Levels\DebugLevel\5#14.txt" />
   </ItemGroup>
 </Project>

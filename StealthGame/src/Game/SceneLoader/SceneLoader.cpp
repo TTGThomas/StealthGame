@@ -15,6 +15,9 @@ void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game
 	case 1:
 		LoadTestLevel(desc, scene, game);
 		break;
+	case 2:
+		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/", "DebugLevel");
+		break;
 	}
 }
 
@@ -340,6 +343,7 @@ void SceneLoader::LoadTestLevel(GameTickDesc& desc, GameScene* scene, Game* game
 void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 {
 	desc.m_camera->SetZoom(0.5f);
+	game->InitZonePopUp(desc);
 
 	LoadTextures(desc);
 	LoadConstants(desc, scene, game);
@@ -399,6 +403,19 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;
 	}
+	{
+		Object object;
+		glm::vec2 pos = { 1.0f, 1.5f };
+		glm::vec2 radius = { 0.3f, 0.3f };
+		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 2);
+		std::vector<QuadInitDesc> objectDesc;
+		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
+		object.Init(objectDesc);
+		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+		specialBlockIndex++;
+	}
 
 	// Init
 	SceneInitDesc initDesc;
@@ -415,6 +432,88 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	initDesc.m_backgroundTexID = backgroundID;
 
 	scene->Init(initDesc);
+}
+
+void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name)
+{
+	desc.m_camera->SetZoom(0.5f);
+	game->InitZonePopUp(desc);
+
+	std::ifstream mainFile;
+	
+	std::string mainFilePath = path;
+	mainFilePath.append(name);
+	mainFilePath.append(".txt");
+	mainFile.open(mainFilePath);
+	
+	if (!mainFile.is_open())
+	{
+		printf("fail to open file path: %s\n", mainFilePath.c_str());
+		return;
+	}
+
+	LoadTextures(desc);
+	LoadConstants(desc, scene, game);
+
+	std::string backgroundPath = path;
+	backgroundPath.append(name);
+	backgroundPath.append("-back.png");
+	Texture background(backgroundPath.c_str());
+	uint64_t backgroundID = background.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(background);
+	
+	std::string foregroundPath = path;
+	foregroundPath.append(name);
+	foregroundPath.append("-fore.png");
+	Texture foreground(foregroundPath.c_str());
+	uint64_t foregroundID = foreground.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(foreground);
+
+	GlobalData gData = GlobalData::Get();
+
+	std::vector<QuadInitDesc> playerDesc{};
+
+	std::vector<NPCInitDesc> allNpcDesc{};
+	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
+	
+	std::vector<AABB> trespassingZones = {};
+	std::vector<AABB> hostileZones = {};
+	
+	std::string line = "";
+	int noLine = 1;
+	while (std::getline(mainFile, line))
+	{
+		int noChar = 1;
+		for (char c : line)
+		{
+			glm::vec2 pos = { (float)(noChar - 1) * 0.6f, (float)(noLine - 1) * -0.6f };
+	
+			if (c == 'p')
+				SetPlayer(&playerDesc, pos, gData.m_defaultShader, gData.m_texPlayer);
+			else if (c == '#')
+				LoadMap(&allMapDesc, pos, { 0.3f, 0.3f }, gData.m_defaultShader, gData.m_texLogo);
+			noChar++;
+		}
+		noLine++;
+	}
+
+	// Init
+	SceneInitDesc initDesc;
+	initDesc.m_renderer = desc.m_renderer;
+	initDesc.m_collision = desc.m_collision;
+	initDesc.m_player = &playerDesc;
+	initDesc.m_playerCamera = desc.m_camera;
+	initDesc.m_npcs = &allNpcDesc;
+	initDesc.m_map = &allMapDesc;
+	initDesc.m_gameTickDesc = desc;
+	initDesc.m_trespassingZones = &trespassingZones;
+	initDesc.m_hostileZones = &hostileZones;
+	initDesc.m_foregroundTexID = foregroundID;
+	initDesc.m_backgroundTexID = backgroundID;
+
+	scene->Init(initDesc);
+
+	mainFile.close();
 }
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)

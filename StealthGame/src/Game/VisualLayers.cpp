@@ -15,8 +15,11 @@ uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float depth, uint64_t texID)
 	Scene* scene = desc.m_scene;
 	Texture& texture = desc.m_renderer->GetTextures()[texID];
 
-	float rate = 0.01f;
-
+	float rate = 0.03f;
+	
+	// 20 px for 0.6
+	// 1 px for 0.6 / 20
+	// rate = 0.03
 	Quad quad;
 	uint64_t uuid = quad.GetUUID().GetUUID();
 	quad.SetRadius({ (float)texture.GetWidth() * rate, (float)texture.GetHeight() * rate });
