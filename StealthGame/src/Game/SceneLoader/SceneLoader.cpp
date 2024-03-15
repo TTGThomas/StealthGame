@@ -436,6 +436,9 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 
 void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name)
 {
+#define MAP_RADIUS 0.3f
+#define MAP_SCALE MAP_RADIUS * 2.0f
+
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
@@ -486,12 +489,13 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		int noChar = 1;
 		for (char c : line)
 		{
-			glm::vec2 pos = { (float)(noChar - 1) * 0.6f, (float)(noLine - 1) * -0.6f };
-	
+			glm::vec2 pos = { (float)(noChar - 1) * MAP_SCALE, (float)(noLine - 1) * -MAP_SCALE };
+			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
+
 			if (c == 'p')
 				SetPlayer(&playerDesc, pos, gData.m_defaultShader, gData.m_texPlayer);
 			else if (c == '#')
-				LoadMap(&allMapDesc, pos, { 0.3f, 0.3f }, gData.m_defaultShader, gData.m_texLogo);
+				LoadMap(&allMapDesc, pos, { MAP_RADIUS, MAP_RADIUS }, gData.m_defaultShader, gData.m_texLogo);
 			noChar++;
 		}
 		noLine++;
