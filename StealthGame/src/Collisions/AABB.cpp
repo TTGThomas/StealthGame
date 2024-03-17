@@ -41,6 +41,10 @@ bool AABB::Collide(AABB& other)
 	if (!m_enabled)
 		return false;
 
+	glm::vec2 diff = glm::abs(GetCenterPoint() - other.GetCenterPoint());
+	if (diff.x + diff.y > MAP_RADIUS * 4.1f)
+		return false;
+
 	if (other.GetMinPos().x < m_maxPos.x)
 		if (other.GetMaxPos().x > m_minPos.x)
 			if (other.GetMinPos().y < m_maxPos.y)
@@ -63,4 +67,9 @@ bool AABB::CollideLines(glm::vec2 a0, glm::vec2 a1, glm::vec2 b0, glm::vec2 b1)
 	float uB = (a1xma0x * a0ymb0y - a1yma0y * a0xmb0x) * inv;
 
 	return uA >= 0.0f && uA <= 1.0f && uB >= 0.0f && uB <= 1.0f;
+}
+
+float AABB::GetDistFromPos(glm::vec2 otherPos)
+{
+	return glm::distance(GetCenterPoint(), otherPos);
 }

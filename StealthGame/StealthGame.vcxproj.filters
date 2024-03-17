@@ -429,5 +429,6 @@
     <Text Include="res\Levels\DebugLevel\10#10.txt" />
     <Text Include="res\Levels\DebugLevel\6#15.txt" />
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
+    <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />
   </ItemGroup>
 </Project>

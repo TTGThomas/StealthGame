@@ -290,6 +290,7 @@
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
     <Text Include="res\Levels\DebugLevel\6#15.txt" />
     <Text Include="res\Levels\DebugLevel\10#10.txt" />
+    <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />
     <Text Include="res\Levels\DebugLevel\DebugLevel.txt" />
     <Text Include="res\Levels\LevelFormat.txt" />
     <Text Include="res\NPC\FormatInfo.txt" />

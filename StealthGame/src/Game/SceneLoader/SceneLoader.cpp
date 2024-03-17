@@ -603,6 +603,38 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		noLine++;
 	}
 
+	std::string zonesFilePath = path;
+	zonesFilePath.append(name);
+	zonesFilePath.append("-zones.txt");
+
+	std::ifstream zonesFile;
+	zonesFile.open(zonesFilePath);
+
+	noLine = 1;
+	while (std::getline(zonesFile, line))
+	{
+		int noChar = 1;
+		for (char c : line)
+		{
+			glm::vec2 pos = { (float)(noChar - 1) * MAP_SCALE, (float)(noLine - 1) * -MAP_SCALE };
+			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
+
+			glm::vec2 minPos = pos - glm::vec2(MAP_RADIUS, MAP_RADIUS);
+			glm::vec2 maxPos = pos + glm::vec2(MAP_RADIUS, MAP_RADIUS);
+
+			if (c == 'H')
+			{
+				hostileZones.emplace_back(AABB(minPos, maxPos, UUID()));
+			}
+			else if (c == 'T')
+			{
+				trespassingZones.emplace_back(AABB(minPos, maxPos, UUID()));
+			}
+			noChar++;
+		}
+		noLine++;
+	}
+
 	// Init
 	SceneInitDesc initDesc;
 	initDesc.m_renderer = desc.m_renderer;
@@ -620,6 +652,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	scene->Init(initDesc);
 
 	mainFile.close();
+	zonesFile.close();
 }
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
