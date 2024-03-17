@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -26,14 +27,11 @@ public:
 	{
 		Task() = default;
 
-		Task(TaskType type, char* text, UUID taskUUID)
+		Task(TaskType type, std::string text, UUID taskUUID)
 			: m_type(type), m_text(text), m_uuid(taskUUID) {}
 
-		Task(TaskType type, const char* text, UUID taskUUID)
-			: m_type(type), m_text(const_cast<char*>(text)), m_uuid(taskUUID) {}
-
 		TaskType m_type = TaskType::ELIMINATE;
-		char* m_text = nullptr;
+		std::string m_text;
 		UUID m_uuid = 1;
 	};
 public:

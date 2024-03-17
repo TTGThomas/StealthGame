@@ -39,20 +39,10 @@ void GameScene::Init(SceneInitDesc& desc)
 
 	for (uint64_t& targetID : m_targets)
 	{
-		const char* prefix = "Eliminate ";
-		const int prefixLen = (int)strlen(prefix);
+		std::string text = "Eliminate: ";
+		text.append(m_npcs[targetID].GetName().c_str());
 
-		const char* name = m_npcs[targetID].GetName();
-		const int nameLen = (int)strlen(name);
-
-		char* text = new char[nameLen + prefixLen + 1];
-		text[nameLen + prefixLen] = '\0';
-
-		for (int i = 0; i < nameLen + prefixLen; i++)
-			text[i] = (i < 10 ? prefix[i] : name[i - 10]);
-
-		m_taskbar.AddTask({ TaskBar::TaskType::ELIMINATE, text, UUID(targetID) });
-		delete[] text;
+		m_taskbar.AddTask(TaskBar::Task(TaskBar::TaskType::ELIMINATE, text, UUID(targetID)));
 	}
 	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit", 0 });
 }

@@ -15,7 +15,7 @@ uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float depth, uint64_t texID)
 	Scene* scene = desc.m_scene;
 	Texture& texture = desc.m_renderer->GetTextures()[texID];
 
-	float rate = 0.015f;
+	float rate = MAP_RADIUS * 2.0f / 40.0f;
 	
 	// 20 px for 0.6
 	// 1 px for 0.6 / 20

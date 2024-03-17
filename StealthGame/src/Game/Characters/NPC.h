@@ -3,6 +3,7 @@
 #include <queue>
 #include <unordered_set>
 #include <vector>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -44,7 +45,7 @@ public:
 public:
 	NPC() = default;
 
-	void Init(std::vector<QuadInitDesc> desc, const char* name);
+	void Init(std::vector<QuadInitDesc> desc, std::string name);
 
 	void BindCollision(CollisionDetector* collision) { m_collision = collision; }
 
@@ -77,7 +78,7 @@ public:
 	UUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
 	Identities GetType() { return m_type; }
-	const char* GetName() { return m_name; }
+	std::string GetName() { return m_name; }
 	bool GetIsBeingDragged() { return m_isBeingDragged; }
 	bool GetIsDisposed() { return m_isDisposed; }
 	float GetSpeed() { return m_speed; }
@@ -127,7 +128,7 @@ private:
 	UUID m_uuid;
 	CollisionDetector* m_collision;
 
-	const char* m_name;
+	std::string m_name;
 
 	bool m_isPlayerDetected = false;
 

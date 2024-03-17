@@ -5,7 +5,7 @@
 
 std::unordered_set<uint64_t> NPC::m_detectedDeadNPCs;
 
-void NPC::Init(std::vector<QuadInitDesc> desc, const char* name)
+void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 {
 	Entity::Init(desc);
 	m_name = name;

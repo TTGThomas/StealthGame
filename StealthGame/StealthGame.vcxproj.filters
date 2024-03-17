@@ -344,6 +344,9 @@
     <ClInclude Include="src\Game\Engine\Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\SceneLoader\SceneConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -384,7 +387,7 @@
     <Image Include="res\Icons\Escape.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
+    <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SpecialObjects\Container.png">
@@ -414,7 +417,7 @@
     <Image Include="res\Inventories\Bullet.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png">
+    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

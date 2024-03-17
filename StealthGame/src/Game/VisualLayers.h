@@ -6,6 +6,8 @@
 #include "../quadRenderer/QuadRenderer.h"
 #include "../quadRenderer/Texture.h"
 
+#include "SceneLoader/SceneConfig.h"
+
 #include "GlobalData.h"
 
 #include "Desc.h"

@@ -37,7 +37,7 @@ struct NPCInitDesc
 	std::vector<QuadInitDesc> m_desc;
 	std::vector<NPCRoutePoint> m_route;
 	Identities m_type;
-	const char* m_name;
+	std::string m_name;
 	bool m_isTarget = false;
 };
 

@@ -2,8 +2,6 @@
 
 TaskBar::~TaskBar()
 {
-	for (auto& [id, task] : m_tasks)
-		delete[] task.m_text;
 	m_tasks.clear();
 	m_taskOrder = {};
 }
@@ -33,9 +31,6 @@ void TaskBar::Init(GameTickDesc& desc)
 void TaskBar::AddTask(Task task)
 {
 	m_changed = true;
-	char* originText = task.m_text;
-	task.m_text = new char[strlen(originText) + 1];
-	memcpy(task.m_text, originText, strlen(originText) + 1);
 	m_tasks[task.m_uuid.GetUUID()] = task;
 	m_taskOrder.emplace_back(task.m_uuid.GetUUID());
 }
@@ -43,7 +38,6 @@ void TaskBar::AddTask(Task task)
 void TaskBar::CompleteTask(uint64_t taskID)
 {
 	m_changed = true;
-	delete[] m_tasks[taskID].m_text;
 	int index = 0;
 	for (uint64_t& id : m_taskOrder)
 	{
@@ -78,7 +72,7 @@ void TaskBar::UpdateTaskbar(GameTickDesc& desc)
 			AddQuad(desc, m_iconTextures[(int)task.m_type], pos);
 			pos.x += GetQuad((int)m_uuids.size() - 1)->GetRadius().x * 2.0f;
 
-			for (int i = 0; i < strlen(task.m_text); i++)
+			for (int i = 0; i < task.m_text.size(); i++)
 			{
 				char letter = task.m_text[i];
 				AddLetter(desc, letter, pos, color);

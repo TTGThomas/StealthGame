@@ -202,6 +202,7 @@
     <ClInclude Include="src\Game\Inventory\InventoryItems\Fist.h" />
     <ClInclude Include="src\Game\Inventory\Inventory.h" />
     <ClInclude Include="src\Game\Inventory\InventoryItems\InventoryItem.h" />
+    <ClInclude Include="src\Game\SceneLoader\SceneConfig.h" />
     <ClInclude Include="src\Game\UI\ExitCurtainPopUp.h" />
     <ClInclude Include="src\Game\Interact\ExitInteract.h" />
     <ClInclude Include="src\Game\Interact\DoorInteract.h" />
@@ -271,8 +272,8 @@
     <Image Include="res\Inventories\fistHUD.png" />
     <Image Include="res\Inventories\Gun.png" />
     <Image Include="res\Inventories\GunHUD.png" />
-    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png" />
     <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png" />
+    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
     <Image Include="res\NPC\NPC0.png" />
