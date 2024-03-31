@@ -15,7 +15,7 @@ public:
 	virtual void OnEquipping() override;
 	virtual void OnResize(int x, int y) override;
 
-	static void ProjectileTick();
+	static void ProjectileTick(GameTickDesc& desc);
 
 	static void ClearResources();
 private:

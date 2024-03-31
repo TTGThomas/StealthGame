@@ -36,6 +36,8 @@
 
 #include "Desc.h"
 
+#include "DebugManager.h"
+
 class Game
 {
 public:

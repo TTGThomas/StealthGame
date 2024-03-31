@@ -33,6 +33,7 @@ struct RenderDesc
 	Texture* m_texture;
 	float m_ratio;
 	bool m_isSelected;
+	bool m_useTexture;
 };
 
 struct RenderQuadInitDesc

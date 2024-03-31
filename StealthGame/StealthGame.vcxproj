@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\DebugManager.cpp" />
     <ClCompile Include="src\Game\Engine\Projectile.cpp" />
     <ClCompile Include="src\Game\Inventory\InventoryItems\FiberWire.cpp" />
     <ClCompile Include="src\Game\Inventory\InventoryItems\Gun.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\DebugManager.h" />
     <ClInclude Include="src\Game\Engine\Projectile.h" />
     <ClInclude Include="src\Game\Inventory\InventoryItems\FiberWire.h" />
     <ClInclude Include="src\Game\Inventory\InventoryItems\Gun.h" />
@@ -288,6 +290,7 @@
   <ItemGroup>
     <Text Include="Logs\Log.txt" />
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
+    <Text Include="res\Levels\DebugLevel\5#15.txt" />
     <Text Include="res\Levels\DebugLevel\6#15.txt" />
     <Text Include="res\Levels\DebugLevel\10#10.txt" />
     <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />

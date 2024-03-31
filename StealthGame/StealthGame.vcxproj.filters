@@ -168,6 +168,9 @@
     <ClCompile Include="src\Game\Engine\Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\DebugManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -347,6 +350,9 @@
     <ClInclude Include="src\Game\SceneLoader\SceneConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\DebugManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -430,5 +436,6 @@
     <Text Include="res\Levels\DebugLevel\6#15.txt" />
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
     <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />
+    <Text Include="res\Levels\DebugLevel\5#15.txt" />
   </ItemGroup>
 </Project>

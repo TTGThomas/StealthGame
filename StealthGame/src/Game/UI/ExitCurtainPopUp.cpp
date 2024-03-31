@@ -22,12 +22,12 @@ static void OnCreate(GameTickDesc& desc, PopUp* popUp)
 
 static void OnTick(GameTickDesc& desc, PopUp* popUp, float timeFromCreate)
 {
-	desc.m_scene->GetRenderQuads()[popUp->GetUUID(0).GetUUID()].SetAlpha(timeFromCreate / 0.5f);
+	desc.m_scene->GetRenderQuads()[popUp->GetUUID(0).GetUUID()].SetAlpha(std::max(timeFromCreate / 0.5f, 0.0f));
 }
 
 static void OnStartTick(GameTickDesc& desc, PopUp* popUp, float timeFromCreate)
 {
-	desc.m_scene->GetRenderQuads()[popUp->GetUUID(0).GetUUID()].SetAlpha(1.2f - timeFromCreate / 1.0f);
+	desc.m_scene->GetRenderQuads()[popUp->GetUUID(0).GetUUID()].SetAlpha(std::max(1.2f - timeFromCreate / 1.0f, 0.0f));
 }
 
 static void OnDelete(GameTickDesc& desc, PopUp* popUp)

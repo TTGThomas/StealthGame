@@ -64,12 +64,12 @@ void Gun::OnResize(int x, int y)
 	m_HUDpos = { (1.0f / ratio) - 0.2f, -0.8f };
 }
 
-void Gun::ProjectileTick()
+void Gun::ProjectileTick(GameTickDesc& desc)
 {
 	for (int i = 0; i < m_projectiles.size(); )
 	{
 		Projectile& proj = m_projectiles[i];
-		if (!proj.Tick())
+		if (!proj.Tick(desc))
 			m_projectiles.erase(m_projectiles.begin() + i);
 		else
 			i++;

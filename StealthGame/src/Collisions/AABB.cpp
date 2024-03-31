@@ -7,9 +7,9 @@ AABB::AABB(glm::vec2 minPos, glm::vec2 maxPos, UUID uuid)
 	m_maxPos = maxPos;
 }
 
-bool AABB::Collide(glm::vec2 point)
+bool AABB::Collide(glm::vec2 point, bool ignoreDisabled)
 {
-	if (!m_enabled)
+	if (!m_enabled && ignoreDisabled)
 		return false;
 
 	if (point.x > m_minPos.x)
@@ -20,9 +20,9 @@ bool AABB::Collide(glm::vec2 point)
 	return false;
 }
 
-bool AABB::Collide(glm::vec2 l0, glm::vec2 l1)
+bool AABB::Collide(glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled)
 {
-	if (!m_enabled)
+	if (!m_enabled && ignoreDisabled)
 		return false;
 
 	if (CollideLines(l0, l1, m_minPos, { m_minPos.x, m_maxPos.y }))
@@ -36,9 +36,12 @@ bool AABB::Collide(glm::vec2 l0, glm::vec2 l1)
 	return false;
 }
 
-bool AABB::Collide(AABB& other)
+bool AABB::Collide(AABB& other, bool ignoreDisabled)
 {
-	if (!m_enabled)
+	if (!m_enabled && ignoreDisabled)
+		return false;
+
+	if (!other.GetEnabled() && ignoreDisabled)
 		return false;
 
 	glm::vec2 diff = glm::abs(GetCenterPoint() - other.GetCenterPoint());

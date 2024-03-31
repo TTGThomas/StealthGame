@@ -16,8 +16,8 @@ void Player::BindCamera(Camera* camera)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
+	desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	m_actionType = ActionType::NORMAL;
-	GlobalData::Get().m_scene->GetAABBs()[GetUUID(1).GetUUID()].SetEnabled(false);
 	if (!m_inputEnabled)
 		return;
 
@@ -36,6 +36,8 @@ void Player::PlayerTick(GameTickDesc& desc)
 
 	if (m_isDragging)
 		m_actionType = ActionType::ILLEGAL;
+
+	desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 void Player::HidePlayer(glm::vec2 pos)
@@ -60,6 +62,8 @@ void Player::EliminateNPC(NPC& victim)
 
 void Player::MovePlayer(GameTickDesc& desc)
 {
+	GlobalData& gData = GlobalData::Get();
+
 	float speed = (m_isCrouching ? m_crouchSpeed : m_normalSpeed) * desc.m_tickTimer->Second();
 	m_velocity = {};
 	if (KeyBoard::IsKeyDown(GLFW_KEY_W))

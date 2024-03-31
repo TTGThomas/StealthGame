@@ -7,13 +7,14 @@
 #include "Entity.h"
 
 #include "../GlobalData.h"
+#include "../Desc.h"
 
 class Projectile
 {
 public:
 	Projectile(glm::vec2 pos, float rot, uint64_t& texID);
 
-	bool Tick();
+	bool Tick(GameTickDesc& desc);
 private:
 	Entity m_entity;
 	float m_lifeStart;

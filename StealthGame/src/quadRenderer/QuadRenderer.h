@@ -52,4 +52,5 @@ private:
 	std::unordered_map<uint64_t, Texture> m_textures{};
 
 	std::vector<int> m_dstIndex;
+	bool m_useTexture = true;
 };

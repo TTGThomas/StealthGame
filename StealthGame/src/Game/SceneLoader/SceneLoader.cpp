@@ -461,13 +461,15 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	Texture background(backgroundPath.c_str());
 	uint64_t backgroundID = background.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(background);
-	
+	backgroundID = 0;
+
 	std::string foregroundPath = path;
 	foregroundPath.append(name);
 	foregroundPath.append("-fore.png");
 	Texture foreground(foregroundPath.c_str());
 	uint64_t foregroundID = foreground.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(foreground);
+	foregroundID = 0;
 
 	GlobalData gData = GlobalData::Get();
 
@@ -536,6 +538,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
 				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
+				//desc.m_scene->GetAABBs()[object.GetUUID(0).GetUUID()].SetEnabled(false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
 			}

@@ -49,8 +49,8 @@ void GameScene::Init(SceneInitDesc& desc)
 
 void GameScene::ClearResources()
 {
-	*this = {};
 	m_player.ClearResources();
+	*this = {};
 }
 
 void GameScene::DeleteTarget(uint64_t target)

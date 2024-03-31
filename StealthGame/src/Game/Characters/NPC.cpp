@@ -72,6 +72,9 @@ void NPC::SetDirPos(glm::vec2 pos)
 
 void NPC::ApplyDamage()
 {
+	GlobalData& gData = GlobalData::Get();
+
+	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	CollisionPayload payload = m_collision->Collide(GetUUID(0));
 	if (payload.m_hasHit)
 	{
@@ -80,6 +83,7 @@ void NPC::ApplyDamage()
 			EliminateMyself();
 		}
 	}
+	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 bool NPC::IsPlayerInSight()
@@ -100,9 +104,7 @@ bool NPC::IsPlayerInSight()
 
 	Scene* scene = GlobalData::Get().m_scene;
 
-	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 	bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
-	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 	return ret;
 }
 
@@ -152,9 +154,7 @@ void NPC::DetectItems()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
-		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 		if (ret)
 			m_detectedItems.emplace_back(uuid);
 	}
@@ -187,9 +187,7 @@ void NPC::DetectNPCs()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
 		bool ret = !m_collision->Collide(GetPos(), npcPos).m_hasHit;
-		scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
 		if (ret)
 			m_detectedNPCs.emplace_back(uuid);
 	}
@@ -292,8 +290,6 @@ void NPC::TickGuard(GameTickDesc& desc)
 			{
 				if (npc->GetState() == State::PANIC)
 					m_state = State::PANIC;
-				else if (npc->GetState() == State::SEARCHING && m_state != State::PANIC)
-					m_state = State::SEARCHING;
 			}
 		}
 	}
@@ -442,8 +438,12 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 	m_speed = m_runningSpeed;
 	
 	static float m_miniSearchingMeter = 4.0f;
+	static bool m_isLocationNew = true;
 
-	if (MoveToTarget(desc.m_tickTimer->Second(), m_miniSearchPos))
+	if (m_isLocationNew)
+		StartMoveToLocation(m_miniSearchPos);
+
+	if (MoveToLocation(desc.m_tickTimer->Second()))
 	{
 		if (m_miniSearchingMeter > 0.0f)
 		{
@@ -451,6 +451,8 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 		}
 		else
 		{
+			m_isLocationNew = true;
+
 			glm::vec2 add = {};
 			float deg = (float)rand() / (float)RAND_MAX * glm::radians(360.0f);
 			add.x = 0.5f * glm::sin(deg);
@@ -461,7 +463,7 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 	}
 	else
 	{
-		PointAtPoint(m_miniSearchPos);
+		m_isLocationNew = false;
 	}
 
 	if (m_searchingMeter < 0.0f)
@@ -498,9 +500,6 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	glm::vec2 add{};
 	float speed = m_speed * dt;
 
-#if 0
-	add = GetAddFromTarget(point);
-#else
 	if (GetPos().x < point.x)
 		add.x += speed;
 	if (GetPos().x > point.x)
@@ -509,19 +508,37 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 		add.y += speed;
 	if (GetPos().y > point.y)
 		add.y -= speed;
-#endif
 
-	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
-	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(false);
-
+	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	NPCMove(add);
-
-	scene->GetAABBs()[player->GetUUID(0).GetUUID()].SetEnabled(true);
-	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	if (glm::distance(GetPos(), point) < 0.01f && snapp)
 		NPCMove(point - GetPos());
 	return GetPos() == point;
+}
+
+bool NPC::MoveToLocation(float dt)
+{
+	bool ret = false;
+	if (m_isDynamicRouteCalculated && m_dynamicTargetRouteIndex < m_dynamicRoute.size())
+	{
+		ret = MoveToTarget(dt, m_dynamicRoute[m_dynamicTargetRouteIndex].m_pos);
+		PointAtPoint(m_dynamicRoute[m_dynamicTargetRouteIndex].m_pos);
+		if (ret && m_dynamicTargetRouteIndex < m_dynamicRoute.size() - 1)
+			m_dynamicTargetRouteIndex++;
+	}
+	return ret && m_dynamicTargetRouteIndex == m_dynamicRoute.size() - 1;
+}
+
+void NPC::StartMoveToLocation(glm::vec2 location)
+{
+	// add task to thread
+	m_dynamicTargetRouteIndex = 0;
+	m_dynamicRoute = {};
+	m_isDynamicRouteCalculated = false;
+	std::thread pathSearch = std::thread(CalculateDynamicRoute, &GlobalData::Get(), (void*)&m_dynamicRoute, (void*)&m_isDynamicRouteCalculated, GetPos(), location);
+	pathSearch.detach();
 }
 
 void NPC::PointAtPoint(glm::vec2 point)
@@ -540,85 +557,165 @@ float NPC::AngleFromPoint(glm::vec2 point)
 	return (point.x > 0.0f ? degree : 360.0f - degree);
 }
 
-glm::vec2 NPC::GetAddFromTarget(glm::vec2 target)
-{
-	const float BFSPrecision = 0.04f;
-
-	struct Node
-	{
-		glm::vec2 pos{};
-		int add;
-	};
-
-	bool assignAdd = true;
-	glm::vec2 pos = GetQuad(0)->GetPos();
-	Node finalNode{};
-	std::queue<Node> bfs;
-	bfs.push({ GetQuad(0)->GetPos(), {} });
-	//int countDown = 1000;
-
-	float dx[] = { 0.0f, 1.0f, 1.0f,  1.0f,  0.0f, -1.0f, -1.0f, -1.0f };
-	float dy[] = { 1.0f, 1.0f, 0.0f, -1.0f, -1.0f, -1.0f,  0.0f,  1.0f };
-
-	std::vector<glm::vec2> notedPos;
-
-	while (!bfs.empty())
-	{
-		Node curNode = bfs.front();
-		glm::vec2 now = curNode.pos;
-		bfs.pop();
-
-		GetQuad(0)->SetPos(now);
-		if (m_collision->Collide(GetUUID(0)).m_hasHit)
-			continue;
-
-		if (glm::distance(now, target) < BFSPrecision)
-		{
-			finalNode = curNode;
-			break;
-		}
-		
-		bool repeated = false;
-		for (glm::vec2& i : notedPos)
-		{
-			if (glm::distance(i, now) < BFSPrecision)
-			{
-				repeated = true;
-				break;
-			}
-		}
-
-		if (repeated)
-			continue;
-		else
-			notedPos.emplace_back(pos);
-
-		for (int i = 0; i < 7; i++)
-		{
-			glm::vec2 newPos = now + (glm::vec2(dx[i], dy[i]) * BFSPrecision);
-			if (assignAdd)
-			{
-				bfs.push({ newPos, i });
-			}
-			else
-			{
-				bfs.push({ newPos, curNode.add });
-			}
-		}
-		assignAdd = false;
-		//countDown--;
-
-		//if (countDown == 0)
-		//{
-			//finalNode = { {}, glm::normalize(target - pos) };
-			//break;
-		//}
-	}
-	GetQuad(0)->SetPos(pos);
-	return { dx[finalNode.add], dy[finalNode.add] };
-}
-
 void NPC::NPCMove(glm::vec2 vec)
 {
 	Move(m_collision, vec.x, vec.y);
+}
+
+glm::vec2 NPC::GetGridPos(glm::vec2 location)
+{
+	location += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
+	glm::vec2 pos = glm::round(location / MAP_SCALE) * MAP_SCALE;
+	pos += glm::vec2(-MAP_RADIUS, MAP_RADIUS);
+	return pos;
+}
+
+void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculated, glm::vec2 start, glm::vec2 location)
+{
+	std::vector<NPCRoutePoint>* routePoints = (std::vector<NPCRoutePoint>*)route;
+	bool* isDynamicRouteCalculated = (bool*)isRouteCalculated;
+
+	struct Node
+	{
+		Node(glm::vec2 pos, int parentIndex)
+			: m_pos(pos), m_parentIndex(parentIndex) {}
+
+		void SetH(glm::vec2 end)
+		{
+			glm::vec2 offset = glm::abs(m_pos - end);
+			m_h = offset.x + offset.y;
+		}
+
+		float F() { return m_g + m_h; }
+
+		glm::vec2 m_pos;
+		int m_parentIndex;
+
+		// movement from start to m_pos
+		float m_g = 0.0f;
+		// estimated movement from m_pos to location
+		// i used manhattan
+		float m_h = 0.0f;
+	};
+
+	glm::vec2 end = NPC::GetGridPos(location);
+	if (gData->m_collision->Collide(end).m_hasHit)
+	{
+		*routePoints = { NPCRoutePoint(start) };
+		*isDynamicRouteCalculated = true;
+		return;
+	}
+
+	static int dx[] = { 0, 0, 1, -1 };
+	static int dy[] = { 1, -1, 0, 0 };
+
+	std::vector<Node> locations;
+	std::set<int> openList;
+	std::set<int> closedList;
+
+	locations.emplace_back(NPC::GetGridPos(start), -1).SetH(end);
+	openList.insert(0);
+
+	bool routeFound = false;
+	int routeIndexFound = -1;
+
+	while (true)
+	{
+		// Get Node with lowest F cost and move it to closedList
+		int index = -1;
+		for (int i : openList)
+			if (index == -1 || locations[i].F() < locations[index].F())
+				index = i;
+		Node now = locations[index];
+		openList.erase(index);
+		closedList.insert(index);
+
+		// add debug quad
+		DebugManager::AddDebugQuad(now.m_pos, { 0.1f, 0.1f }, 0.0f);
+
+		// return if route is found
+		if (glm::distance(now.m_pos, end) < 0.1f)
+		{
+			routeFound = true;
+			routeIndexFound = index;
+			break;
+		}
+
+		// for every neighbour
+		for (int i = 0; i < 4; i++)
+		{
+			Node neighbour = now;
+			neighbour.m_pos += glm::vec2((float)dx[i] * MAP_SCALE, (float)dy[i] * MAP_SCALE);
+			neighbour.m_parentIndex = index;
+
+			if (gData->m_collision->Collide(neighbour.m_pos).m_hasHit)
+				continue;
+			bool inClosed = false;
+			for (int i : closedList)
+			{
+				if (locations[i].m_pos == neighbour.m_pos)
+				{
+					inClosed = true;
+					break;
+				}
+			}
+			if (inClosed)
+				continue;
+
+			bool inOpen = false;
+			int neighbourIndex = -1;
+			for (int i : openList)
+			{
+				if (locations[i].m_pos == neighbour.m_pos)
+				{
+					neighbourIndex = i;
+					inOpen = true;
+					break;
+				}
+			}
+
+			if (inOpen)
+			{
+				if (now.m_g + MAP_RADIUS < locations[neighbourIndex].m_g)
+				{
+					locations[neighbourIndex].m_parentIndex = index;
+					locations[neighbourIndex].m_g = now.m_g + MAP_RADIUS;
+				}
+			}
+			else
+			{
+				neighbour.m_g = now.m_g + MAP_RADIUS;
+				neighbour.SetH(end);
+				locations.emplace_back(neighbour);
+				openList.insert(locations.size() - 1);
+			}
+		}
+		//std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
+	
+	if (routeFound)
+	{
+		while (routeIndexFound != 0)
+		{
+			routePoints->emplace_back(locations[routeIndexFound].m_pos);
+			routeIndexFound = locations[routeIndexFound].m_parentIndex;
+		}
+
+		// flip the routes
+		int n = routePoints->size() / 2;
+		for (int front = 0; front < n; front++)
+		{
+			int back = routePoints->size() - 1 - front;
+			// swap back and front
+			NPCRoutePoint backVal = (*routePoints)[back];
+			(*routePoints)[back] = (*routePoints)[front];
+			(*routePoints)[front] = backVal;
+		}
+	}
+	else
+	{
+		routePoints->clear();
+	}
+
+	*isDynamicRouteCalculated = true;
 }

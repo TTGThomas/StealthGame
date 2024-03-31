@@ -62,6 +62,7 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 			desc.m_shader = &m_shaders[renderQuad.getShaderUUID()];
 			desc.m_texture = &m_textures[renderQuad.GetTextureUUID()];
 			desc.m_isSelected = false;
+			desc.m_useTexture = m_useTexture;
 
 			renderQuad.Draw(desc);
 			if (renderQuad.GetVisible())
@@ -78,6 +79,7 @@ void QuadRenderer::ShowStatsWindow()
 	ImGui::Text("Quad Rendered: %u", m_quadRendered);
 	ImGui::Text("Shaders Allocated: %u", m_shaders.size());
 	ImGui::Text("Textures Allocated: %u", m_textures.size());
+	ImGui::Checkbox("Use Texture", &m_useTexture);
 	ImGui::End();
 #endif
 }

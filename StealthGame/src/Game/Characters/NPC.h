@@ -1,9 +1,11 @@
 #pragma once
 
 #include <queue>
+#include <set>
 #include <unordered_set>
 #include <vector>
 #include <string>
+#include <thread>
 
 #include <glm/glm.hpp>
 
@@ -18,11 +20,18 @@
 
 #include "../GlobalData.h"
 
+#include "../DebugManager.h"
+
 class Player;
 class CollisionDetector;
 
+void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculated, glm::vec2 start, glm::vec2 location);
+
 struct NPCRoutePoint
 {
+	NPCRoutePoint(glm::vec2 pos)
+		: m_pos(pos) {}
+
 	glm::vec2 m_pos;
 };
 
@@ -73,6 +82,8 @@ public:
 
 	void SetSearchType(SearchType type) { m_searchType = type; }
 
+	static glm::vec2 GetGridPos(glm::vec2 location);
+
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
 	UUID& GetNPCUUID() { return m_uuid; }
@@ -119,10 +130,14 @@ private:
 	}
 private:
 	// returns if it is at point or not
+	// this does not applies BFS
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
+	// returns if it is at location or not
+	// this doesnt calculate the route
+	bool MoveToLocation(float dt);
+	void StartMoveToLocation(glm::vec2 location);
 	void PointAtPoint(glm::vec2 point);
 	float AngleFromPoint(glm::vec2 point);
-	glm::vec2 GetAddFromTarget(glm::vec2 target);
 	void NPCMove(glm::vec2 vec);
 private:
 	UUID m_uuid;
@@ -151,7 +166,10 @@ private:
 	int m_health = 100;
 
 	std::vector<NPCRoutePoint> m_route;
+	std::vector<NPCRoutePoint> m_dynamicRoute;
+	int m_dynamicTargetRouteIndex = 0;
 	int m_targetRouteIndex = 0;
+	bool m_isDynamicRouteCalculated = false;
 
 	glm::vec2 m_frontVec{};
 	

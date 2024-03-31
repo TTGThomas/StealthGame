@@ -21,10 +21,10 @@ public:
 	CollisionDetector(class Scene* parent)
 		: m_parent(parent) {}
 
-	CollisionPayload Collide(glm::vec2 point);
-	CollisionPayload Collide(glm::vec2 l0, glm::vec2 l1);
-	CollisionPayload Collide(AABB& aabb);
-	CollisionPayload Collide(UUID& uuid);
+	CollisionPayload Collide(glm::vec2 point, bool ignoreDisabled = true);
+	CollisionPayload Collide(glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled = true);
+	CollisionPayload Collide(AABB& aabb, bool ignoreDisabled = true);
+	CollisionPayload Collide(UUID& uuid, bool ignoreDisabled = true);
 private:
 	Scene* m_parent = nullptr;
 };

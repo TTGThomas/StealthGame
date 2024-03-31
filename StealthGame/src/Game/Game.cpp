@@ -30,15 +30,13 @@ void Game::Tick(GameTickDesc& desc)
 	ShowStatsWindow();
 	m_gameScene.GetTaskbar().ShowStatsWindow();
 
-	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
-		scene->GetAABBs()[npc.GetUUID(0).GetUUID()].SetEnabled(false);
-
 	m_gameScene.GetPlayer().PlayerTick(desc);
 
 	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
 	{
 		m_gameScene.GetPlayer().OnTrespassZone();
 		m_zonePopUp.OnTrespass();
+
 	}
 	else if (m_gameScene.GetHostileZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
 	{
@@ -52,9 +50,8 @@ void Game::Tick(GameTickDesc& desc)
 
 	InteractTick(desc);
 
-	if (glm::length(m_gameScene.GetPlayer().GetVelocity()) != 0.0f || true)
-		for (auto& [uuid, npc] : m_gameScene.GetNPCs())
-			npc.NPCTick(desc);
+	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
+		npc.NPCTick(desc);
 
 	if (m_exiting)
 	{
@@ -71,6 +68,8 @@ void Game::Tick(GameTickDesc& desc)
 			m_exitPopUp.StartStart(desc, &m_popUpManager);
 		}
 	}
+
+	DebugManager::RenderDebugs();
 }
 
 void Game::OnResize(int width, int height)
@@ -97,9 +96,9 @@ void Game::ClearCurrentScene(GameTickDesc& desc)
 	desc.m_renderer->ClearResources();
 	desc.m_scene->ClearResources();
 	m_gameScene.ClearResources();
-	m_popUpManager.ClearResources();
 	m_zonePopUp.ClearResources();
 	m_exitPopUp.ClearResources();
+	m_popUpManager.ClearResources();
 }
 
 void Game::InteractTick(GameTickDesc& desc)
@@ -110,15 +109,12 @@ void Game::InteractTick(GameTickDesc& desc)
 
 	m_interact.reset();
 
-	GlobalData::Get().m_scene->GetAABBs()[m_gameScene.GetPlayer().GetUUID(0).GetUUID()].SetEnabled(false);
-
 	m_interactDist = FLT_MAX;
+
 
 	InteractNPC();
 	InteractItems();
 	InteractSpecialBlocks();
-
-	GlobalData::Get().m_scene->GetAABBs()[m_gameScene.GetPlayer().GetUUID(0).GetUUID()].SetEnabled(true);
 
 	if (m_interact.get() != nullptr)
 	{

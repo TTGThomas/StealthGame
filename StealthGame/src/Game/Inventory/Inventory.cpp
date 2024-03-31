@@ -40,7 +40,7 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 		m_items[2]->OnResize(m_resize.second.x, m_resize.second.y);
 	}
 
-	Gun::ProjectileTick();
+	Gun::ProjectileTick(desc);
 
 	if (GetEquippiedType() != Type::FIST)
 		GlobalData::Get().m_gameScene->GetPlayer().SetActionType(Player::ActionType::ILLEGAL);

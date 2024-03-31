@@ -12,9 +12,9 @@ public:
 	AABB() = default;
 	AABB(glm::vec2 minPos, glm::vec2 maxPos, UUID uuid);
 
-	bool Collide(glm::vec2 point);
-	bool Collide(glm::vec2 l0, glm::vec2 l1);
-	bool Collide(AABB& other);
+	bool Collide(glm::vec2 point, bool ignoreDisabled = true);
+	bool Collide(glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled = true);
+	bool Collide(AABB& other, bool ignoreDisabled = true);
 
 	void SetMinPos(glm::vec2 newPos) { m_minPos = newPos; }
 	void SetMaxPos(glm::vec2 newPos) { m_maxPos = newPos; }

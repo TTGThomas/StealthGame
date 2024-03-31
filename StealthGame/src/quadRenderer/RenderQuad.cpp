@@ -48,6 +48,9 @@ void RenderQuad::Draw(RenderDesc& desc)
 	if (!m_visible)
 		return;
 
+	if (m_alpha == 0.0f)
+		return;
+
 	desc.m_shader->Bind();
 	desc.m_texture->Bind();
 
@@ -74,6 +77,8 @@ void RenderQuad::Draw(RenderDesc& desc)
 	glUniform1f(LOCATION(*desc.m_shader, "u_depth"), m_depth);
 
 	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
+
+	glUniform1i(LOCATION(*desc.m_shader, "u_useTexture"), desc.m_useTexture ? 1: 0);
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);

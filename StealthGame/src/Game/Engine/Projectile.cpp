@@ -15,10 +15,10 @@ Projectile::Projectile(glm::vec2 pos, float rot, uint64_t& texID)
 	descs.push_back({ m_pos, { size, size }, 0.9f, gData.m_defaultShader, texID });
 	m_entity.Init(descs);
 	
-	m_speed = 0.01f;
+	m_speed = 3.0f;
 }
 
-bool Projectile::Tick()
+bool Projectile::Tick(GameTickDesc& desc)
 {
 	// returns if it is alive or not
 	GlobalData& gData = GlobalData::Get();
@@ -30,8 +30,8 @@ bool Projectile::Tick()
 	if (gData.m_collision->Collide(m_entity.GetUUID(0)).m_hasHit)
 		ret = false;
 
-	m_entity.GetQuad(0)->ChangePos(m_vel * m_speed);
-	m_entity.GetQuad(1)->ChangePos(m_vel * m_speed);
+	m_entity.GetQuad(0)->ChangePos(m_vel * m_speed * desc.m_tickTimer->Second());
+	m_entity.GetQuad(1)->ChangePos(m_vel * m_speed * desc.m_tickTimer->Second());
 
 	if (!ret)
 	{
