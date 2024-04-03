@@ -22,7 +22,7 @@ std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm
 		{
 			bool last = GlobalData::Get().m_scene->GetAABBs()[obj.GetUUID(0).GetUUID()].GetEnabled();
 			GlobalData::Get().m_scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(false);
-			if (!GlobalData::Get().m_collision->Collide(pos, objPos).m_hasHit)
+			if (!GlobalData::Get().m_collision->Collide(0, pos, objPos).m_hasHit)
 			{
 				retDist = dist;
 				retIndex = i;

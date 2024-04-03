@@ -85,7 +85,7 @@ void Player::MovePlayer(GameTickDesc& desc)
 
 	GetQuad(0)->SetRadius(m_isCrouching ? m_crouchScale : m_normalScale);
 	// check if in wall
-	if (desc.m_collision->Collide(GetUUID(0)).m_hasHit)
+	if (desc.m_collision->Collide(0, GetUUID(0)).m_hasHit)
 		m_isCrouching = true;
 
 	// synch hitbox and character

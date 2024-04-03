@@ -21,7 +21,7 @@ void DoorInteract::OnInteract()
 		obj.GetQuad(1)->SetRadius(m_radius);
 
 		scene->GetAABBs()[m_scene->GetPlayer().GetUUID(0).GetUUID()].SetEnabled(true);
-		CollisionPayload payload = collision->Collide(obj.GetUUID(0));
+		CollisionPayload payload = collision->Collide(0, obj.GetUUID(0));
 		scene->GetAABBs()[m_scene->GetPlayer().GetUUID(0).GetUUID()].SetEnabled(false);
 		if (payload.m_hasHit)
 		{

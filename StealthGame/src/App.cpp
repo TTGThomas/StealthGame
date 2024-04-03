@@ -88,21 +88,21 @@ void App::UpdateCamera()
 
 void App::UpdateSelection()
 {
-	// hovered
-	// (pos - camPos) * camZoom
-	glm::vec2 cursPos = GetMouseGLPos();
-	cursPos.x /= m_window.GetRatio();
-	cursPos /= m_camera.GetZoom();
-	cursPos += m_camera.GetPos();
-	CollisionPayload payload = m_collision.Collide(cursPos);
-	
-	// selected
-#ifndef IMGUI_DISABLE
-	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT) && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
-#else
-	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT))
-#endif
-		m_selectedIndex = m_hoveredIndex;
+//	// hovered
+//	// (pos - camPos) * camZoom
+//	glm::vec2 cursPos = GetMouseGLPos();
+//	cursPos.x /= m_window.GetRatio();
+//	cursPos /= m_camera.GetZoom();
+//	cursPos += m_camera.GetPos();
+//	CollisionPayload payload = m_collision.Collide(cursPos);
+//	
+//	// selected
+//#ifndef IMGUI_DISABLE
+//	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT) && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+//#else
+//	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT))
+//#endif
+//		m_selectedIndex = m_hoveredIndex;
 }
 
 void App::UpdateGame()

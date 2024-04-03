@@ -14,6 +14,7 @@ Projectile::Projectile(glm::vec2 pos, float rot, uint64_t& texID)
 	descs.push_back({ m_pos, { size, size }, 0.9f, gData.m_defaultShader, texID });
 	descs.push_back({ m_pos, { size, size }, 0.9f, gData.m_defaultShader, texID });
 	m_entity.Init(descs);
+	gData.m_collision->AddToLayer(2, m_entity.GetUUID(0).GetUUID());
 	
 	m_speed = 3.0f;
 }
@@ -27,7 +28,7 @@ bool Projectile::Tick(GameTickDesc& desc)
 
 	if ((float)glfwGetTime() - m_lifeStart > 1.0f)
 		ret = false;
-	if (gData.m_collision->Collide(m_entity.GetUUID(0)).m_hasHit)
+	if (gData.m_collision->Collide(0, m_entity.GetUUID(0)).m_hasHit)
 		ret = false;
 
 	m_entity.GetQuad(0)->ChangePos(m_vel * m_speed * desc.m_tickTimer->Second());

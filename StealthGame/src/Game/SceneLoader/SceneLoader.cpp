@@ -662,6 +662,7 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 {
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
+	desc.m_collision->SetLayers(3);
 
 	GlobalData::Get().m_bodiesFound = 0;
 }

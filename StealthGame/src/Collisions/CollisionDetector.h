@@ -17,11 +17,14 @@ struct CollisionPayload
 
 // collision layer 0: map collision
 // collision layer 1: NPC collision
+// Collision layer 2: damager collision
 class CollisionDetector
 {
 public:
 	CollisionDetector(class Scene* parent)
 		: m_parent(parent) {}
+
+	void ClearResources();
 
 	void SetLayers(int numLayers);
 	void AddToLayer(int layer, uint64_t aabb);

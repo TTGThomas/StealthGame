@@ -95,6 +95,7 @@ void Game::ClearCurrentScene(GameTickDesc& desc)
 {
 	desc.m_renderer->ClearResources();
 	desc.m_scene->ClearResources();
+	desc.m_collision->ClearResources();
 	m_gameScene.ClearResources();
 	m_zonePopUp.ClearResources();
 	m_exitPopUp.ClearResources();
@@ -149,7 +150,7 @@ void Game::InteractNPC()
 		//float dst = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc.GetIsBeingDragged())
 		{
-			if (!GlobalData::Get().m_collision->Collide(m_gameScene.GetPlayer().GetPos(), npc.GetPos()).m_hasHit)
+			if (!GlobalData::Get().m_collision->Collide(0, m_gameScene.GetPlayer().GetPos(), npc.GetPos()).m_hasHit)
 			{
 				victim = &npc;
 				victimDst = glm::length(diff);
@@ -176,7 +177,7 @@ void Game::InteractItems()
 		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
 		if (dist < 0.5f)
 		{
-			if (!GlobalData::Get().m_collision->Collide(m_gameScene.GetPlayer().GetPos(), item->GetQuad().GetPos()).m_hasHit)
+			if (!GlobalData::Get().m_collision->Collide(0, m_gameScene.GetPlayer().GetPos(), item->GetQuad().GetPos()).m_hasHit)
 			{
 				if (dist < m_interactDist)
 				{

@@ -75,13 +75,10 @@ void NPC::ApplyDamage()
 	GlobalData& gData = GlobalData::Get();
 
 	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
-	CollisionPayload payload = m_collision->Collide(GetUUID(0));
+	CollisionPayload payload = m_collision->Collide(2, GetUUID(0));
 	if (payload.m_hasHit)
 	{
-		if (payload.m_uuid.GetUUID() != GlobalData::Get().m_gameScene->GetPlayer().GetUUID(0).GetUUID())
-		{
-			EliminateMyself();
-		}
+		EliminateMyself();
 	}
 	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
@@ -104,7 +101,7 @@ bool NPC::IsPlayerInSight()
 
 	Scene* scene = GlobalData::Get().m_scene;
 
-	bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+	bool ret = !m_collision->Collide(0, GetPos(), player->GetPos()).m_hasHit;
 	return ret;
 }
 
@@ -154,7 +151,7 @@ void NPC::DetectItems()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		bool ret = !m_collision->Collide(GetPos(), player->GetPos()).m_hasHit;
+		bool ret = !m_collision->Collide(0, GetPos(), player->GetPos()).m_hasHit;
 		if (ret)
 			m_detectedItems.emplace_back(uuid);
 	}
@@ -187,7 +184,7 @@ void NPC::DetectNPCs()
 
 		Scene* scene = GlobalData::Get().m_scene;
 
-		bool ret = !m_collision->Collide(GetPos(), npcPos).m_hasHit;
+		bool ret = !m_collision->Collide(0, GetPos(), npcPos).m_hasHit;
 		if (ret)
 			m_detectedNPCs.emplace_back(uuid);
 	}
@@ -511,10 +508,14 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 
 	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	NPCMove(add);
-	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	if (glm::distance(GetPos(), point) < 0.01f && snapp)
 		NPCMove(point - GetPos());
+
+	if (gData.m_collision->Collide(0, GetUUID(0)).m_hasHit)
+		NPCMove(GetPos() - point);
+	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+
 	return GetPos() == point;
 }
 
@@ -599,7 +600,7 @@ void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculat
 	};
 
 	glm::vec2 end = NPC::GetGridPos(location);
-	if (gData->m_collision->Collide(end).m_hasHit)
+	if (gData->m_collision->Collide(0, end).m_hasHit)
 	{
 		*routePoints = { NPCRoutePoint(start) };
 		*isDynamicRouteCalculated = true;
@@ -648,7 +649,7 @@ void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculat
 			neighbour.m_pos += glm::vec2((float)dx[i] * MAP_SCALE, (float)dy[i] * MAP_SCALE);
 			neighbour.m_parentIndex = index;
 
-			if (gData->m_collision->Collide(neighbour.m_pos).m_hasHit)
+			if (gData->m_collision->Collide(0, neighbour.m_pos).m_hasHit)
 				continue;
 			bool inClosed = false;
 			for (int i : closedList)

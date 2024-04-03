@@ -86,3 +86,8 @@ void CollisionDetector::AddToLayer(int layer, uint64_t aabb)
 {
 	m_layers[layer].emplace_back(aabb);
 }
+
+void CollisionDetector::ClearResources()
+{
+	m_layers = {};
+}

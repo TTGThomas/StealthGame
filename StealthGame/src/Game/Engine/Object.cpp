@@ -28,4 +28,6 @@ void Object::Init(std::vector<QuadInitDesc>& descs)
 	}
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	scene->GetRenderQuads()[GetUUID(0).GetUUID()].SetVisibility(false);
+
+	GlobalData::Get().m_collision->AddToLayer(0, GetUUID(0).GetUUID());
 }
