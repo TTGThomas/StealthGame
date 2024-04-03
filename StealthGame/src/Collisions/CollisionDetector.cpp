@@ -1,10 +1,13 @@
 #include "CollisionDetector.h"
 
 // be carefull, point is in world space not screen space
-CollisionPayload CollisionDetector::Collide(glm::vec2 point, bool ignoreDisabled)
+CollisionPayload CollisionDetector::Collide(int layer, glm::vec2 point, bool ignoreDisabled)
 {
-	for (auto& [uuid, quad] : m_parent->GetQuads())
+	for (int i = 0; i < m_layers[layer].size(); i++)
 	{
+		uint64_t uuid = m_layers[layer][i];
+		Quad& quad = m_parent->GetQuads()[uuid];
+
 		AABB& aabb = m_parent->GetAABBs()[uuid];
 		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
@@ -14,10 +17,13 @@ CollisionPayload CollisionDetector::Collide(glm::vec2 point, bool ignoreDisabled
 	return { false, UUID(0) };
 }
 
-CollisionPayload CollisionDetector::Collide(glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled)
+CollisionPayload CollisionDetector::Collide(int layer, glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled)
 {
-	for (auto& [uuid, quad] : m_parent->GetQuads())
+	for (int i = 0; i < m_layers[layer].size(); i++)
 	{
+		uint64_t uuid = m_layers[layer][i];
+		Quad& quad = m_parent->GetQuads()[uuid];
+
 		AABB& aabb = m_parent->GetAABBs()[uuid];
 		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
@@ -27,10 +33,13 @@ CollisionPayload CollisionDetector::Collide(glm::vec2 l0, glm::vec2 l1, bool ign
 	return { false, UUID(0) };
 }
 
-CollisionPayload CollisionDetector::Collide(AABB& aabb, bool ignoreDisabled)
+CollisionPayload CollisionDetector::Collide(int layer, AABB& aabb, bool ignoreDisabled)
 {
-	for (auto& [uuid, quad] : m_parent->GetQuads())
+	for (int i = 0; i < m_layers[layer].size(); i++)
 	{
+		uint64_t uuid = m_layers[layer][i];
+		Quad& quad = m_parent->GetQuads()[uuid];
+
 		AABB& aabb = m_parent->GetAABBs()[uuid];
 		aabb.SetMinPos(quad.GetPos() - quad.GetRadius());
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
@@ -40,7 +49,7 @@ CollisionPayload CollisionDetector::Collide(AABB& aabb, bool ignoreDisabled)
 	return { false, UUID(0) };
 }
 
-CollisionPayload CollisionDetector::Collide(UUID& uuid, bool ignoreDisabled)
+CollisionPayload CollisionDetector::Collide(int layer, UUID& uuid, bool ignoreDisabled)
 {
 	{
 		Quad& quad = m_parent->GetQuads()[uuid.GetUUID()];
@@ -49,8 +58,11 @@ CollisionPayload CollisionDetector::Collide(UUID& uuid, bool ignoreDisabled)
 		aabb.SetMaxPos(quad.GetPos() + quad.GetRadius());
 	}
 
-	for (auto& [id, quad] : m_parent->GetQuads())
+	for (int i = 0; i < m_layers[layer].size(); i++)
 	{
+		uint64_t id = m_layers[layer][i];
+		Quad& quad = m_parent->GetQuads()[id];
+
 		if (id == uuid.GetUUID())
 			continue;
 
@@ -61,4 +73,16 @@ CollisionPayload CollisionDetector::Collide(UUID& uuid, bool ignoreDisabled)
 			return { true, UUID(id) };
 	}
 	return { false, UUID(0) };
+}
+
+void CollisionDetector::SetLayers(int numLayers)
+{
+	m_layers.resize(numLayers);
+	for (int i = 0; i < numLayers; i++)
+		m_layers[i] = {};
+}
+
+void CollisionDetector::AddToLayer(int layer, uint64_t aabb)
+{
+	m_layers[layer].emplace_back(aabb);
 }
