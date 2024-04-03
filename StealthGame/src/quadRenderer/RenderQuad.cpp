@@ -45,6 +45,15 @@ void RenderQuad::Init(float depth, uint64_t shaderUUID, uint64_t textureUUID)
 
 void RenderQuad::Draw(RenderDesc& desc)
 {
+	if (m_screenRatioLoc == -1)
+	{
+		m_screenRatioLoc = LOCATION(*desc.m_shader, "u_screenRatio");
+		m_matrixLoc = LOCATION(*desc.m_shader, "u_matrix");
+		m_alphaLoc = LOCATION(*desc.m_shader, "u_alpha");
+		m_depthLoc = LOCATION(*desc.m_shader, "u_depth");
+		m_useTextureLoc = LOCATION(*desc.m_shader, "u_useTexture");
+	}
+
 	if (!m_visible)
 		return;
 
@@ -54,7 +63,7 @@ void RenderQuad::Draw(RenderDesc& desc)
 	desc.m_shader->Bind();
 	desc.m_texture->Bind();
 
-	glUniform1f(LOCATION(*desc.m_shader, "u_screenRatio"), desc.m_ratio);
+	glUniform1f(m_screenRatioLoc, desc.m_ratio);
 
 	glm::mat4 matrix = glm::identity<glm::mat4>();
 
@@ -70,15 +79,12 @@ void RenderQuad::Draw(RenderDesc& desc)
 	matrix = glm::rotate(matrix, glm::radians(-m_rotation), {0.0f, 0.0f, 1.0f});
 	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
 
-	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
-	glUniformMatrix4fv(LOCATION(*desc.m_shader, "u_matrix"), 1, GL_FALSE, glm::value_ptr(matrix));
+	glUniformMatrix4fv(m_matrixLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+	
+	glUniform1f(m_alphaLoc, m_alpha);
+	glUniform1f(m_depthLoc, m_depth);
 
-	glUniform1f(LOCATION(*desc.m_shader, "u_alpha"), m_alpha);
-	glUniform1f(LOCATION(*desc.m_shader, "u_depth"), m_depth);
-
-	glUniform1i(LOCATION(*desc.m_shader, "u_selected"), desc.m_isSelected);
-
-	glUniform1i(LOCATION(*desc.m_shader, "u_useTexture"), desc.m_useTexture ? 1: 0);
+	glUniform1i(m_useTextureLoc, desc.m_useTexture ? 1: 0);
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);

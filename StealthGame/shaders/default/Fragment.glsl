@@ -6,8 +6,6 @@ in vec2 v_texCoord;
 
 uniform sampler2D u_texture;
 
-uniform int u_selected;
-
 uniform float u_alpha;
 
 uniform int u_useTexture;

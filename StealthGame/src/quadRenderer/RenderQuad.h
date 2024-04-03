@@ -75,6 +75,12 @@ private:
 	uint64_t m_shaderUUID = 0;
 	uint64_t m_textureUUID = 0;
 
+	int m_screenRatioLoc = -1;
+	int m_matrixLoc = -1;
+	int m_alphaLoc = -1;
+	int m_depthLoc = -1;
+	int m_useTextureLoc = -1;
+
 	glm::vec2 m_pos{};
 	glm::vec2 m_radius{};
 	float m_rotation = 0.0f;
