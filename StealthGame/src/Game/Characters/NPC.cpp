@@ -16,13 +16,15 @@ void NPC::NPCTick(GameTickDesc& desc)
 	if (m_health > 0)
 	{
 		SetPos(GetPos());
+		ApplyDamage();
+		if (m_health <= 0)
+			return;
 		DetectEverything();
 		if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
 			TickGuest(desc);
 		else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
 			TickGuard(desc);
 		TickNonStatic(desc);
-		ApplyDamage();
 	}
 	else
 	{
@@ -74,13 +76,13 @@ void NPC::ApplyDamage()
 {
 	GlobalData& gData = GlobalData::Get();
 
-	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	//gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	CollisionPayload payload = m_collision->Collide(2, GetUUID(0));
 	if (payload.m_hasHit)
 	{
 		EliminateMyself();
 	}
-	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+	//gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 bool NPC::IsPlayerInSight()
@@ -336,13 +338,29 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 		{
 			if (m_route.size() > 0)
 			{
-				if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+				if (m_isAtTarget)
 				{
-					m_targetRouteIndex++;
-					if (m_targetRouteIndex >= (int)m_route.size())
-						m_targetRouteIndex -= (int)m_route.size();
+					if (((float)glfwGetTime() - m_timeAtTarget) * 1000.0f > (float)m_route[m_targetRouteIndex].m_waitMs)
+					{
+						m_isAtTarget = false;
+						m_targetRouteIndex++;
+						if (m_targetRouteIndex >= (int)m_route.size())
+							m_targetRouteIndex -= (int)m_route.size();
+					}
 				}
-				PointAtPoint(m_route[m_targetRouteIndex].m_pos);
+				else
+				{
+					if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+					{
+						m_isAtTarget = true;
+						m_timeAtTarget = (float)glfwGetTime();
+					}
+					else
+					{
+						m_isAtTarget = false;
+						PointAtPoint(m_route[m_targetRouteIndex].m_pos);
+					}
+				}
 			}
 			else
 			{
@@ -506,7 +524,6 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	if (GetPos().y > point.y)
 		add.y -= speed;
 
-	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	NPCMove(add);
 
 	if (glm::distance(GetPos(), point) < 0.01f && snapp)
@@ -514,7 +531,6 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 
 	if (gData.m_collision->Collide(0, GetUUID(0)).m_hasHit)
 		NPCMove(GetPos() - point);
-	gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 
 	return GetPos() == point;
 }

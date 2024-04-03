@@ -87,6 +87,14 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.TabRounding = 8.0f;
+    style.FrameRounding = 8.0f;
+    style.GrabRounding = 8.0f;
+    style.WindowRounding = 8.0f;
+    style.PopupRounding = 8.0f;
+    style.Alpha = 0.5f;
+
     ImFontConfig fontConfig;
 #if 0
     fontConfig.SizePixels = 40.0f;

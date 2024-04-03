@@ -16,7 +16,7 @@ void Player::BindCamera(Camera* camera)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
-	desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	//desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	m_actionType = ActionType::NORMAL;
 	if (!m_inputEnabled)
 		return;
@@ -37,7 +37,7 @@ void Player::PlayerTick(GameTickDesc& desc)
 	if (m_isDragging)
 		m_actionType = ActionType::ILLEGAL;
 
-	desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
+	//desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 void Player::HidePlayer(glm::vec2 pos)

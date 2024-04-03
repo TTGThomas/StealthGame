@@ -662,7 +662,7 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 {
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
-	desc.m_collision->SetLayers(3);
+	desc.m_collision->SetLayers(4);
 
 	GlobalData::Get().m_bodiesFound = 0;
 }
@@ -740,14 +740,16 @@ void SceneLoader::GetNPCDataFromFile(std::vector<std::string>* names, std::vecto
 			continue;
 		}
 
-		int x = 0, y = 0;
+		int x = 0, y = 0, waitMs = 0;
 		int commaIdx = (int)lineStr.find_first_of(',');
+		int spaceIdx = (int)lineStr.find_last_of(' ');
 		x = std::stoi(lineStr.substr(0, commaIdx));
-		y = std::stoi(lineStr.substr(commaIdx +	1));
+		y = std::stoi(lineStr.substr(commaIdx +	1, spaceIdx - commaIdx));
+		waitMs = std::stoi(lineStr.substr(spaceIdx + 1));
 		
 		glm::vec2 pos = { (float)(x - 1) * MAP_SCALE, (float)(y - 1) * -MAP_SCALE };
 		pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
-		route->push_back({ pos });
+		route->push_back(NPCRoutePoint(pos, waitMs));
 	}
 
 	file.close();

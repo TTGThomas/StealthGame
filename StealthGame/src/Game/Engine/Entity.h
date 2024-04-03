@@ -11,5 +11,7 @@
 class Entity : public Object
 {
 public:
+	virtual void Init(std::vector<QuadInitDesc>& descs) override;
+
 	void Move(CollisionDetector* collision, float x, float y);
 };

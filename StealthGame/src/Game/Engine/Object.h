@@ -27,7 +27,7 @@ public:
 	Object() = default;
 	Object(std::vector<QuadInitDesc>& descs);
 
-	inline void Init(std::vector<QuadInitDesc>& descs);
+	virtual void Init(std::vector<QuadInitDesc>& descs);
 
 	Quad* GetQuad(int index) { return &GlobalData::Get().m_scene->GetQuads()[m_uuids[index].GetUUID()]; }
 	const std::vector<UUID>& GetUUIDs() { return m_uuids; }

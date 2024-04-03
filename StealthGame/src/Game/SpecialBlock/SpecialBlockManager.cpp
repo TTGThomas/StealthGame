@@ -17,17 +17,14 @@ std::shared_ptr<Interaction> SpecialBlockManager::GetClosestEventWithinRange(glm
 		glm::vec2 objPos = obj.GetQuad(0)->GetPos();
 		glm::vec2 diff = pos - objPos;
 		float dist = glm::length(diff); // pythagoras
-		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
+		//float dist = glm::abs(diff.x) + glm::abs(diff.y); // manhattan
 		if (dist < retDist)
 		{
-			bool last = GlobalData::Get().m_scene->GetAABBs()[obj.GetUUID(0).GetUUID()].GetEnabled();
-			GlobalData::Get().m_scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(false);
-			if (!GlobalData::Get().m_collision->Collide(0, pos, objPos).m_hasHit)
+			if (!GlobalData::Get().m_collision->Collide(3, pos, objPos).m_hasHit)
 			{
 				retDist = dist;
 				retIndex = i;
 			}
-			GlobalData::Get().m_scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(last);
 		}
 	}
 	if (retIndex == -1)

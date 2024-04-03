@@ -15,9 +15,10 @@ struct CollisionPayload
 	UUID m_uuid;
 };
 
-// collision layer 0: map collision
-// collision layer 1: NPC collision
+// collision layer 0: all object collision
+// collision layer 1: entity collision
 // Collision layer 2: damager collision
+// collision layer 3: map object collision(excludes special blocks which include door, exits, ...)
 class CollisionDetector
 {
 public:

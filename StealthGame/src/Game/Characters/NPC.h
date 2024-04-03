@@ -29,10 +29,11 @@ void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculat
 
 struct NPCRoutePoint
 {
-	NPCRoutePoint(glm::vec2 pos)
-		: m_pos(pos) {}
+	NPCRoutePoint(glm::vec2 pos, int waitMs = 0)
+		: m_pos(pos), m_waitMs(waitMs) {}
 
 	glm::vec2 m_pos;
+	int m_waitMs = 0;
 };
 
 // first quad in the list acts as the hitbox
@@ -154,6 +155,9 @@ private:
 
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;
+
+	bool m_isAtTarget = false;
+	float m_timeAtTarget = 0.0f;
 
 	Identities m_type = Identities::GUEST;
 	State m_state = State::NORMAL;

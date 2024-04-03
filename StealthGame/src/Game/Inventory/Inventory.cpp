@@ -23,12 +23,19 @@ void Inventory::GiveEverything()
 
 void Inventory::InventoryTick(GameTickDesc& desc)
 {
-	if (KeyBoard::IsKeyPressDown(GLFW_KEY_1))
+	if (GlobalData::Get().m_gameScene->GetPlayer().GetIsHidden())
+	{
 		EquipWithIndex(desc, 0);
-	if (KeyBoard::IsKeyPressDown(GLFW_KEY_2))
-		EquipWithIndex(desc, 1);
-	if (KeyBoard::IsKeyPressDown(GLFW_KEY_3))
-		EquipWithIndex(desc, 2);
+	}
+	else
+	{
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_1))
+			EquipWithIndex(desc, 0);
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_2))
+			EquipWithIndex(desc, 1);
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_3))
+			EquipWithIndex(desc, 2);
+	}
 
 	GetEquipped()->OnEquipping();
 

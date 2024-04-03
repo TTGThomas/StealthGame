@@ -35,6 +35,7 @@ void GameScene::Init(SceneInitDesc& desc)
 	{
 		m_map.push_back(Object());
 		m_map.back().Init(objectDesc);
+		desc.m_collision->AddToLayer(3, m_map.back().GetUUID(0).GetUUID());
 	}
 
 	for (uint64_t& targetID : m_targets)
