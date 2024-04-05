@@ -95,7 +95,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +131,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);;USEIMGUI=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)vendors\include;$(SolutionDir)StealthGame\third\ImGui</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Characters\AnimBP\PlayerAnimBP.cpp" />
+    <ClCompile Include="src\Game\Animation\AnimationPlayer.cpp" />
     <ClCompile Include="src\Game\DebugManager.cpp" />
     <ClCompile Include="src\Game\Engine\Projectile.cpp" />
     <ClCompile Include="src\Game\Inventory\InventoryItems\FiberWire.cpp" />
@@ -197,6 +199,8 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Characters\AnimBP\PlayerAnimBP.h" />
+    <ClInclude Include="src\Game\Animation\AnimationPlayer.h" />
     <ClInclude Include="src\Game\DebugManager.h" />
     <ClInclude Include="src\Game\Engine\Projectile.h" />
     <ClInclude Include="src\Game\Inventory\InventoryItems\FiberWire.h" />
@@ -283,7 +287,11 @@
     <Image Include="res\NPC\NPC4.png" />
     <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
-    <Image Include="res\Player\player.png" />
+    <Image Include="res\Player\playerArm.png" />
+    <Image Include="res\Player\playerCrouchIdle.png" />
+    <Image Include="res\Player\playerCrouchWalk.png" />
+    <Image Include="res\Player\playerIdle.png" />
+    <Image Include="res\Player\playerWalk.png" />
     <Image Include="res\SpecialObjects\Container.png" />
     <Image Include="res\SpecialObjects\Door.png" />
   </ItemGroup>

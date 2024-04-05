@@ -51,6 +51,8 @@ void RenderQuad::Draw(RenderDesc& desc)
 		m_matrixLoc = LOCATION(*desc.m_shader, "u_matrix");
 		m_alphaLoc = LOCATION(*desc.m_shader, "u_alpha");
 		m_depthLoc = LOCATION(*desc.m_shader, "u_depth");
+		m_frameIndexLoc = LOCATION(*desc.m_shader, "u_frameIndex");
+		m_sideFramesLoc = LOCATION(*desc.m_shader, "u_sideFrames");
 		m_useTextureLoc = LOCATION(*desc.m_shader, "u_useTexture");
 	}
 
@@ -83,6 +85,9 @@ void RenderQuad::Draw(RenderDesc& desc)
 	
 	glUniform1f(m_alphaLoc, m_alpha);
 	glUniform1f(m_depthLoc, m_depth);
+
+	glUniform1i(m_frameIndexLoc, (int)m_frameIndex);
+	glUniform1i(m_sideFramesLoc, m_sideFrames);
 
 	glUniform1i(m_useTextureLoc, desc.m_useTexture ? 1: 0);
 

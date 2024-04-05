@@ -44,6 +44,7 @@ private:
 	// timers here
 	Timer m_gpuTimer;
 	Timer m_tickTimer;
+	Timer m_depthSortTimer;
 
 	int m_hoveredIndex = -1;
 	int m_selectedIndex = -1;

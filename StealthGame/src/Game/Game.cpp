@@ -24,6 +24,8 @@ void Game::Tick(GameTickDesc& desc)
 	Scene* scene = GlobalData::Get().m_scene;
 	GlobalData& gData = GlobalData::Get();
 
+	gData.m_deltaTime = desc.m_tickTimer->Second();
+
 	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
 	m_popUpManager.UpdatePopUps(desc);
 
@@ -100,6 +102,7 @@ void Game::ClearCurrentScene(GameTickDesc& desc)
 	m_zonePopUp.ClearResources();
 	m_exitPopUp.ClearResources();
 	m_popUpManager.ClearResources();
+	AnimationPlayer::ClearResource();
 }
 
 void Game::InteractTick(GameTickDesc& desc)

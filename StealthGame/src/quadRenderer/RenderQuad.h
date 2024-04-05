@@ -64,12 +64,16 @@ public:
 	void SetVisibility(bool visible) { m_visible = visible; }
 	void SetFollowCamera(bool follow) { m_followCamera = follow; }
 	void SetAlpha(float alpha) { m_alpha = alpha; }
+	void SetSideFrames(int sideFrames) { m_sideFrames = sideFrames; }
+	void SetFrameIndex(float frameIndex) { m_frameIndex = frameIndex; }
 
 	uint64_t getShaderUUID() { return m_shaderUUID; }
 	uint64_t GetTextureUUID() { return m_textureUUID;; }
 	float GetDepth() { return m_depth; }
 	bool GetVisible() { return m_visible; }
 	bool GetFollowCamera() { return m_followCamera; }
+	int GetSideFrames() { return m_sideFrames; }
+	float GetFrameIndex() { return m_frameIndex; }
 private:
 	unsigned int m_vao = 0, m_vbo = 0, m_ebo = 0;
 	uint64_t m_shaderUUID = 0;
@@ -79,7 +83,12 @@ private:
 	int m_matrixLoc = -1;
 	int m_alphaLoc = -1;
 	int m_depthLoc = -1;
+	int m_frameIndexLoc = -1;
+	int m_sideFramesLoc = -1;
 	int m_useTextureLoc = -1;
+
+	float m_frameIndex = 0;
+	int m_sideFrames = 1;
 
 	glm::vec2 m_pos{};
 	glm::vec2 m_radius{};

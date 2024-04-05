@@ -6,16 +6,10 @@ void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game
 {
 	switch (index)
 	{
-	case -1:
-		LoadDebugScene(desc, scene, game);
-		break;
 	case 0:
 		LoadMenu(desc, scene, game);
 		break;
 	case 1:
-		LoadTestLevel(desc, scene, game);
-		break;
-	case 2:
 		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/", "DebugLevel");
 		break;
 	}
@@ -403,19 +397,6 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;
 	}
-	{
-		Object object;
-		glm::vec2 pos = { 1.0f, 1.5f };
-		glm::vec2 radius = { 0.3f, 0.3f };
-		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 2);
-		std::vector<QuadInitDesc> objectDesc;
-		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
-		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
-		object.Init(objectDesc);
-		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
-		specialBlockIndex++;
-	}
 
 	// Init
 	SceneInitDesc initDesc;
@@ -461,7 +442,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	Texture background(backgroundPath.c_str());
 	uint64_t backgroundID = background.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(background);
-	backgroundID = 0;
 
 	std::string foregroundPath = path;
 	foregroundPath.append(name);
@@ -469,7 +449,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	Texture foreground(foregroundPath.c_str());
 	uint64_t foregroundID = foreground.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(foreground);
-	foregroundID = 0;
 
 	GlobalData gData = GlobalData::Get();
 
@@ -522,7 +501,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 0);
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
 				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
@@ -535,7 +513,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<DoorInteract> event = std::make_shared<DoorInteract>(scene, specialBlockIndex, radius);
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
 				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
 				//desc.m_scene->GetAABBs()[object.GetUUID(0).GetUUID()].SetEnabled(false);
@@ -549,7 +526,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::vector<QuadInitDesc> objectDesc;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
 				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texContainer });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
@@ -681,7 +657,7 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_texPlayerCursor = cursor.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(cursor);
 
-	Texture player("res/Player/Player.png");
+	Texture player("res/Player/playerIdle.png");
 	GlobalData::Get().m_texPlayer = player.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(player);
 
@@ -779,7 +755,7 @@ void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos
 {
 	GlobalData& globalData = GlobalData::Get();
 
-	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, globalData.m_texLogo });
+	playerDesc->push_back({ pos, glm::vec2(0.2f, 0.2f), 0.25f, shader, globalData.m_texLogo });
 	playerDesc->push_back({ pos, glm::vec2(0.1f), 1.0f, shader, globalData.m_texPlayerCursor });
 	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, texture });
 }
@@ -791,7 +767,6 @@ void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, gl
 
 	std::vector<QuadInitDesc> mapDesc{};
 	float index = (0.6f + (allMapDesc->size() * 0.000001f));
-	mapDesc.push_back({ pos, radius, index, shader, texture });
 	mapDesc.push_back({ pos, radius, index, shader, texture });
 	allMapDesc->push_back(mapDesc);
 }

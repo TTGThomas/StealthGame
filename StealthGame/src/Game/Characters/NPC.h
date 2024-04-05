@@ -164,6 +164,9 @@ private:
 	SearchType m_searchType = SearchType::DEADBODY;
 	glm::vec2 m_searchPos = {};
 	glm::vec2 m_miniSearchPos = {};
+	float m_miniSearchingMeter = 2.0f;
+	bool m_isLocationNew = true;
+
 	DisguiseState m_disguiseStates[5];
 	float m_suspiciousMeter = 0.0f;
 	float m_searchingMeter = 0.0f;

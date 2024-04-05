@@ -451,9 +451,6 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 	}
 
 	m_speed = m_runningSpeed;
-	
-	static float m_miniSearchingMeter = 4.0f;
-	static bool m_isLocationNew = true;
 
 	if (m_isLocationNew)
 		StartMoveToLocation(m_miniSearchPos);

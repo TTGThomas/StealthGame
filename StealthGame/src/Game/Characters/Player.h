@@ -7,6 +7,9 @@
 
 #include "../Engine/Entity.h"
 
+#include "../Animation/AnimationPlayer.h"
+#include "AnimBP/PlayerAnimBP.h"
+
 #include "../Inventory/Inventory.h"
 
 #include "NPC.h"
@@ -26,6 +29,8 @@ public:
 	};
 public:
 	Player();
+
+	virtual void Init(std::vector<QuadInitDesc>& descs) override;
 
 	void ClearResources();
 
@@ -60,6 +65,7 @@ public:
 private:
 	void MovePlayer(GameTickDesc& desc);
 private:
+	PlayerAnimBP m_animBP;
 	Inventory m_inventory;
 	glm::vec2 m_velocity{};
 
@@ -73,8 +79,8 @@ private:
 	glm::vec2 m_posBeforeHidden = {};
 	UUID m_draggedNPC = 0;
 
-	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
-	constexpr static glm::vec2 m_crouchScale = { 0.2f, 0.15f };
+	constexpr static glm::vec2 m_normalScale = { 0.1f, 0.2f };
+	constexpr static glm::vec2 m_crouchScale = { 0.1f, 0.15f };
 
 	constexpr static float m_normalSpeed = 1.5f;
 	constexpr static float m_crouchSpeed = 0.9f;

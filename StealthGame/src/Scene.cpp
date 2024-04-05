@@ -54,6 +54,42 @@ void Scene::AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc)
 		m_depthOrder.emplace_back(uuid);
 }
 
+void Scene::UpdateDepthOrder()
+{
+	// bubble sort
+	if (m_depthOrder.size() < 2)
+		return;
+
+	bool valChanged = false;
+	do
+	{
+		int ptr1 = 0, ptr2 = 1;
+		for (int ptr1 = 0, ptr2 = 1; ptr2 < m_depthOrder.size(); ptr2++, ptr1++)
+		{
+			float ptr1Depth = m_renderQuads[m_depthOrder[ptr1]].GetDepth();
+			float ptr2Depth = m_renderQuads[m_depthOrder[ptr2]].GetDepth();
+
+			if (ptr1Depth > ptr2Depth)
+			{
+				valChanged = true;
+
+				uint64_t ptr1Val = m_depthOrder[ptr1];
+				m_depthOrder[ptr1] = m_depthOrder[ptr2];
+				m_depthOrder[ptr2] = ptr1Val;
+			}
+		}
+	} while (valChanged);
+
+	// check order
+	if (false)
+	{
+		std::vector<float> depths;
+		depths.resize(m_depthOrder.size());
+		for (int i = 0; i < m_depthOrder.size(); i++)
+			depths[i] = m_renderQuads[m_depthOrder[i]].GetDepth();
+	}
+}
+
 void Scene::DeleteQuad(uint64_t uuid)
 {
 	m_quads.erase(uuid);

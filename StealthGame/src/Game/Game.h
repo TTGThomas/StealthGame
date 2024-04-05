@@ -32,6 +32,8 @@
 #include "GameScene.h"
 #include "SceneLoader/SceneLoader.h"
 
+#include "Animation/AnimationPlayer.h"
+
 #include "GlobalData.h"
 
 #include "Desc.h"

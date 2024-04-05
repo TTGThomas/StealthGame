@@ -50,6 +50,8 @@ public:
 
 	void AddQuad(Quad& quad, RenderQuadInitDesc& renderQuadDesc);
 
+	void UpdateDepthOrder();
+
 	void DeleteQuad(uint64_t uuid);
 	void ClearResources();
 
@@ -59,7 +61,7 @@ public:
 	std::unordered_map<uint64_t, RenderQuad>& GetRenderQuads() { return m_renderQuads; }
 	std::unordered_map<uint64_t, AABB>& GetAABBs() { return m_aabb; }
 
-	// biggest go first
+	// smallest go first
 	std::vector<uint64_t>& GetDepthOrder() { return m_depthOrder; }
 
 	const int* GetLetterWidths() { return m_letterWidths; }

@@ -24,6 +24,8 @@ public:
 		return data;
 	}
 public:
+	// in seconds
+	float m_deltaTime = 0.0f;
 	Scene* m_scene = nullptr;
 	class GameScene* m_gameScene = nullptr;
 	class CollisionDetector* m_collision = nullptr;

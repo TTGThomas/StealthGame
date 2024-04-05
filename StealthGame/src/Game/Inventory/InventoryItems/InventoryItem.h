@@ -18,6 +18,10 @@ public:
 	virtual void OnUnequip() {}
 	virtual void OnEquipping() {}
 	virtual void OnResize(int x, int y) {}
+
+	Quad& GetQuad(int index) { return GlobalData::Get().m_scene->GetQuads()[GetUUID(index)]; }
+	uint64_t GetUUID(int index) { return m_uuids[index].GetUUID(); }
+	std::vector<UUID>& GetUUIDs() { return m_uuids; }
 protected:
 	uint64_t CreateTexture(const char* path)
 	{

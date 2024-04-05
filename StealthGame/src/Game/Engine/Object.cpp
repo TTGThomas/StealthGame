@@ -17,6 +17,7 @@ void Object::Init(std::vector<QuadInitDesc>& descs)
 
 		RenderQuadInitDesc renderDesc;
 		renderDesc.m_depth = desc.m_depth;
+		//renderDesc.m_depth = (float)rand() / (float)RAND_MAX;
 		renderDesc.m_shaderUUID = desc.m_shaderUUID;
 		renderDesc.m_textureUUID = desc.m_textureUUID;
 
@@ -27,7 +28,6 @@ void Object::Init(std::vector<QuadInitDesc>& descs)
 		m_uuids.emplace_back(uuid);
 	}
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
-	scene->GetRenderQuads()[GetUUID(0).GetUUID()].SetVisibility(false);
 
 	GlobalData::Get().m_collision->AddToLayer(0, GetUUID(0).GetUUID());
 }

@@ -4,6 +4,36 @@ Player::Player()
 {
 }
 
+void Player::Init(std::vector<QuadInitDesc>& descs)
+{
+	Scene* scene = GlobalData::Get().m_scene;
+
+	m_uuids.reserve(descs.size());
+	for (QuadInitDesc& desc : descs)
+	{
+		Quad quad(desc.m_pos, desc.m_scale);
+		uint64_t uuid = quad.GetUUID().GetUUID();
+
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = desc.m_depth;
+		//renderDesc.m_depth = (float)rand() / (float)RAND_MAX;
+		renderDesc.m_shaderUUID = desc.m_shaderUUID;
+		renderDesc.m_textureUUID = desc.m_textureUUID;
+
+		scene->AddQuad(quad, renderDesc);
+		scene->GetRenderQuads()[uuid].UpdateRenderQuad(scene, uuid);
+		scene->GetAABBs()[uuid].SetEnabled(false);
+
+		m_uuids.emplace_back(uuid);
+	}
+	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	scene->GetRenderQuads()[GetUUID(0).GetUUID()].SetVisibility(false);
+
+	GlobalData::Get().m_collision->AddToLayer(1, GetUUID(0).GetUUID());
+
+	m_animBP.Init();
+}
+
 void Player::ClearResources()
 {
 	m_inventory.ClearResources();
@@ -16,7 +46,7 @@ void Player::BindCamera(Camera* camera)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
-	//desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
+	
 	m_actionType = ActionType::NORMAL;
 	if (!m_inputEnabled)
 		return;
@@ -33,11 +63,10 @@ void Player::PlayerTick(GameTickDesc& desc)
 	}
 
 	m_inventory.InventoryTick(desc);
+	m_animBP.Tick(this);
 
 	if (m_isDragging)
 		m_actionType = ActionType::ILLEGAL;
-
-	//desc.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 void Player::HidePlayer(glm::vec2 pos)
@@ -65,17 +94,20 @@ void Player::MovePlayer(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 
 	float speed = (m_isCrouching ? m_crouchSpeed : m_normalSpeed) * desc.m_tickTimer->Second();
-	m_velocity = {};
+	glm::vec2 lastPos = GetPos();
+	glm::vec2 add = {};
 	if (KeyBoard::IsKeyDown(GLFW_KEY_W))
-		m_velocity.y += speed;
+		add.y += speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_A))
-		m_velocity.x -= speed;
+		add.x -= speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_S))
-		m_velocity.y -= speed;
+		add.y -= speed;
 	if (KeyBoard::IsKeyDown(GLFW_KEY_D))
-		m_velocity.x += speed;
+		add.x += speed;
 
-	Move(desc.m_collision, m_velocity.x, m_velocity.y);
+	Move(desc.m_collision, add.x, add.y);
+
+	m_velocity = GetPos() - lastPos;
 
 	desc.m_camera->SetPos(GetQuad(2)->GetPos());
 
@@ -89,6 +121,5 @@ void Player::MovePlayer(GameTickDesc& desc)
 		m_isCrouching = true;
 
 	// synch hitbox and character
-	GetQuad(2)->SetRadius(GetQuad(0)->GetRadius());
 	GetQuad(2)->SetPos(GetQuad(0)->GetPos());
 }

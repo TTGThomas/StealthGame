@@ -34,9 +34,6 @@ void FiberWire::OnEquipping()
 
 	{
 		glm::vec2 pos = gData.m_gameScene->GetPlayer().GetPos();
-		glm::vec2 playerVel = gData.m_gameScene->GetPlayer().GetVelocity();
-		if (glm::abs(playerVel.x) + glm::abs(playerVel.y) > 0.0f)
-			pos += 0.2f * glm::normalize(playerVel);
 		gData.m_scene->GetQuads()[m_uuids[1].GetUUID()].SetPos(pos);
 	}
 }

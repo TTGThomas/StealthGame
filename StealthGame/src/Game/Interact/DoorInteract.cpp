@@ -13,19 +13,19 @@ void DoorInteract::OnInteract()
 	if (m_isOpen)
 	{
 		scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(false);
-		obj.GetQuad(1)->SetRadius({});
+		obj.GetQuad(0)->SetRadius({});
 	}
 	else
 	{
 		scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(true);
-		obj.GetQuad(1)->SetRadius(m_radius);
+		obj.GetQuad(0)->SetRadius(m_radius);
 		
 		CollisionPayload payload = collision->Collide(1, obj.GetUUID(0));
 		if (payload.m_hasHit)
 		{
 			m_isOpen = true;
 			scene->GetAABBs()[obj.GetUUID(0).GetUUID()].SetEnabled(false);
-			obj.GetQuad(1)->SetRadius({});
+			obj.GetQuad(0)->SetRadius({});
 		}
 	}
 }

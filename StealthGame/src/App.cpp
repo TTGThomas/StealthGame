@@ -47,6 +47,7 @@ void App::Tick()
 	ImGui::Begin("Stats");
 	ImGui::Text("FPS: %ffps", ImGui::GetIO().Framerate);
 	ImGui::Text("MS: %fms", m_tickTimer.Ms());
+	ImGui::Text("Depth Sort Timer: %fms", m_depthSortTimer.Ms());
 	ImGui::Text("GPU Timer: %fms", m_gpuTimer.Ms());
 	ImGui::Text("CPU Timer: %fms", m_tickTimer.Ms() - m_gpuTimer.Ms());
 	ImGui::Text("Hovered Index: %i", m_hoveredIndex);
@@ -64,6 +65,10 @@ void App::Tick()
 	{
 		m_game.OnResize(m_window.GetWidth(), m_window.GetHeight());
 	}
+
+	m_depthSortTimer.Start();
+	m_scene.UpdateDepthOrder();
+	m_depthSortTimer.Stop();
 
 	m_gpuTimer.Start();
 	m_renderer.Render(m_window.GetRatio(), m_hoveredIndex);

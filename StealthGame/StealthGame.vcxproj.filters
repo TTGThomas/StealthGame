@@ -171,6 +171,12 @@
     <ClCompile Include="src\Game\DebugManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Animation\AnimationPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Characters\AnimBP\PlayerAnimBP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -353,6 +359,12 @@
     <ClInclude Include="src\Game\DebugManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Animation\AnimationPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Characters\AnimBP\PlayerAnimBP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -363,7 +375,7 @@
     <Image Include="res\logo.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\player.png">
+    <Image Include="res\Player\playerIdle.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\NPC\NPC0.png">
@@ -424,6 +436,18 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Player\playerWalk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Player\playerCrouchIdle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Player\playerCrouchWalk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Player\playerArm.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -7,7 +7,7 @@ Projectile::Projectile(glm::vec2 pos, float rot, uint64_t& texID)
 	m_lifeStart = (float)glfwGetTime();
 
 	m_vel = { glm::sin(glm::radians(rot)), glm::cos(glm::radians(rot)) };
-	m_pos = pos + m_vel * 0.41f;
+	m_pos = pos + m_vel * 0.15f;
 
 	std::vector<QuadInitDesc> descs;
 	float size = 0.05f;
@@ -16,7 +16,7 @@ Projectile::Projectile(glm::vec2 pos, float rot, uint64_t& texID)
 	m_entity.Init(descs);
 	gData.m_collision->AddToLayer(2, m_entity.GetUUID(0).GetUUID());
 	
-	m_speed = 3.0f;
+	m_speed = 10.0f;
 }
 
 bool Projectile::Tick(GameTickDesc& desc)
@@ -26,7 +26,7 @@ bool Projectile::Tick(GameTickDesc& desc)
 
 	bool ret = true;
 
-	if ((float)glfwGetTime() - m_lifeStart > 1.0f)
+	if ((float)glfwGetTime() - m_lifeStart > 5.0f)
 		ret = false;
 	if (gData.m_collision->Collide(0, m_entity.GetUUID(0)).m_hasHit)
 		ret = false;

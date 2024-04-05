@@ -14,8 +14,8 @@ void Gun::OnEquip()
 		m_texHUD = CreateTexture("res/Inventories/GunHUD.png");
 	if (m_texInGame == 0)
 		m_texInGame = CreateTexture("res/Inventories/Gun.png");
-	AddQuad({}, { 0.2f, 0.2f }, false, m_texHUD);
-	AddQuad({}, { 0.2f, 0.2f }, true, m_texInGame);
+	AddQuad({}, { 0.1f, 0.1f }, false, m_texHUD);
+	AddQuad({}, { 0.1f, 0.1f }, true, m_texInGame);
 }
 
 void Gun::OnUnequip()
@@ -40,12 +40,17 @@ void Gun::OnEquipping()
 	mousePos.x *= 1.0f / (m_windowScale.y / m_windowScale.x);
 	mousePos.y = -mousePos.y;
 	float rotation = AngleFromPoint(player.GetPos(), player.GetPos() + mousePos);
-	gData.m_scene->GetQuads()[m_uuids[1].GetUUID()].SetRotation(rotation);
+	gData.m_scene->GetQuads()[GetUUID(1)].SetRotation(rotation);
 
 	glm::vec2 pos = player.GetPos();
 	glm::vec2 front = { glm::sin(glm::radians(rotation)), glm::cos(glm::radians(rotation)) };
-	pos += 0.4f * front;
-	gData.m_scene->GetQuads()[m_uuids[1].GetUUID()].SetPos(pos);
+	pos += 0.15f * front;
+	float pixelSize = 0.2f / 16.0f;
+	if (rotation > 180.0f)
+		gData.m_scene->GetQuads()[GetUUID(1)].SetRadius({ -0.1f, 0.1f });
+	else
+		gData.m_scene->GetQuads()[GetUUID(1)].SetRadius({ 0.1f, 0.1f });
+	gData.m_scene->GetQuads()[GetUUID(1)].SetPos(pos);
 
 	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT))
 	{
