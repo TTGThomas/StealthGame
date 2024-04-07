@@ -132,6 +132,8 @@ void PlayerAnimBP::Tick(Player* player)
 		}
 	}
 
+	float pixelSize = 0.2f / 16.0f;
+
 	if (player->GetInventory().GetEquippiedType() == Inventory::Type::GUN)
 	{
 		float rotation = player->GetInventory().GetEquipped()->GetQuad(1).GetRotation();
@@ -156,9 +158,12 @@ void PlayerAnimBP::Tick(Player* player)
 
 	if (player->GetInventory().GetEquippiedType() == Inventory::Type::FIBERWIRE)
 	{
+		float averageRot = leftArm.GetRotation();
 		glm::vec2 pos = leftArm.GetPos() + rightArm.GetPos();
 		pos /= 2.0f;
-		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos + glm::vec2(0.0f, 4.0f * (0.2f / 16.0f)));
+		pos.x += 3.0f * pixelSize * glm::sin(glm::radians(averageRot));
+		pos.y += 3.0f * pixelSize * glm::cos(glm::radians(averageRot));
+		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos);
 	}
 
 	UpdateArms(player, leftArmPos, rightArmPos);

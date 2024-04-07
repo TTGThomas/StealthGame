@@ -1,6 +1,6 @@
 #include "AABB.h"
 
-AABB::AABB(glm::vec2 minPos, glm::vec2 maxPos, UUID uuid)
+AABB::AABB(glm::vec2 minPos, glm::vec2 maxPos, GameUUID uuid)
 {
 	m_uuid = uuid;
 	m_minPos = minPos;

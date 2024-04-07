@@ -21,7 +21,7 @@ void ItemsManager::DeleteItem(uint64_t uuid)
 	m_items.erase(uuid);
 }
 
-UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
+GameUUID ItemsManager::GetNearestUUID(glm::vec2 pos)
 {
 	uint64_t ret = 0;
 	float retDist = -1.0f;
@@ -37,7 +37,7 @@ UUID ItemsManager::GetNearestUUID(glm::vec2 pos)
 			ret = uuid;
 		}
 	}
-	return UUID(ret);
+	return GameUUID(ret);
 }
 
 std::shared_ptr<Item> ItemsManager::GetNearestItem(glm::vec2 pos)

@@ -30,9 +30,9 @@ public:
 	void OnDelete(GameTickDesc& desc);
 
 	Quad* GetQuad(int index) { return &GlobalData::Get().m_scene->GetQuads()[m_uuids[index].GetUUID()]; }
-	const std::vector<UUID>& GetUUIDs() { return m_uuids; }
-	UUID& GetUUID(int index) { return m_uuids[index]; }
-	UUID GetPopUUID() { return m_popUUID; }
+	const std::vector<GameUUID>& GetUUIDs() { return m_uuids; }
+	GameUUID& GetUUID(int index) { return m_uuids[index]; }
+	GameUUID GetPopUUID() { return m_popUUID; }
 public:
 	// pos is the top left point of the letter
 	void ClearQuads(GameTickDesc& desc);
@@ -40,8 +40,8 @@ public:
 	void AddQuad(GameTickDesc& desc, uint64_t textureID, glm::vec2 radius, glm::vec2 pos);
 	void SetQuadPos(Quad* quad, glm::vec2 pos);
 private:
-	UUID m_popUUID;
-	std::vector<UUID> m_uuids;
+	GameUUID m_popUUID;
+	std::vector<GameUUID> m_uuids;
 
 	float m_createTime = 0.0f;
 

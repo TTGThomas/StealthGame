@@ -12,6 +12,7 @@ R: vip guard - target
 t: exit
 y: door
 u: containers
+b: body concentration
 
 world is split into quads that are 0.3f in radius
 each quad gets 20 pixels

@@ -20,7 +20,6 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene, Game* gam
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadTextures(desc);
 	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -83,11 +82,11 @@ void SceneLoader::LoadDebugScene(GameTickDesc& desc, GameScene* scene, Game* gam
 
 	// trespassing zones
 	std::vector<AABB> trespassingZones = {};
-	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0001f, 3.0f }, UUID()));
+	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0001f, 3.0f }, GameUUID()));
 
 	// hostile zones
 	std::vector<AABB> hostileZones = {};
-	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, UUID()));
+	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, GameUUID()));
 
 	// special objects
 	int specialBlockIndex = 0;
@@ -187,7 +186,6 @@ void SceneLoader::LoadTestLevel(GameTickDesc& desc, GameScene* scene, Game* game
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadTextures(desc);
 	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -250,11 +248,11 @@ void SceneLoader::LoadTestLevel(GameTickDesc& desc, GameScene* scene, Game* game
 
 	// trespassing zones
 	std::vector<AABB> trespassingZones = {};
-	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0001f, 3.0f }, UUID()));
+	trespassingZones.emplace_back(AABB({ -0.8f, 1.0f }, { 0.0001f, 3.0f }, GameUUID()));
 
 	// hostile zones
 	std::vector<AABB> hostileZones = {};
-	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, UUID()));
+	hostileZones.emplace_back(AABB({ 0.0f, 1.0f }, { 0.8f, 3.0f }, GameUUID()));
 
 	// special objects
 	int specialBlockIndex = 0;
@@ -339,7 +337,6 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
 
-	LoadTextures(desc);
 	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
@@ -433,7 +430,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		return;
 	}
 
-	LoadTextures(desc);
 	LoadConstants(desc, scene, game);
 
 	std::string backgroundPath = path;
@@ -450,7 +446,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	uint64_t foregroundID = foreground.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(foreground);
 
-	GlobalData gData = GlobalData::Get();
+	GlobalData& gData = GlobalData::Get();
 
 	std::vector<QuadInitDesc> playerDesc{};
 
@@ -576,6 +572,8 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				else
 					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::VIPGUARD, gData.m_defaultShader, gData.m_texNPC3, npcRoute);
 			}
+			else if (c == 'b')
+				gData.m_bodyConcentrationPos = pos;
 
 			noChar++;
 		}
@@ -603,11 +601,11 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 			if (c == 'H')
 			{
-				hostileZones.emplace_back(AABB(minPos, maxPos, UUID()));
+				hostileZones.emplace_back(AABB(minPos, maxPos, GameUUID()));
 			}
 			else if (c == 'T')
 			{
-				trespassingZones.emplace_back(AABB(minPos, maxPos, UUID()));
+				trespassingZones.emplace_back(AABB(minPos, maxPos, GameUUID()));
 			}
 			noChar++;
 		}
@@ -636,6 +634,9 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
 {
+	LoadTextures(desc);
+	LoadAudio(desc);
+
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
 	desc.m_collision->SetLayers(4);
@@ -665,15 +666,23 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_texNPCDead = npcDead.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDead);
 
-	Texture npc0("res/NPC/NPC0.png");
+	Texture npc0("res/NPC/NPC0/idle.png");
 	GlobalData::Get().m_texNPC0 = npc0.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc0);
 
-	Texture npc2("res/NPC/NPC2.png");
+	Texture npc1("res/NPC/NPC1/idle.png");
+	GlobalData::Get().m_texNPC1 = npc1.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(npc1);
+
+	Texture npc2("res/NPC/NPC2/idle.png");
 	GlobalData::Get().m_texNPC2 = npc2.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc2);
 
-	Texture npc4("res/NPC/NPC4.png");
+	Texture npc3("res/NPC/NPC3/idle.png");
+	GlobalData::Get().m_texNPC3 = npc3.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(npc3);
+
+	Texture npc4("res/NPC/NPC4/idle.png");
 	GlobalData::Get().m_texNPC4 = npc4.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc4);
 
@@ -692,6 +701,23 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	Texture door("res/SpecialObjects/Door.png");
 	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(door);
+}
+
+void SceneLoader::LoadAudio(GameTickDesc& desc)
+{
+	GlobalData& gData = GlobalData::Get();
+
+	AudioManager& audio = desc.m_scene->GetAudio();
+	audio.Init();
+
+	audio.LoadRawSound("res/Audio/BohemianRapsody.mp3");
+	gData.m_audioBR = audio.LastRawSoundIndex();
+
+	audio.LoadRawSound("res/Audio/Gun/gunshot1.mp3");
+	gData.m_audioGun1 = audio.LastRawSoundIndex();
+
+	GameUUID uuid = audio.AddSound(gData.m_audioBR, { 0.0f, 0.0f }, 0.0f, false, true);
+	audio.StartSound(uuid);
 }
 
 void SceneLoader::GetNPCDataFromFile(std::vector<std::string>* names, std::vector<NPCRoutePoint>* route, const char* path, int row, int line)

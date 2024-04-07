@@ -27,12 +27,12 @@ public:
 	{
 		Task() = default;
 
-		Task(TaskType type, std::string text, UUID taskUUID)
+		Task(TaskType type, std::string text, GameUUID taskUUID)
 			: m_type(type), m_text(text), m_uuid(taskUUID) {}
 
 		TaskType m_type = TaskType::ELIMINATE;
 		std::string m_text;
-		UUID m_uuid = 1;
+		GameUUID m_uuid = 1;
 	};
 public:
 	TaskBar() = default;
@@ -51,8 +51,8 @@ public:
 	void ShowStatsWindow();
 	
 	Quad* GetQuad(int index) { return &GlobalData::Get().m_scene->GetQuads()[m_uuids[index].GetUUID()]; }
-	const std::vector<UUID>& GetUUIDs() { return m_uuids; }
-	UUID& GetUUID(int index) { return m_uuids[index]; }
+	const std::vector<GameUUID>& GetUUIDs() { return m_uuids; }
+	GameUUID& GetUUID(int index) { return m_uuids[index]; }
 private:
 	// pos is the top left point of the letter
 	void AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec3 color);
@@ -63,7 +63,7 @@ private:
 private:
 	bool m_changed = true;
 
-	std::vector<UUID> m_uuids;
+	std::vector<GameUUID> m_uuids;
 	std::vector<uint64_t> m_iconTextures;
 	std::unordered_map<uint64_t, Task> m_tasks;
 	std::vector<uint64_t> m_taskOrder;

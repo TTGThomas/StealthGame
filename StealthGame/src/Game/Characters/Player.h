@@ -58,7 +58,7 @@ public:
 	bool GetIsCrouching() { return m_isCrouching; }
 	bool GetIsDragging() { return m_isDragging; }
 	bool GetIsHidden() { return m_isHidden; }
-	UUID GetDraggedNPCID() { return m_draggedNPC; }
+	GameUUID GetDraggedNPCID() { return m_draggedNPC; }
 	void EliminateNPC(NPC& victim);
 	ActionType GetActionType() { return m_actionType; }
 	Inventory& GetInventory() { return m_inventory; }
@@ -77,7 +77,7 @@ private:
 	bool m_isDragging = false;
 	bool m_isHidden = false;
 	glm::vec2 m_posBeforeHidden = {};
-	UUID m_draggedNPC = 0;
+	GameUUID m_draggedNPC = 0;
 
 	constexpr static glm::vec2 m_normalScale = { 0.1f, 0.2f };
 	constexpr static glm::vec2 m_crouchScale = { 0.1f, 0.15f };

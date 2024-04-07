@@ -28,6 +28,7 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+	m_audio.Cleanup();
 	delete[] m_letterAtlas;
 }
 
@@ -108,6 +109,7 @@ void Scene::DeleteQuad(uint64_t uuid)
 
 void Scene::ClearResources()
 {
+	m_audio.Cleanup();
 	m_quads.clear();
 	m_renderQuads.clear();
 	m_aabb.clear();

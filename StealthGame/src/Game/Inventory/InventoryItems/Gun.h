@@ -15,16 +15,12 @@ public:
 	virtual void OnEquipping() override;
 	virtual void OnResize(int x, int y) override;
 
-	static void ProjectileTick(GameTickDesc& desc);
-
 	static void ClearResources();
 private:
 	float AngleFromPoint(glm::vec2 start, glm::vec2 end);
 private:
 	static uint64_t m_texHUD;
 	static uint64_t m_texInGame;
-
-	static std::vector<Projectile> m_projectiles;
 
 	glm::vec2 m_HUDpos;
 

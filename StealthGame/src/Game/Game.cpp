@@ -28,6 +28,7 @@ void Game::Tick(GameTickDesc& desc)
 
 	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
 	m_popUpManager.UpdatePopUps(desc);
+	m_gameScene.UpdateProjectiles();
 
 	ShowStatsWindow();
 	m_gameScene.GetTaskbar().ShowStatsWindow();

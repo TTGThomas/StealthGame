@@ -5,9 +5,9 @@ void VisualLayers::Init(GameTickDesc& desc, uint64_t backgroundTexID, uint64_t f
 	// background = -0.1f
 	// foreground = 0.99f
 	if (foregroundTexID != 0)
-		m_foreground = UUID(AddQuad(desc, 0.99f, foregroundTexID));
+		m_foreground = GameUUID(AddQuad(desc, 0.99f, foregroundTexID));
 	if (backgroundTexID != 0)
-		m_background = UUID(AddQuad(desc, -0.1f, backgroundTexID));
+		m_background = GameUUID(AddQuad(desc, -0.1f, backgroundTexID));
 }
 
 uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float depth, uint64_t texID)

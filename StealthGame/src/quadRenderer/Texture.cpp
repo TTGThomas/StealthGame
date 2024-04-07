@@ -24,7 +24,7 @@ void Texture::Init(const char* filePath)
 		type = GL_RGBA;
 
 	if (data == nullptr)
-		std::cout << "fail to load file: " << filePath << std::endl;
+		std::cout << "fail to load file: " << filePath << ";" << std::endl;
 
 	glBindTexture(GL_TEXTURE_2D, m_id);
 

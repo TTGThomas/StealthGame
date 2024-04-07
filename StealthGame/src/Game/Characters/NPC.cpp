@@ -1,5 +1,8 @@
 #include "NPC.h"
 
+// TODO: deprecate std::string
+#include <string>
+
 #include "Player.h"
 #include "../GameScene.h"
 
@@ -9,10 +12,14 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 {
 	Entity::Init(desc);
 	m_name = name;
+
+	m_animBP.Init(m_type);
 }
 
 void NPC::NPCTick(GameTickDesc& desc)
 {
+	glm::vec2 lastPos = GetPos();
+
 	if (m_health > 0)
 	{
 		SetPos(GetPos());
@@ -30,6 +37,9 @@ void NPC::NPCTick(GameTickDesc& desc)
 	{
 		TickDead(desc);
 	}
+	m_velocity = GetPos() - lastPos;
+
+	m_animBP.Tick(this);
 
 	while (m_dir > 360.0f)
 		m_dir -= 360.0f;
@@ -263,7 +273,7 @@ void NPC::TickGuard(GameTickDesc& desc)
 			TickGuardSearchILLEGALWEAPON(desc);
 	}
 
-	if (m_state != State::PANIC && m_state != State::SEARCHING)
+	if (m_state != State::PANIC)
 	{
 		// goes through every item the npc sees
 		for (uint64_t& uuid : m_detectedItems)
@@ -282,7 +292,7 @@ void NPC::TickGuard(GameTickDesc& desc)
 					m_detectedDeadNPCs.insert(uuid);
 					gData.m_bodiesFound++;
 
-					Search(npc->GetPos(), 20.0f, SearchType::DEADBODY);
+					Search((void*)npc, npc->GetPos(), 20.0f, SearchType::DEADBODY);
 				}
 			}
 			else
@@ -291,6 +301,10 @@ void NPC::TickGuard(GameTickDesc& desc)
 					m_state = State::PANIC;
 			}
 		}
+
+		if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_MIDDLE))
+			if (glm::distance(GetPos(), player->GetPos()) < 5.0f || true)
+				Search(nullptr, player->GetPos(), 10.0f, SearchType::GUNSHOT);
 	}
 }
 
@@ -298,6 +312,8 @@ void NPC::TickNonStatic(GameTickDesc& desc)
 {
 	GlobalData& gData = GlobalData::Get();
 	Player* player = &gData.m_gameScene->GetPlayer();
+
+	AnimationPlayer::PlayAnimation(GetUUID(1).GetUUID(), 30.0f, 3, 8);
 
 	if (m_state != State::PANIC && m_state != State::SEARCHING)
 	{
@@ -434,60 +450,135 @@ void NPC::TickDead(GameTickDesc& desc)
 
 void NPC::TickGuardSearchBody(GameTickDesc& desc)
 {
-	// TODO: Make guards drag the body to somewhere safe after pathfinding is done
-
 	Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 
-	m_searchingMeter -= desc.m_tickTimer->Second();
-	if (IsPlayerDetected())
+	if (m_searchingMeter > 0.0f)
 	{
-		static bool first = true;
-		if (first)
+		// phrase 1 - search body
+		m_searchingMeter -= desc.m_tickTimer->Second();
+		if (IsPlayerDetected())
 		{
-			first = false;
-			if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
-				m_state = State::PANIC;
+			if (m_onSeachEnter)
+			{
+				m_onSeachEnter = false;
+				if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
+					m_state = State::PANIC;
+			}
 		}
-	}
 
-	m_speed = m_runningSpeed;
+		m_speed = m_runningSpeed;
 
-	if (m_isLocationNew)
-		StartMoveToLocation(m_miniSearchPos);
+		if (m_isLocationNew)
+			StartMoveToLocation(m_miniSearchPos);
 
-	if (MoveToLocation(desc.m_tickTimer->Second()))
-	{
-		if (m_miniSearchingMeter > 0.0f)
+		if (MoveToLocation(desc.m_tickTimer->Second()))
 		{
-			m_miniSearchingMeter -= desc.m_tickTimer->Second();
+			if (m_miniSearchingMeter > 0.0f)
+			{
+				m_miniSearchingMeter -= desc.m_tickTimer->Second();
+			}
+			else
+			{
+				m_isLocationNew = true;
+
+				glm::vec2 add = {};
+				float deg = (float)rand() / (float)RAND_MAX * glm::radians(360.0f);
+				add.x = 0.5f * glm::sin(deg);
+				add.y = 0.5f * glm::cos(deg);
+				m_miniSearchPos = m_searchPos + add;
+				m_miniSearchingMeter = 2.0f;
+			}
 		}
 		else
 		{
-			m_isLocationNew = true;
+			m_isLocationNew = false;
+		}
 
-			glm::vec2 add = {};
-			float deg = (float)rand() / (float)RAND_MAX * glm::radians(360.0f);
-			add.x = 0.5f * glm::sin(deg);
-			add.y = 0.5f * glm::cos(deg);
-			m_miniSearchPos = m_searchPos + add;
-			m_miniSearchingMeter = 2.0f;
+		if (m_searchingMeter < 0.0f)
+		{
+			m_searchingMeter = 0.0f;
+			m_speed = m_normalSpeed;
+			m_isLocationNew = true;
 		}
 	}
-	else
+	else if (m_searchingMeter == 0.0f)
 	{
-		m_isLocationNew = false;
-	}
+		// phrase 2 - return to route and teleport body to point
+		if (m_isLocationNew)
+		{
+			((NPC*)m_seachParam)->SetPos(GlobalData::Get().m_bodyConcentrationPos);
+			StartMoveToLocation(m_route[m_targetRouteIndex].m_pos);
+		}
 
-	if (m_searchingMeter < 0.0f)
-	{
-		m_state = State::NORMAL;
-		m_searchingMeter = 0.0f;
-		m_speed = m_normalSpeed;
+		if (MoveToLocation(desc.m_tickTimer->Second()))
+		{
+			m_state = State::NORMAL;
+			m_searchingMeter = 0.0f;
+		}
+		else
+		{
+			m_isLocationNew = false;
+		}
 	}
 }
 
 void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
 {
+	Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+
+	if (m_searchingMeter > 0.0f)
+	{
+		// phrase 1 - search gunshot source
+		m_searchingMeter -= desc.m_tickTimer->Second();
+		if (IsPlayerDetected())
+		{
+			if (m_onSeachEnter)
+			{
+				m_onSeachEnter = false;
+				if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
+					m_state = State::PANIC;
+			}
+		}
+
+		m_speed = m_runningSpeed;
+
+		if (m_isLocationNew)
+			StartMoveToLocation(m_searchPos);
+
+		if (m_dynamicRoute.empty() && m_isDynamicRouteCalculated)
+		{
+			m_state = State::NORMAL;
+			m_searchingMeter = 0.0f;
+			m_isLocationNew = true;
+		}
+		
+		if (!MoveToLocation(desc.m_tickTimer->Second()))
+			m_isLocationNew = false;
+
+		if (m_searchingMeter < 0.0f)
+		{
+			m_searchingMeter = 0.0f;
+			m_speed = m_normalSpeed;
+			m_isLocationNew = true;
+		}
+	}
+	else if (m_searchingMeter == 0.0f)
+	{
+		// phrase 2 - return to route
+		if (m_isLocationNew)
+			StartMoveToLocation(m_route[m_targetRouteIndex].m_pos);
+
+		if (MoveToLocation(desc.m_tickTimer->Second()))
+		{
+			m_state = State::NORMAL;
+			m_searchingMeter = 0.0f;
+			m_isLocationNew = true;
+		}
+		else
+		{
+			m_isLocationNew = false;
+		}
+	}
 }
 
 void NPC::TickGuardSearchILLEGALWEAPON(GameTickDesc& desc)
@@ -509,8 +600,8 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	Player* player = &gData.m_gameScene->GetPlayer();
 	Scene* scene = gData.m_scene;
 
-	glm::vec2 add{};
 	float speed = m_speed * dt;
+	glm::vec2 add{};
 
 	if (GetPos().x < point.x)
 		add.x += speed;
@@ -521,13 +612,16 @@ bool NPC::MoveToTarget(float dt, glm::vec2 point, bool snapp)
 	if (GetPos().y > point.y)
 		add.y -= speed;
 
+	if (snapp)
+	{
+		glm::vec2 offset = point - GetPos();
+		if (glm::abs(offset.x) < glm::abs(add.x))
+			add.x = offset.x;
+		if (glm::abs(offset.y) < glm::abs(add.y))
+			add.y = offset.y;
+	}
+
 	NPCMove(add);
-
-	if (glm::distance(GetPos(), point) < 0.01f && snapp)
-		NPCMove(point - GetPos());
-
-	if (gData.m_collision->Collide(0, GetUUID(0)).m_hasHit)
-		NPCMove(GetPos() - point);
 
 	return GetPos() == point;
 }
@@ -633,7 +727,7 @@ void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculat
 	bool routeFound = false;
 	int routeIndexFound = -1;
 
-	while (true)
+	while (!openList.empty())
 	{
 		// Get Node with lowest F cost and move it to closedList
 		int index = -1;
@@ -645,7 +739,7 @@ void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculat
 		closedList.insert(index);
 
 		// add debug quad
-		DebugManager::AddDebugQuad(now.m_pos, { 0.1f, 0.1f }, 0.0f);
+		//DebugManager::AddDebugQuad(now.m_pos, { 0.1f, 0.1f }, 0.0f);
 
 		// return if route is found
 		if (glm::distance(now.m_pos, end) < 0.1f)

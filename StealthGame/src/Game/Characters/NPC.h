@@ -14,6 +14,9 @@
 
 #include "../Engine/Entity.h"
 
+#include "../Animation/AnimationPlayer.h"
+#include "AnimBP/NPCAnimBP.h"
+
 #include "../Desc.h"
 
 #include "../Items/Item.h"
@@ -80,6 +83,7 @@ public:
 	void SetIsDisposed(bool val) { m_isDisposed = val; }
 
 	void SetSpeed(float speed) { m_speed = speed; }
+	void SetNPCUUID(GameUUID uuid) { m_uuid = uuid; }
 
 	void SetSearchType(SearchType type) { m_searchType = type; }
 
@@ -87,7 +91,7 @@ public:
 
 	float GetSuspiciousMeter() { return m_suspiciousMeter; }
 	State GetState() { return m_state; }
-	UUID& GetNPCUUID() { return m_uuid; }
+	GameUUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
 	Identities GetType() { return m_type; }
 	std::string GetName() { return m_name; }
@@ -95,6 +99,7 @@ public:
 	bool GetIsDisposed() { return m_isDisposed; }
 	float GetSpeed() { return m_speed; }
 	SearchType GetSearchType() { return m_searchType; }
+	glm::vec2 GetVelocity() { return m_velocity; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -121,13 +126,16 @@ private:
 private:
 	inline bool IsThetaInView(float cosTheta);
 private:
-	void Search(glm::vec2 where, float time, SearchType type)
+	void Search(void* param, glm::vec2 where, float time, SearchType type)
 	{
 		m_state = State::SEARCHING;
 		m_searchingMeter = time;
 		m_searchPos = where;
 		m_miniSearchPos = m_searchPos;
 		m_searchType = type;
+		m_seachParam = param;
+		m_onSeachEnter = true;
+		m_isLocationNew = true;
 	}
 private:
 	// returns if it is at point or not
@@ -141,8 +149,10 @@ private:
 	float AngleFromPoint(glm::vec2 point);
 	void NPCMove(glm::vec2 vec);
 private:
-	UUID m_uuid;
+	GameUUID m_uuid;
 	CollisionDetector* m_collision;
+
+	NPCAnimBP m_animBP;
 
 	std::string m_name;
 
@@ -164,8 +174,10 @@ private:
 	SearchType m_searchType = SearchType::DEADBODY;
 	glm::vec2 m_searchPos = {};
 	glm::vec2 m_miniSearchPos = {};
+	void* m_seachParam = nullptr;// can be anything
 	float m_miniSearchingMeter = 2.0f;
 	bool m_isLocationNew = true;
+	bool m_onSeachEnter = true;
 
 	DisguiseState m_disguiseStates[5];
 	float m_suspiciousMeter = 0.0f;
@@ -179,6 +191,7 @@ private:
 	bool m_isDynamicRouteCalculated = false;
 
 	glm::vec2 m_frontVec{};
+	glm::vec2 m_velocity{};
 	
 	std::vector<uint64_t> m_detectedItems;
 	std::vector<uint64_t> m_detectedNPCs;

@@ -24,12 +24,12 @@ public:
 	void Unbind();
 
 	unsigned int GetProgram() { return m_program; }
-	UUID& GetUUID() { return m_uuid; }
+	GameUUID& GetUUID() { return m_uuid; }
 private:
 	unsigned int CompileShader(const char* path, GLenum type);
 private:
 	unsigned int m_program = 0;
-	UUID m_uuid;
+	GameUUID m_uuid;
 };
 
 #define LOCATION(shader, name) glGetUniformLocation((shader).GetProgram(), (name))

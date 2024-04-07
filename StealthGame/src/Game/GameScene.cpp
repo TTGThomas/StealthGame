@@ -18,16 +18,18 @@ void GameScene::Init(SceneInitDesc& desc)
 	{
 		NPCInitDesc& npcDesc = (*desc.m_npcs)[i];
 
-		NPC npc;
-		npc.Init(npcDesc.m_desc, npcDesc.m_name);
-		npc.BindCollision(desc.m_collision);
-		npc.BindRoute(npcDesc.m_route);
-		npc.SetType(npcDesc.m_type);
+		uint64_t uuid = GameUUID{}.GetUUID();
+		m_npcs[uuid] = NPC();
+		m_npcs[uuid].SetNPCUUID(uuid);
+
+		m_npcs[uuid].SetType(npcDesc.m_type);
+		m_npcs[uuid].Init(npcDesc.m_desc, npcDesc.m_name);
+		m_npcs[uuid].BindCollision(desc.m_collision);
+		m_npcs[uuid].BindRoute(npcDesc.m_route);
 
 		if (npcDesc.m_isTarget)
-			m_targets.emplace_back(npc.GetNPCUUID().GetUUID());
+			m_targets.emplace_back(uuid);
 
-		m_npcs[npc.GetNPCUUID().GetUUID()] = std::move(npc);
 	}
 
 	m_map.reserve(desc.m_map->size());
@@ -43,7 +45,7 @@ void GameScene::Init(SceneInitDesc& desc)
 		std::string text = "Eliminate: ";
 		text.append(m_npcs[targetID].GetName().c_str());
 
-		m_taskbar.AddTask(TaskBar::Task(TaskBar::TaskType::ELIMINATE, text, UUID(targetID)));
+		m_taskbar.AddTask(TaskBar::Task(TaskBar::TaskType::ELIMINATE, text, GameUUID(targetID)));
 	}
 	m_taskbar.AddTask({ TaskBar::TaskType::ESCAPE, "Locate the exit", 0 });
 }
@@ -65,5 +67,17 @@ void GameScene::DeleteTarget(uint64_t target)
 	{
 		m_targets.erase(m_targets.begin() + index);
 		m_taskbar.CompleteTask(target);
+	}
+}
+
+void GameScene::UpdateProjectiles()
+{
+	for (int i = 0; i < m_projectiles.size(); )
+	{
+		Projectile& proj = m_projectiles[i];
+		if (!proj.Tick())
+			m_projectiles.erase(m_projectiles.begin() + i);
+		else
+			i++;
 	}
 }

@@ -23,7 +23,7 @@ public:
 
 	void Activate(int index);
 
-	UUID& GetUUID() { return m_uuid; }
+	GameUUID& GetUUID() { return m_uuid; }
 	int GetWidth() { return m_width; }
 	int GetHeight() { return m_height; }
 public:
@@ -31,5 +31,5 @@ public:
 private:
 	unsigned int m_id = 0;
 	int m_width = 0, m_height = 0;
-	UUID m_uuid;
+	GameUUID m_uuid;
 };

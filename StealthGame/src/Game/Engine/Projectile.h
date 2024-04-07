@@ -14,7 +14,7 @@ class Projectile
 public:
 	Projectile(glm::vec2 pos, float rot, uint64_t& texID);
 
-	bool Tick(GameTickDesc& desc);
+	bool Tick();
 private:
 	Entity m_entity;
 	float m_lifeStart;

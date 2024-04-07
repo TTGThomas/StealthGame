@@ -4,7 +4,6 @@
 
 uint64_t Gun::m_texHUD;
 uint64_t Gun::m_texInGame;
-std::vector<Projectile> Gun::m_projectiles;
 
 void Gun::OnEquip()
 {
@@ -55,7 +54,8 @@ void Gun::OnEquipping()
 	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_LEFT))
 	{
 		// fire projectile
-		m_projectiles.emplace_back(player.GetPos(), rotation, gData.m_texBullet);
+		gData.m_gameScene->GetProjectiles().emplace_back(player.GetPos(), rotation, gData.m_texBullet);
+		//gData.m_scene->GetAudio().StartSound(gData.m_scene->GetAudio().AddSound(gData.m_audioBR, player.GetPos(), 5.0f, true));
 	}
 }
 
@@ -67,18 +67,6 @@ void Gun::OnResize(int x, int y)
 
 	float ratio = (float)y / (float)x;
 	m_HUDpos = { (1.0f / ratio) - 0.2f, -0.8f };
-}
-
-void Gun::ProjectileTick(GameTickDesc& desc)
-{
-	for (int i = 0; i < m_projectiles.size(); )
-	{
-		Projectile& proj = m_projectiles[i];
-		if (!proj.Tick(desc))
-			m_projectiles.erase(m_projectiles.begin() + i);
-		else
-			i++;
-	}
 }
 
 void Gun::ClearResources()

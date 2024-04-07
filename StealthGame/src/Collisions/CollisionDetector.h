@@ -12,7 +12,7 @@
 struct CollisionPayload
 {
 	bool m_hasHit;
-	UUID m_uuid;
+	GameUUID m_uuid;
 };
 
 // collision layer 0: all object collision
@@ -33,7 +33,7 @@ public:
 	CollisionPayload Collide(int layer, glm::vec2 point, bool ignoreDisabled = true);
 	CollisionPayload Collide(int layer, glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled = true);
 	CollisionPayload Collide(int layer, AABB& aabb, bool ignoreDisabled = true);
-	CollisionPayload Collide(int layer, UUID& uuid, bool ignoreDisabled = true);
+	CollisionPayload Collide(int layer, GameUUID& uuid, bool ignoreDisabled = true);
 private:
 	Scene* m_parent = nullptr;
 	std::vector<std::vector<uint64_t>> m_layers;

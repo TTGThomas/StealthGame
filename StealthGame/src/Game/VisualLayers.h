@@ -21,6 +21,6 @@ public:
 private:
 	uint64_t AddQuad(GameTickDesc& desc, float depth, uint64_t texID);
 private:
-	UUID m_foreground;
-	UUID m_background;
+	GameUUID m_foreground;
+	GameUUID m_background;
 };

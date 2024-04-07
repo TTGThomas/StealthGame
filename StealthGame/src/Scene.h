@@ -11,6 +11,8 @@
 #include "quadRenderer/RenderQuad.h"
 #include "UUID.h"
 
+#include "Audio/AudioManager.h"
+
 #include "Collisions/AABB.h"
 
 class Quad
@@ -34,12 +36,12 @@ public:
 	const glm::vec2& GetPos() { return m_pos; }
 	const glm::vec2& GetRadius() { return m_radius; }
 	float GetRotation() { return m_rotation; }
-	UUID& GetUUID() { return m_uuid; }
+	GameUUID& GetUUID() { return m_uuid; }
 private:
 	glm::vec2 m_pos{};
 	glm::vec2 m_radius{};
 	float m_rotation = 0.0f;
-	UUID m_uuid;
+	GameUUID m_uuid;
 };
 
 class Scene
@@ -65,7 +67,10 @@ public:
 	std::vector<uint64_t>& GetDepthOrder() { return m_depthOrder; }
 
 	const int* GetLetterWidths() { return m_letterWidths; }
+
+	AudioManager& GetAudio() { return m_audio; }
 private:
+	AudioManager m_audio;
 	std::unordered_map<uint64_t, Quad> m_quads;
 	std::unordered_map<uint64_t, RenderQuad> m_renderQuads;
 	std::unordered_map<uint64_t, AABB> m_aabb;

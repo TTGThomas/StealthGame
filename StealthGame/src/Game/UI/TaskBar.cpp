@@ -106,7 +106,7 @@ void TaskBar::AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec
 	float widthRatio = desc.m_scene->GetLetterWidths()[letterIndex] / 24.0f;
 	quad.SetRadius({ m_fontSize * widthRatio, m_fontSize });
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
-	m_uuids.emplace_back(UUID(uuid));
+	m_uuids.emplace_back(GameUUID(uuid));
 	RenderQuadInitDesc renderDesc;
 	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
@@ -126,7 +126,7 @@ void TaskBar::AddQuad(GameTickDesc& desc, uint64_t textureID, glm::vec2 pos)
 	uint64_t uuid = quad.GetUUID().GetUUID();
 	quad.SetRadius({ m_fontSize, m_fontSize });
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
-	m_uuids.emplace_back(UUID(uuid));
+	m_uuids.emplace_back(GameUUID(uuid));
 	RenderQuadInitDesc renderDesc;
 	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
@@ -146,7 +146,7 @@ void TaskBar::SetQuadPos(Quad* quad, glm::vec2 pos)
 
 void TaskBar::ClearQuads(GameTickDesc& desc)
 {
-	for (UUID& uuid : m_uuids)
+	for (GameUUID& uuid : m_uuids)
 	{
 		uint64_t id = uuid.GetUUID();
 		desc.m_scene->DeleteQuad(id);

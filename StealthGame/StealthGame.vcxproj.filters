@@ -177,6 +177,12 @@
     <ClCompile Include="src\Game\Characters\AnimBP\PlayerAnimBP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Characters\AnimBP\NPCAnimBP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -365,6 +371,12 @@
     <ClInclude Include="src\Game\Characters\AnimBP\PlayerAnimBP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Characters\AnimBP\NPCAnimBP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio\AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -378,7 +390,7 @@
     <Image Include="res\Player\playerIdle.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC0.png">
+    <Image Include="res\NPC\NPC0\idle.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Player\Cursor.png">
@@ -390,13 +402,13 @@
     <Image Include="res\NPC\NPCDead.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC2.png">
+    <Image Include="res\NPC\NPC2\idle.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Fonts\sample-atlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC4.png">
+    <Image Include="res\NPC\NPC4\idle.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Icons\Eliminate.png">
@@ -450,6 +462,27 @@
     <Image Include="res\Player\playerArm.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\NPC\NPC1\idle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC3\idle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC0\walk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC1\walk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC2\walk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC3\walk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NPC\NPC4\walk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />
@@ -461,5 +494,9 @@
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
     <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />
     <Text Include="res\Levels\DebugLevel\5#15.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\Audio\BohemianRapsody.mp3" />
+    <Media Include="res\Audio\Gun\gunshot1.mp3" />
   </ItemGroup>
 </Project>

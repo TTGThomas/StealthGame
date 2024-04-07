@@ -48,7 +48,7 @@ class RenderQuad
 {
 public:
 	RenderQuad() = default;
-	RenderQuad(RenderQuadInitDesc& desc, UUID uuid);
+	RenderQuad(RenderQuadInitDesc& desc, GameUUID uuid);
 
 	void Init(float depth, uint64_t shaderUUID, uint64_t textureUUID);
 	void Cleanup();
@@ -56,7 +56,7 @@ public:
 	void Draw(RenderDesc& desc);
 
 	void UpdateRenderQuad(class Scene* scene);
-	void UpdateRenderQuad(Scene* scene, UUID uuid);
+	void UpdateRenderQuad(Scene* scene, GameUUID uuid);
 
 	void SetTextureUUID(uint64_t uuid) { m_textureUUID = uuid; }
 	void SetShaderUUID(uint64_t uuid) { m_shaderUUID = uuid; }
@@ -94,7 +94,7 @@ private:
 	glm::vec2 m_radius{};
 	float m_rotation = 0.0f;
 
-	UUID m_uuid;
+	GameUUID m_uuid;
 
 	// if alpha is -1, it will use the texture alpha
 	float m_alpha = -1.0f;

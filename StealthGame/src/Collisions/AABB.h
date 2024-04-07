@@ -10,7 +10,7 @@ class AABB
 {
 public:
 	AABB() = default;
-	AABB(glm::vec2 minPos, glm::vec2 maxPos, UUID uuid);
+	AABB(glm::vec2 minPos, glm::vec2 maxPos, GameUUID uuid);
 
 	bool Collide(glm::vec2 point, bool ignoreDisabled = true);
 	bool Collide(glm::vec2 l0, glm::vec2 l1, bool ignoreDisabled = true);
@@ -32,7 +32,7 @@ private:
 	bool CollideLines(glm::vec2 a0, glm::vec2 a1, glm::vec2 b0, glm::vec2 b1);
 	float GetDistFromPos(glm::vec2 otherPos);
 private:
-	UUID m_uuid;
+	GameUUID m_uuid;
 	glm::vec2 m_minPos{};
 	glm::vec2 m_maxPos{};
 	bool m_enabled = true;

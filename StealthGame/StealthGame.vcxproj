@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Audio\AudioManager.cpp" />
+    <ClCompile Include="src\Game\Characters\AnimBP\NPCAnimBP.cpp" />
     <ClCompile Include="src\Game\Characters\AnimBP\PlayerAnimBP.cpp" />
     <ClCompile Include="src\Game\Animation\AnimationPlayer.cpp" />
     <ClCompile Include="src\Game\DebugManager.cpp" />
@@ -199,6 +201,8 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Audio\AudioManager.h" />
+    <ClInclude Include="src\Game\Characters\AnimBP\NPCAnimBP.h" />
     <ClInclude Include="src\Game\Characters\AnimBP\PlayerAnimBP.h" />
     <ClInclude Include="src\Game\Animation\AnimationPlayer.h" />
     <ClInclude Include="src\Game\DebugManager.h" />
@@ -282,9 +286,16 @@
     <Image Include="res\Levels\DebugLevel\DebugLevel-back.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
-    <Image Include="res\NPC\NPC0.png" />
-    <Image Include="res\NPC\NPC2.png" />
-    <Image Include="res\NPC\NPC4.png" />
+    <Image Include="res\NPC\NPC0\idle.png" />
+    <Image Include="res\NPC\NPC0\walk.png" />
+    <Image Include="res\NPC\NPC1\idle.png" />
+    <Image Include="res\NPC\NPC1\walk.png" />
+    <Image Include="res\NPC\NPC2\idle.png" />
+    <Image Include="res\NPC\NPC2\walk.png" />
+    <Image Include="res\NPC\NPC3\idle.png" />
+    <Image Include="res\NPC\NPC3\walk.png" />
+    <Image Include="res\NPC\NPC4\idle.png" />
+    <Image Include="res\NPC\NPC4\walk.png" />
     <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
     <Image Include="res\Player\playerArm.png" />
@@ -305,6 +316,10 @@
     <Text Include="res\Levels\DebugLevel\DebugLevel.txt" />
     <Text Include="res\Levels\LevelFormat.txt" />
     <Text Include="res\NPC\FormatInfo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\Audio\BohemianRapsody.mp3" />
+    <Media Include="res\Audio\Gun\gunshot1.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

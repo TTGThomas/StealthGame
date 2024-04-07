@@ -46,5 +46,9 @@ public:
 	uint64_t m_texContainer;
 	uint64_t m_texDoor;
 
+	uint64_t m_audioBR;
+	uint64_t m_audioGun1;
+
+	glm::vec2 m_bodyConcentrationPos;
 	int m_bodiesFound = 0;
 };

@@ -22,7 +22,7 @@ public:
 
 	void DeleteItem(uint64_t uuid);
 
-	UUID GetNearestUUID(glm::vec2 pos);
+	GameUUID GetNearestUUID(glm::vec2 pos);
 	std::shared_ptr<Item> GetNearestItem(glm::vec2 pos);
 
 	std::shared_ptr<Item> GetItem(uint64_t key) { return m_items[key]; }

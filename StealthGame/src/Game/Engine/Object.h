@@ -30,8 +30,8 @@ public:
 	virtual void Init(std::vector<QuadInitDesc>& descs);
 
 	Quad* GetQuad(int index) { return &GlobalData::Get().m_scene->GetQuads()[m_uuids[index].GetUUID()]; }
-	const std::vector<UUID>& GetUUIDs() { return m_uuids; }
-	UUID& GetUUID(int index) { return m_uuids[index]; }
+	const std::vector<GameUUID>& GetUUIDs() { return m_uuids; }
+	GameUUID& GetUUID(int index) { return m_uuids[index]; }
 protected:
-	std::vector<UUID> m_uuids;
+	std::vector<GameUUID> m_uuids;
 };

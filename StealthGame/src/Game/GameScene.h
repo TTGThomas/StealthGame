@@ -13,6 +13,7 @@
 #include "UI/TaskBar.h"
 
 #include "Engine/Object.h"
+#include "Engine/Projectile.h"
 
 #include "../quadRenderer/Camera.h"
 
@@ -70,6 +71,8 @@ public:
 
 	void DeleteTarget(uint64_t target);
 
+	void UpdateProjectiles();
+
 	std::vector<Object>& GetMap() { return m_map; }
 	const std::vector<uint64_t>& GetTargets() { return m_targets; }
 	std::unordered_map<uint64_t, NPC>& GetNPCs() { return m_npcs; }
@@ -79,9 +82,11 @@ public:
 	Zone& GetTrespassZone() { return m_trespassZone; }
 	Zone& GetHostileZone() { return m_hostileZone; }
 	SpecialBlockManager& GetSpecialBlockManager() { return m_specialBlockManager; }
+	std::vector<Projectile>& GetProjectiles() { return m_projectiles; }
 private:
 	VisualLayers m_visualLayers;
 	std::vector<Object> m_map;
+	std::vector<Projectile> m_projectiles;
 	std::unordered_map<uint64_t, NPC> m_npcs;
 	std::vector<uint64_t> m_targets;
 	ItemsManager m_items;

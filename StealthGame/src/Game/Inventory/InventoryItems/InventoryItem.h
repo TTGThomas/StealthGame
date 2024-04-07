@@ -21,7 +21,7 @@ public:
 
 	Quad& GetQuad(int index) { return GlobalData::Get().m_scene->GetQuads()[GetUUID(index)]; }
 	uint64_t GetUUID(int index) { return m_uuids[index].GetUUID(); }
-	std::vector<UUID>& GetUUIDs() { return m_uuids; }
+	std::vector<GameUUID>& GetUUIDs() { return m_uuids; }
 protected:
 	uint64_t CreateTexture(const char* path)
 	{
@@ -56,5 +56,5 @@ protected:
 		m_uuids.emplace_back(uuid);
 	}
 protected:
-	std::vector<UUID> m_uuids;
+	std::vector<GameUUID> m_uuids;
 };

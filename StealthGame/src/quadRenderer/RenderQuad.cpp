@@ -2,7 +2,7 @@
 
 #include "../Scene.h"
 
-RenderQuad::RenderQuad(RenderQuadInitDesc& desc, UUID uuid)
+RenderQuad::RenderQuad(RenderQuadInitDesc& desc, GameUUID uuid)
 {
 	m_uuid = uuid;
 	m_followCamera = desc.m_followCameraOffset;
@@ -108,7 +108,7 @@ void RenderQuad::UpdateRenderQuad(Scene* scene)
 	m_rotation = quad.GetRotation();
 }
 
-void RenderQuad::UpdateRenderQuad(Scene* scene, UUID uuid)
+void RenderQuad::UpdateRenderQuad(Scene* scene, GameUUID uuid)
 {
 	m_uuid = uuid;
 

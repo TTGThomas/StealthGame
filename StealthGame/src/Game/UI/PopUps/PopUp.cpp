@@ -41,7 +41,7 @@ void PopUp::AddLetter(GameTickDesc& desc, char letter, float fontSize, glm::vec2
 	float widthRatio = desc.m_scene->GetLetterWidths()[letterIndex] / 24.0f;
 	quad.SetRadius({ fontSize * widthRatio, fontSize });
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
-	m_uuids.emplace_back(UUID(uuid));
+	m_uuids.emplace_back(GameUUID(uuid));
 	RenderQuadInitDesc renderDesc;
 	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
@@ -62,7 +62,7 @@ void PopUp::AddQuad(GameTickDesc& desc, uint64_t textureID, glm::vec2 radius, gl
 	uint64_t uuid = quad.GetUUID().GetUUID();
 	quad.SetRadius(radius);
 	quad.SetPos(pos + glm::vec2(quad.GetRadius().x, -quad.GetRadius().y));
-	m_uuids.emplace_back(UUID(uuid));
+	m_uuids.emplace_back(GameUUID(uuid));
 	RenderQuadInitDesc renderDesc;
 	renderDesc.m_followCameraOffset = false;
 	renderDesc.m_depth = 1.0f;
@@ -82,7 +82,7 @@ void PopUp::SetQuadPos(Quad* quad, glm::vec2 pos)
 
 void PopUp::ClearQuads(GameTickDesc& desc)
 {
-	for (UUID& uuid : m_uuids)
+	for (GameUUID& uuid : m_uuids)
 	{
 		uint64_t id = uuid.GetUUID();
 		desc.m_scene->DeleteQuad(id);

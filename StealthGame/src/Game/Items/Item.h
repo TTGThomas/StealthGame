@@ -14,14 +14,14 @@
 class Item
 {
 public:
-	void SetUUID(UUID uuid) { m_uuid = uuid; }
+	void SetUUID(GameUUID uuid) { m_uuid = uuid; }
 
 	virtual void OnCollect(class GameScene* scene) {}
 
 	virtual bool IsIllegal() { return false; }
 
 	Quad& GetQuad() { return GlobalData::Get().m_scene->GetQuads()[m_uuid.GetUUID()]; }
-	UUID& GetUUID() { return m_uuid; }
+	GameUUID& GetUUID() { return m_uuid; }
 protected:
-	UUID m_uuid;
+	GameUUID m_uuid;
 };

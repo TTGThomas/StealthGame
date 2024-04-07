@@ -2,13 +2,13 @@
 
 #include <random>
 
-class UUID
+class GameUUID
 {
 public:
-	UUID();
-	UUID(uint64_t& uuid);
-	UUID(const uint64_t& uuid);
-	UUID(uint64_t&& uuid);
+	GameUUID();
+	GameUUID(uint64_t& uuid);
+	GameUUID(const uint64_t& uuid);
+	GameUUID(uint64_t&& uuid);
 
 	void RegenerateUUID();
 

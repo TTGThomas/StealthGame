@@ -59,6 +59,7 @@ void App::Tick()
 	m_camera.ShowStatsWindow();
 	MemoryCounter::ShowStatsWindow();
 
+	m_scene.GetAudio().UpdateAllSound(m_camera.GetPos());
 	UpdateGame();
 
 	if (m_window.GetIsResized())
