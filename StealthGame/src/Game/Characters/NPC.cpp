@@ -13,7 +13,7 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 	Entity::Init(desc);
 	m_name = name;
 
-	m_animBP.Init(m_type);
+	m_animBP.Init(this);
 }
 
 void NPC::NPCTick(GameTickDesc& desc)
@@ -273,7 +273,7 @@ void NPC::TickGuard(GameTickDesc& desc)
 			TickGuardSearchILLEGALWEAPON(desc);
 	}
 
-	if (m_state != State::PANIC)
+	if (m_state != State::PANIC && m_isDynamicRouteCalculated)
 	{
 		// goes through every item the npc sees
 		for (uint64_t& uuid : m_detectedItems)
@@ -302,9 +302,17 @@ void NPC::TickGuard(GameTickDesc& desc)
 			}
 		}
 
-		if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_MIDDLE))
-			if (glm::distance(GetPos(), player->GetPos()) < 5.0f || true)
+		// goes through sounds
+		AudioManager& audio = desc.m_scene->GetAudio();
+		for (auto& [uuid, sound] : audio.GetSounds())
+		{
+			if (audio.GetSoundSource(uuid) != gData.m_audioGun1)
+				continue;
+
+			float dist = glm::distance(GetPos(), audio.GetSoundPos(uuid));
+			if (dist < audio.GetSoundMinDist(uuid))
 				Search(nullptr, player->GetPos(), 10.0f, SearchType::GUNSHOT);
+		}
 	}
 }
 

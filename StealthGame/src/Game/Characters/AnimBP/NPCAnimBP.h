@@ -11,7 +11,7 @@ class NPCAnimBP
 {
 	enum class State
 	{
-		IDLE, WALKING
+		IDLE, WALKING, DEAD
 	};
 
 	struct AnimNode
@@ -45,7 +45,7 @@ class NPCAnimBP
 public:
 	NPCAnimBP() = default;
 
-	void Init(Identities identity);
+	void Init(NPC* npc);
 
 	void Tick(NPC* npc);
 
@@ -56,4 +56,5 @@ private:
 
 	char m_idlePath[22];
 	char m_walkPath[22];
+	char m_deadPath[20];
 };

@@ -55,7 +55,14 @@ void Gun::OnEquipping()
 	{
 		// fire projectile
 		gData.m_gameScene->GetProjectiles().emplace_back(player.GetPos(), rotation, gData.m_texBullet);
-		//gData.m_scene->GetAudio().StartSound(gData.m_scene->GetAudio().AddSound(gData.m_audioBR, player.GetPos(), 5.0f, true));
+		uint64_t t = gData.m_scene->GetAudio().AddSound(
+			GameUUID(gData.m_audioGun1),
+			player.GetPos(),
+			5.0f, 7.0f,
+			true,
+			false
+		).GetUUID();
+		gData.m_scene->GetAudio().StartSound(t);
 	}
 }
 

@@ -9,56 +9,38 @@
 
 #include "../UUID.h"
 
+#define MAXAUDIOS 10
+
 class AudioManager
 {
-public:
-	struct RawSound
-	{
-		RawSound() = default;
-		RawSound(ma_sound sound, bool isLoaded = true)
-			: m_sound(sound), m_isLoaded(isLoaded) {}
-
-		ma_sound m_sound;
-		bool m_isLoaded;
-	};
-
-	struct Sound
-	{
-		Sound() = default;
-		Sound(int rawSoundIndex, glm::vec2 pos, float maxDist, bool deleteOnFinsih = false, bool ignorePos = false)
-			: m_rawSoundIndex(rawSoundIndex), m_pos(pos), m_maxDist(maxDist), m_deleteOnFinish(deleteOnFinsih), m_ignorePos(ignorePos) {}
-
-		int m_rawSoundIndex;
-		glm::vec2 m_pos;
-		float m_maxDist;
-		bool m_deleteOnFinish;
-		bool m_ignorePos;
-	};
 public:
 	void Init();
 	void Cleanup();
 
-	void LoadRawSound(const char* filePath);
-	void UnloadRawSound(int index);
-
-	int LastRawSoundIndex();
-
-	GameUUID AddSound(int rawSoundIndex, glm::vec2 pos, float maxDist, bool deleteOnFinish = false, bool ignorePos = false);
+	GameUUID AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false);
+	GameUUID AddSound(GameUUID source, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false);
 	void DeleteSound(GameUUID uuid);
 
+	// delays the delete to tick
+	void AddDeleteSound(GameUUID uuid);
+
 	void StartSound(GameUUID uuid, int frameIndex = 0);
-	void UpdateSound(GameUUID uuid, glm::vec2 listenPos);
 	void UpdateAllSound(glm::vec2 listenPos);
 	void StopSound(GameUUID uuid);
 
 	bool IsSoundFinished(GameUUID uuid);
-	bool IsRawSoundFinished(int index);
 
-	std::unordered_map<uint64_t, Sound>& GetSounds() { return m_sounds; }
-	std::vector<RawSound>& GetRawSounds() { return m_rawSounds; }
-	ma_sound& SoundFromUUID(GameUUID uuid) { return m_rawSounds[m_sounds[uuid.GetUUID()].m_rawSoundIndex].m_sound; }
+	float GetSoundMinDist(GameUUID uuid);
+	float GetSoundMaxDist(GameUUID uuid);
+	glm::vec2 GetSoundPos(GameUUID uuid);
+	uint64_t GetSoundSource(GameUUID uuid);
+
+	std::unordered_map<uint64_t, ma_sound>& GetSounds() { return m_sounds; }
 private:
-	ma_engine m_engine;
-	std::unordered_map<uint64_t, Sound> m_sounds;
-	std::vector<RawSound> m_rawSounds;
+	void ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos);
+private:
+	ma_engine* m_engine;
+	std::vector<GameUUID> m_deletes;
+	std::unordered_map<uint64_t, ma_sound> m_sounds;
+	std::unordered_map<uint64_t, uint64_t> m_sources;
 };

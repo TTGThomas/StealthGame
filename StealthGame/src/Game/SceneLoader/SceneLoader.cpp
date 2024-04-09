@@ -709,15 +709,20 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 
 	AudioManager& audio = desc.m_scene->GetAudio();
 	audio.Init();
+	
+	gData.m_audioBR = audio.AddSound("res/Audio/BohemianRapsody.mp3",
+		{},
+		1.0f, 5.0f,
+		false,
+		false
+	).GetUUID();
 
-	audio.LoadRawSound("res/Audio/BohemianRapsody.mp3");
-	gData.m_audioBR = audio.LastRawSoundIndex();
-
-	audio.LoadRawSound("res/Audio/Gun/gunshot1.mp3");
-	gData.m_audioGun1 = audio.LastRawSoundIndex();
-
-	GameUUID uuid = audio.AddSound(gData.m_audioBR, { 0.0f, 0.0f }, 0.0f, false, true);
-	audio.StartSound(uuid);
+	gData.m_audioGun1 = audio.AddSound("res/Audio/Gun/gunshot1.mp3",
+		{},
+		1.0f, 5.0f,
+		false,
+		false
+	).GetUUID();
 }
 
 void SceneLoader::GetNPCDataFromFile(std::vector<std::string>* names, std::vector<NPCRoutePoint>* route, const char* path, int row, int line)

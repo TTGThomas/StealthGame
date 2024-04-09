@@ -25,6 +25,8 @@
 
 #include "../DebugManager.h"
 
+#undef min
+
 class Player;
 class CollisionDetector;
 
@@ -84,6 +86,7 @@ public:
 
 	void SetSpeed(float speed) { m_speed = speed; }
 	void SetNPCUUID(GameUUID uuid) { m_uuid = uuid; }
+	void SetIsTarget(bool isTarget) { m_isTarget = isTarget; }
 
 	void SetSearchType(SearchType type) { m_searchType = type; }
 
@@ -97,6 +100,7 @@ public:
 	std::string GetName() { return m_name; }
 	bool GetIsBeingDragged() { return m_isBeingDragged; }
 	bool GetIsDisposed() { return m_isDisposed; }
+	bool GetIsTarget() { return m_isTarget; }
 	float GetSpeed() { return m_speed; }
 	SearchType GetSearchType() { return m_searchType; }
 	glm::vec2 GetVelocity() { return m_velocity; }
@@ -162,6 +166,7 @@ private:
 	bool m_isDisposed = false;
 
 	bool m_isWitness = false;
+	bool m_isTarget = false;
 
 	float m_dir = 0.0f;
 	float m_targetDir = 0.0f;
@@ -188,7 +193,7 @@ private:
 	std::vector<NPCRoutePoint> m_dynamicRoute;
 	int m_dynamicTargetRouteIndex = 0;
 	int m_targetRouteIndex = 0;
-	bool m_isDynamicRouteCalculated = false;
+	bool m_isDynamicRouteCalculated = true;
 
 	glm::vec2 m_frontVec{};
 	glm::vec2 m_velocity{};

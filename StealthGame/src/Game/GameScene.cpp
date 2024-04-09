@@ -23,6 +23,7 @@ void GameScene::Init(SceneInitDesc& desc)
 		m_npcs[uuid].SetNPCUUID(uuid);
 
 		m_npcs[uuid].SetType(npcDesc.m_type);
+		m_npcs[uuid].SetIsTarget(npcDesc.m_isTarget);
 		m_npcs[uuid].Init(npcDesc.m_desc, npcDesc.m_name);
 		m_npcs[uuid].BindCollision(desc.m_collision);
 		m_npcs[uuid].BindRoute(npcDesc.m_route);
