@@ -130,8 +130,17 @@ private:
 private:
 	inline bool IsThetaInView(float cosTheta);
 private:
-	void Search(void* param, glm::vec2 where, float time, SearchType type)
+	bool Search(void* param, glm::vec2 where, float time, SearchType type)
 	{
+		// gunshot > body > illegal weapon
+		if (m_state == State::SEARCHING)
+		{
+			if (m_searchType == SearchType::GUNSHOT)
+				return false;
+			else if (m_searchType == SearchType::DEADBODY)
+				return false;
+		}
+
 		m_state = State::SEARCHING;
 		m_searchingMeter = time;
 		m_searchPos = where;
@@ -140,6 +149,7 @@ private:
 		m_seachParam = param;
 		m_onSeachEnter = true;
 		m_isLocationNew = true;
+		return true;
 	}
 private:
 	// returns if it is at point or not
@@ -189,6 +199,8 @@ private:
 	float m_searchingMeter = 0.0f;
 	int m_health = 100;
 
+	float m_shootDur = 0.0f;
+
 	std::vector<NPCRoutePoint> m_route;
 	std::vector<NPCRoutePoint> m_dynamicRoute;
 	int m_dynamicTargetRouteIndex = 0;
@@ -208,5 +220,5 @@ private:
 	constexpr static float m_normalSpeed = 0.8f;
 	constexpr static float m_runningSpeed = 1.2f;
 
-	constexpr static glm::vec2 m_normalScale = { 0.2f, 0.2f };
+	constexpr static glm::vec2 m_normalScale = { 0.1f, 0.2f };
 };

@@ -483,6 +483,12 @@
     <Image Include="res\NPC\NPC4\walk.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\NPC\NPC0\disguise.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Player\disguise.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />

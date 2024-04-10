@@ -286,6 +286,7 @@
     <Image Include="res\Levels\DebugLevel\DebugLevel-back.png" />
     <Image Include="res\logo.png" />
     <Image Include="res\NPC\Dir.png" />
+    <Image Include="res\NPC\NPC0\disguise.png" />
     <Image Include="res\NPC\NPC0\idle.png" />
     <Image Include="res\NPC\NPC0\walk.png" />
     <Image Include="res\NPC\NPC1\idle.png" />
@@ -298,6 +299,7 @@
     <Image Include="res\NPC\NPC4\walk.png" />
     <Image Include="res\NPC\NPCDead.png" />
     <Image Include="res\Player\Cursor.png" />
+    <Image Include="res\Player\disguise.png" />
     <Image Include="res\Player\playerArm.png" />
     <Image Include="res\Player\playerCrouchIdle.png" />
     <Image Include="res\Player\playerCrouchWalk.png" />

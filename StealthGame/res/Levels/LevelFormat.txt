@@ -1,5 +1,6 @@
  : nothing
 #: wall
+
 p: player
 q: guest
 w: vip guest
@@ -9,10 +10,16 @@ Q: guest - target
 W: vip guest - target
 E: guard - target
 R: vip guard - target
+
 t: exit
 y: door
 u: containers
 b: body concentration
+
+1: guest disguise
+2: vip guest disguise
+3: guard disguise
+4: vip guard disguise
 
 world is split into quads that are 0.3f in radius
 each quad gets 20 pixels

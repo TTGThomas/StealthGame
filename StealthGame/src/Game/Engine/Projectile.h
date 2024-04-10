@@ -12,7 +12,7 @@
 class Projectile
 {
 public:
-	Projectile(glm::vec2 pos, float rot, uint64_t& texID);
+	Projectile(glm::vec2 pos, int layer, float rot, uint64_t& texID);
 
 	bool Tick();
 private:

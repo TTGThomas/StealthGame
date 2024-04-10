@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <imgui.h>
 
 #include "../../input/KeyBoard.h"
 #include "../../input/Mouse.h"
@@ -38,6 +39,8 @@ public:
 
 	void PlayerTick(GameTickDesc& desc);
 
+	void ShowWindow();
+
 	void SetPos(glm::vec2 newPos) { GetQuad(0)->SetPos(newPos); }
 	void ChangePos(glm::vec2 pos) { GetQuad(0)->ChangePos(pos); }
 	void SetInputEnabled(bool newInput) { m_inputEnabled = newInput; }
@@ -45,6 +48,7 @@ public:
 	void SetIsDragging(bool newInput) { m_isDragging = newInput; }
 	void SetDraggedNPCID(uint64_t input) { m_draggedNPC = input; }
 	void SetActionType(ActionType type) { m_actionType = type; }
+	void SetDisguise(Identities type) { m_disguise = type; }
 
 	void HidePlayer(glm::vec2 pos);
 	void UnHidePlayer();
@@ -62,12 +66,14 @@ public:
 	void EliminateNPC(NPC& victim);
 	ActionType GetActionType() { return m_actionType; }
 	Inventory& GetInventory() { return m_inventory; }
+	Identities GetDisguise() { return m_disguise; }
 private:
 	void MovePlayer(GameTickDesc& desc);
 private:
 	PlayerAnimBP m_animBP;
 	Inventory m_inventory;
 	glm::vec2 m_velocity{};
+	Identities m_disguise = Identities::STANDARD;
 
 	ActionType m_actionType = ActionType::NORMAL;
 	bool m_inputEnabled = true;

@@ -19,6 +19,7 @@ struct CollisionPayload
 // collision layer 1: entity collision
 // Collision layer 2: damager collision
 // collision layer 3: map object collision(excludes special blocks which include door, exits, ...)
+// collision layer 4: player damager collision
 class CollisionDetector
 {
 public:

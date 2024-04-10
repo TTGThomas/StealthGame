@@ -13,6 +13,8 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 	Entity::Init(desc);
 	m_name = name;
 
+	GetQuad(0)->SetRadius(m_normalScale);
+
 	m_animBP.Init(this);
 }
 
@@ -243,27 +245,70 @@ void NPC::TickGuard(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 	Player* player = &gData.m_gameScene->GetPlayer();
 
+	if (m_state == State::NORMAL || m_state == State::SUSPICIOUS)
+		m_speed = m_normalSpeed;
+	else
+		m_speed = m_runningSpeed;
+
 	if (IsPlayerDetected())
 	{
 		if (player->GetActionType() == Player::ActionType::ILLEGAL)
 		{
 			m_state = State::PANIC;
-			m_disguiseStates[(int)Identities::STANDARD] = DisguiseState::ALERT;
+			m_disguiseStates[(int)player->GetDisguise()] = DisguiseState::ALERT;
 		}
 	}
 
+	if (m_disguiseStates[(int)player->GetDisguise()] == DisguiseState::ALERT)
+		m_state = State::PANIC;
+
 	if (m_state == State::PANIC)
 	{
-		glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
-		pos *= 1.5f;
-		MoveToTarget(desc.m_tickTimer->Second(), player->GetPos() + pos);
-		PointAtPoint(player->GetPos());
-		if (IsPlayerDetected())
+		if (m_disguiseStates[(int)player->GetDisguise()] == DisguiseState::NORMAL)
 		{
-			// shoot
+			Search(nullptr, player->GetPos(), 10.0f, SearchType::GUNSHOT);
 		}
+
+		if (m_isLocationNew)
+			StartMoveToLocation(player->GetPos());
+
+		if (m_dynamicRoute.empty() && m_isDynamicRouteCalculated)
+		{
+			m_state = State::NORMAL;
+			m_searchingMeter = 0.0f;
+			m_isLocationNew = true;
+		}
+
+		if (!desc.m_collision->Collide(0, GetPos(), player->GetPos()).m_hasHit)
+		{
+			MoveToTarget(desc.m_tickTimer->Second(), player->GetPos());
+			m_isLocationNew = true;
+			
+			// shoot
+			if (glm::distance(player->GetPos(), GetPos()) < 3.0f)
+			{
+				if (m_shootDur <= 0.0f)
+				{
+					m_shootDur = 1.0f;
+					gData.m_gameScene->GetProjectiles().emplace_back(GetQuad(0)->GetPos(), 4, GetQuad(2)->GetRotation(), gData.m_texBullet);
+				}
+				else
+					m_shootDur -= desc.m_tickTimer->Second();
+			}
+		}
+		else
+		{
+			if (!MoveToLocation(desc.m_tickTimer->Second()))
+			{
+				m_isLocationNew = false;
+			}
+			else
+				m_isLocationNew = true;
+		}
+		PointAtPoint(player->GetPos());
 	}
-	else if (m_state == State::SEARCHING)
+
+	if (m_state == State::SEARCHING)
 	{
 		if (m_searchType == SearchType::DEADBODY)
 			TickGuardSearchBody(desc);
@@ -289,10 +334,11 @@ void NPC::TickGuard(GameTickDesc& desc)
 			{
 				if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
 				{
-					m_detectedDeadNPCs.insert(uuid);
-					gData.m_bodiesFound++;
-
-					Search((void*)npc, npc->GetPos(), 20.0f, SearchType::DEADBODY);
+					if (Search((void*)npc, npc->GetPos(), 20.0f, SearchType::DEADBODY))
+					{
+						m_detectedDeadNPCs.insert(uuid);
+						gData.m_bodiesFound++;
+					}
 				}
 			}
 			else
@@ -311,7 +357,7 @@ void NPC::TickGuard(GameTickDesc& desc)
 
 			float dist = glm::distance(GetPos(), audio.GetSoundPos(uuid));
 			if (dist < audio.GetSoundMinDist(uuid))
-				Search(nullptr, player->GetPos(), 10.0f, SearchType::GUNSHOT);
+				Search(nullptr, audio.GetSoundPos(uuid), 10.0f, SearchType::GUNSHOT);
 		}
 	}
 }
@@ -474,8 +520,6 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 			}
 		}
 
-		m_speed = m_runningSpeed;
-
 		if (m_isLocationNew)
 			StartMoveToLocation(m_miniSearchPos);
 
@@ -505,7 +549,6 @@ void NPC::TickGuardSearchBody(GameTickDesc& desc)
 		if (m_searchingMeter < 0.0f)
 		{
 			m_searchingMeter = 0.0f;
-			m_speed = m_normalSpeed;
 			m_isLocationNew = true;
 		}
 	}
@@ -548,8 +591,6 @@ void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
 			}
 		}
 
-		m_speed = m_runningSpeed;
-
 		if (m_isLocationNew)
 			StartMoveToLocation(m_searchPos);
 
@@ -566,7 +607,6 @@ void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
 		if (m_searchingMeter < 0.0f)
 		{
 			m_searchingMeter = 0.0f;
-			m_speed = m_normalSpeed;
 			m_isLocationNew = true;
 		}
 	}
@@ -581,6 +621,11 @@ void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
 			m_state = State::NORMAL;
 			m_searchingMeter = 0.0f;
 			m_isLocationNew = true;
+			m_disguiseStates[0] = (DisguiseState)0;
+			m_disguiseStates[1] = (DisguiseState)0;
+			m_disguiseStates[2] = (DisguiseState)0;
+			m_disguiseStates[3] = (DisguiseState)0;
+			m_disguiseStates[4] = (DisguiseState)0;
 		}
 		else
 		{

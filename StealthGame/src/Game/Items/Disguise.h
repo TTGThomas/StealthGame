@@ -24,6 +24,9 @@ public:
 
 	Identities GetType() { return m_type; }
 private:
+	uint64_t DisguiseFromIdentity(Identities type);
+	uint64_t TexFromIdentity(Identities type);
+private:
 	Identities m_type;
 };
 

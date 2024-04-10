@@ -31,6 +31,7 @@ void Game::Tick(GameTickDesc& desc)
 	m_gameScene.UpdateProjectiles();
 
 	ShowStatsWindow();
+	m_gameScene.GetPlayer().ShowWindow();
 	m_gameScene.GetTaskbar().ShowStatsWindow();
 
 	m_gameScene.GetPlayer().PlayerTick(desc);

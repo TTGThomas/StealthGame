@@ -45,6 +45,28 @@ void Player::PlayerTick(GameTickDesc& desc)
 		m_actionType = ActionType::ILLEGAL;
 }
 
+void Player::ShowWindow()
+{
+	ImGui::Begin("Player");
+
+	ImGui::Text("Action Illegal: %i", m_actionType == ActionType::ILLEGAL ? 1 : 0);
+	
+	float invDt = 1.0f / GlobalData::Get().m_deltaTime;
+	ImGui::Text("Speed: %f", glm::length(invDt * glm::vec2(m_velocity.x, m_velocity.y)));
+
+	const char* names[] =
+	{
+		"Standard",
+		"Guest",
+		"Vip Guest",
+		"Guard",
+		"Vip Guard",
+	};
+	ImGui::Text("Identity: %s", names[(int)m_disguise]);
+
+	ImGui::End();
+}
+
 void Player::HidePlayer(glm::vec2 pos)
 {
 	m_isHidden = true;

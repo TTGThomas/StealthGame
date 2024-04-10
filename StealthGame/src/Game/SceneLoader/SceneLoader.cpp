@@ -456,6 +456,8 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	
 	std::vector<AABB> trespassingZones = {};
 	std::vector<AABB> hostileZones = {};
+
+	std::vector<std::shared_ptr<Item>> items;
 	
 	int specialBlockIndex = 0;
 
@@ -572,8 +574,15 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				else
 					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::VIPGUARD, gData.m_defaultShader, gData.m_texNPC3, npcRoute);
 			}
+			// body concentration
 			else if (c == 'b')
 				gData.m_bodyConcentrationPos = pos;
+			// disguises
+			else if (c == '1')
+			{
+				items.emplace_back(std::make_shared<Disguise>());
+				((Disguise*)items.back().get())->Init(Identities::GUEST, pos, 0.0f, gData.m_defaultShader);
+			}
 
 			noChar++;
 		}
@@ -628,6 +637,8 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 	scene->Init(initDesc);
 
+	scene->GetItems().AddItem(items);
+
 	mainFile.close();
 	zonesFile.close();
 }
@@ -639,7 +650,7 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
-	desc.m_collision->SetLayers(4);
+	desc.m_collision->SetLayers(5);
 
 	GlobalData::Get().m_bodiesFound = 0;
 }
@@ -701,6 +712,14 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	Texture door("res/SpecialObjects/Door.png");
 	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(door);
+
+	Texture disguiseSTD("res/Player/disguise.png");
+	GlobalData::Get().m_texDisguiseSTD = disguiseSTD.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(disguiseSTD);
+
+	Texture disguise0("res/NPC/NPC0/disguise.png");
+	GlobalData::Get().m_texDisguise0 = disguise0.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(disguise0);
 }
 
 void SceneLoader::LoadAudio(GameTickDesc& desc)

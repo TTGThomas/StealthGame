@@ -1,20 +1,20 @@
 #include "Projectile.h"
 
-Projectile::Projectile(glm::vec2 pos, float rot, uint64_t& texID)
+Projectile::Projectile(glm::vec2 pos, int layer, float rot, uint64_t& texID)
 {
 	GlobalData& gData = GlobalData::Get();
 
 	m_lifeStart = (float)glfwGetTime();
 
 	m_vel = { glm::sin(glm::radians(rot)), glm::cos(glm::radians(rot)) };
-	m_pos = pos + m_vel * 0.15f;
+	m_pos = pos + m_vel * 0.5f;
 
 	std::vector<QuadInitDesc> descs;
 	float size = 0.05f;
 	descs.push_back({ m_pos, { size, size }, 0.9f, gData.m_defaultShader, texID });
 	descs.push_back({ m_pos, { size, size }, 0.9f, gData.m_defaultShader, texID });
 	m_entity.Init(descs);
-	gData.m_collision->AddToLayer(2, m_entity.GetUUID(0).GetUUID());
+	gData.m_collision->AddToLayer(layer, m_entity.GetUUID(0).GetUUID());
 	
 	m_speed = 10.0f;
 }
