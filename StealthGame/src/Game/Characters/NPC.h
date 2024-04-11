@@ -3,6 +3,7 @@
 #include <queue>
 #include <set>
 #include <unordered_set>
+#include <functional>
 #include <vector>
 #include <string>
 #include <thread>
@@ -56,6 +57,21 @@ public:
 	enum class SearchType
 	{
 		DEADBODY, ILLEGALWEAPON, GUNSHOT
+	};
+
+	struct Bridge
+	{
+		std::vector<int> m_originIndexes;
+		int m_destIndex;
+		// npc, timeFromEnter, frameFromEnter
+		std::function<bool(NPC*, float, int)> m_determineFunc;
+	};
+
+	struct Node
+	{
+		// desc, timeFromEnter, frameFromEnter
+		std::function<void(GameTickDesc&, float, int)> m_func;
+		std::vector<int> m_relatedBridges;
 	};
 public:
 	NPC() = default;
@@ -163,8 +179,24 @@ private:
 	float AngleFromPoint(glm::vec2 point);
 	void NPCMove(glm::vec2 vec);
 private:
+	void ResetNodeGraph()
+	{
+		m_nodePos = 0;
+		m_nodes.clear();
+		m_bridges.clear();
+	}
+
+	void CompileNodeGraph();
+	void NodeGraphGuard();
+private:
 	GameUUID m_uuid;
 	CollisionDetector* m_collision;
+
+	std::vector<Node> m_nodes;
+	std::vector<Bridge> m_bridges;
+	int m_nodePos = 0;
+	int m_frameFromEnter = 0;
+	float m_timeWhenEnter = 0.0f;
 
 	NPCAnimBP m_animBP;
 

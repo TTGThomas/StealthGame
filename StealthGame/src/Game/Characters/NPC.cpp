@@ -16,32 +16,118 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 	GetQuad(0)->SetRadius(m_normalScale);
 
 	m_animBP.Init(this);
+
+	// GUARD:
+	// 
+	//                  +------------+
+	//                  |SearchPlayer|
+	//                  +------------+
+	//                     ^      |
+	//                     |      v
+	// +-----+->+------+ +-----------+->+------------+
+	// |Alert|  |Attack| |SearchPoint|  |SeachGunShot|
+	// +-----+<-+------+ +-----------+<-+------------+
+	//  ^    |             ^      |
+	//  |    v             |      v
+	// +-----------+--- -->+------+->+---------+
+	// |MoveOnRoute|       |Search|  |SeachBody|
+	// +-----------+<-- ---+------+<-+---------+
+	//    ^      |         ^      |
+	//    |      v         |      v
+	// +------------+      +------------+
+	// |LookToPlayer|      |SeachIllegal|
+	// +------------+      +------------+
+
+	// GUEST:
+	//
+	// +-----------+-->+------+->+-------------+
+	// |MoveOnRoute|   |Search|  |ReportToGuard|
+	// +-----------+<--+------+<-+-------------+
+	//    ^      |   
+	//    |      v   
+	// +------------+
+	// |LookToPlayer|
+	// +------------+
+
+	// DEAD:
+	//
+	// +--------+
+	// |DeadTick|
+	// +--------+
+	ResetNodeGraph();
+
+	switch (m_type)
+	{
+	case Identities::GUEST:
+	case Identities::VIPGUEST:
+		break;
+	case Identities::GUARD:
+	case Identities::VIPGUARD:
+		NodeGraphGuard();
+	}
+	
+	CompileNodeGraph();
 }
 
 void NPC::NPCTick(GameTickDesc& desc)
 {
 	glm::vec2 lastPos = GetPos();
 
-	if (m_health > 0)
+	// below are funcs that must get called every frame
+	m_animBP.Tick(this);
+	SetPos(GetPos());
+	//ApplyDamage();
+	DetectEverything();
+
+	//if (m_health > 0)
+	//{
+	//	SetPos(GetPos());
+	//	ApplyDamage();
+	//	if (m_health <= 0)
+	//		return;
+	//	DetectEverything();
+	//	if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
+	//		TickGuest(desc);
+	//	else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
+	//		TickGuard(desc);
+	//	TickNonStatic(desc);
+	//}
+	//else
+	//{
+	//	TickDead(desc);
+	//}
+
+	Node& node = m_nodes[m_nodePos];
+	float time = (float)glfwGetTime() - m_timeWhenEnter;
+	int frame = m_frameFromEnter;
+	node.m_func(desc, time, frame);
+	m_frameFromEnter++;
+	for (int bridgeIndex : node.m_relatedBridges)
 	{
-		SetPos(GetPos());
-		ApplyDamage();
-		if (m_health <= 0)
-			return;
-		DetectEverything();
-		if (m_type == Identities::GUEST || m_type == Identities::VIPGUEST)
-			TickGuest(desc);
-		else if (m_type == Identities::GUARD || m_type == Identities::VIPGUARD)
-			TickGuard(desc);
-		TickNonStatic(desc);
+		Bridge& bridge = m_bridges[bridgeIndex];
+		if (bridge.m_determineFunc(this, time, frame))
+		{
+			m_nodePos = bridge.m_destIndex;
+			m_frameFromEnter = 0;
+			m_timeWhenEnter = (float)glfwGetTime();
+		}
 	}
-	else
-	{
-		TickDead(desc);
-	}
+
 	m_velocity = GetPos() - lastPos;
 
-	m_animBP.Tick(this);
+	// update dir
+	float t0 = m_targetDir - m_dir;
+	float t1 = 360 - glm::abs(t0);
+	float amount = 0.0f;
+	if (glm::abs(t0) < glm::abs(t1))
+		amount = t0;
+	else
+		amount = (m_dir + t1 > 360.0f ? t1 : -t1);
+	float dirSpeed = desc.m_tickTimer->Second() * 200.0f;
+	if (amount > 0.0f)
+		m_dir += glm::min(dirSpeed, amount);
+	else
+		m_dir -= glm::min(dirSpeed, -amount);
 
 	while (m_dir > 360.0f)
 		m_dir -= 360.0f;
@@ -721,6 +807,109 @@ float NPC::AngleFromPoint(glm::vec2 point)
 void NPC::NPCMove(glm::vec2 vec)
 {
 	Move(m_collision, vec.x, vec.y);
+}
+
+void NPC::CompileNodeGraph()
+{
+	for (int i = 0; i < m_bridges.size(); i++)
+	{
+		Bridge& bridge = m_bridges[i];
+		for (int o : bridge.m_originIndexes)
+			m_nodes[o].m_relatedBridges.emplace_back(i);
+	}
+}
+
+void NPC::NodeGraphGuard()
+{
+	// nodes
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+				{
+					if (!m_isAtTarget)
+					{
+						m_timeAtTarget = (float)glfwGetTime();
+						m_isAtTarget = true;
+					}
+					else if (1000.0f * ((float)glfwGetTime() - m_timeAtTarget) > m_route[m_targetRouteIndex].m_waitMs)
+					{
+						m_targetRouteIndex++;
+						if (m_targetRouteIndex == m_route.size())
+							m_targetRouteIndex = 0;
+					}
+				}
+				else
+				{
+					m_isAtTarget = false;
+					PointAtPoint(GetPos() + m_velocity);
+				}
+			};
+	}
+	int moveOnRouteIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				PointAtPoint(player.GetPos());
+			};
+	}
+	int lookAtPlayerIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				MoveToTarget(desc.m_tickTimer->Second(), player.GetPos());
+				PointAtPoint(player.GetPos());
+			};
+	}
+	int attackIndex = m_nodes.size() - 1;
+
+	// bridges
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_destIndex = lookAtPlayerIndex;
+		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				float dist = glm::distance(player.GetPos(), npc->GetPos());
+				if (dist < 0.4f)
+					return true;
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				float dist = glm::distance(player.GetPos(), npc->GetPos());
+				if (dist < 0.4f)
+					return false;
+				return true;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				if (!npc->IsPlayerDetected())
+					return false;
+				if (player.GetActionType() != Player::ActionType::ILLEGAL)
+					return false;
+				return true;
+			};
+	}
 }
 
 glm::vec2 NPC::GetGridPos(glm::vec2 location)
