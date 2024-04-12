@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "../GameScene.h"
 
+#include "../Items/Disguise.h"
+
 std::unordered_set<uint64_t> NPC::m_detectedDeadNPCs;
 
 void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
@@ -162,6 +164,10 @@ void NPC::ChangePos(glm::vec2 pos)
 
 void NPC::EliminateMyself()
 {
+	std::shared_ptr<Disguise> disguise = std::make_shared<Disguise>();
+	disguise->Init(m_type, GetPos(), 0.0f, GlobalData::Get().m_defaultShader);
+	GlobalData::Get().m_gameScene->GetItems().AddItem(disguise);
+
 	m_isPlayerDetected = false;
 	m_health = 0;
 	ResetNodeGraph();
