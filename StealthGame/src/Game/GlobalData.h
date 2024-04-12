@@ -5,9 +5,8 @@
 enum class DisguiseState
 {
 	// NORMAL = normal
-	// COMPROMISED = takes time to recognize
-	// ALERT = immediantley recognize
-	NORMAL, COMPROMISED, ALERT
+	// COMPROMISED = immediantley recognized
+	NORMAL, COMPROMISED
 };
 
 enum class Identities

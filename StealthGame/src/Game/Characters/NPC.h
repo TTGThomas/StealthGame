@@ -64,7 +64,7 @@ public:
 		std::vector<int> m_originIndexes;
 		int m_destIndex;
 		// npc, timeFromEnter, frameFromEnter
-		std::function<bool(NPC*, float, int)> m_determineFunc;
+		std::function<bool(float, int)> m_determineFunc;
 	};
 
 	struct Node
@@ -83,7 +83,6 @@ public:
 	void BindRoute(std::vector<NPCRoutePoint>& route) { m_route = route; }
 
 	void SetType(Identities type) { m_type = type; }
-	void SetState(State state) { m_state = state; }
 
 	void NPCTick(GameTickDesc& desc);
 
@@ -104,12 +103,8 @@ public:
 	void SetNPCUUID(GameUUID uuid) { m_uuid = uuid; }
 	void SetIsTarget(bool isTarget) { m_isTarget = isTarget; }
 
-	void SetSearchType(SearchType type) { m_searchType = type; }
-
 	static glm::vec2 GetGridPos(glm::vec2 location);
 
-	float GetSuspiciousMeter() { return m_suspiciousMeter; }
-	State GetState() { return m_state; }
 	GameUUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
 	Identities GetType() { return m_type; }
@@ -118,7 +113,6 @@ public:
 	bool GetIsDisposed() { return m_isDisposed; }
 	bool GetIsTarget() { return m_isTarget; }
 	float GetSpeed() { return m_speed; }
-	SearchType GetSearchType() { return m_searchType; }
 	glm::vec2 GetVelocity() { return m_velocity; }
 private:
 	void SetDirPos(glm::vec2 pos);
@@ -135,38 +129,7 @@ private:
 private:
 	void UpdateFrontVec();
 private:
-	void TickGuest(GameTickDesc& desc);
-	void TickGuard(GameTickDesc& desc);
-	void TickNonStatic(GameTickDesc& desc);
-	void TickDead(GameTickDesc& desc);
-private:
-	void TickGuardSearchBody(GameTickDesc& desc);
-	void TickGuardSearchGunShot(GameTickDesc& desc);
-	void TickGuardSearchILLEGALWEAPON(GameTickDesc& desc);
-private:
 	inline bool IsThetaInView(float cosTheta);
-private:
-	bool Search(void* param, glm::vec2 where, float time, SearchType type)
-	{
-		// gunshot > body > illegal weapon
-		if (m_state == State::SEARCHING)
-		{
-			if (m_searchType == SearchType::GUNSHOT)
-				return false;
-			else if (m_searchType == SearchType::DEADBODY)
-				return false;
-		}
-
-		m_state = State::SEARCHING;
-		m_searchingMeter = time;
-		m_searchPos = where;
-		m_miniSearchPos = m_searchPos;
-		m_searchType = type;
-		m_seachParam = param;
-		m_onSeachEnter = true;
-		m_isLocationNew = true;
-		return true;
-	}
 private:
 	// returns if it is at point or not
 	// this does not applies BFS
@@ -188,6 +151,9 @@ private:
 
 	void CompileNodeGraph();
 	void NodeGraphGuard();
+	void NodeGraphDead();
+
+	void ResetTimer() { m_timeWhenEnter = 0.0f; }
 private:
 	GameUUID m_uuid;
 	CollisionDetector* m_collision;
@@ -207,7 +173,6 @@ private:
 	bool m_isBeingDragged = false;
 	bool m_isDisposed = false;
 
-	bool m_isWitness = false;
 	bool m_isTarget = false;
 
 	float m_dir = 0.0f;
@@ -217,18 +182,13 @@ private:
 	float m_timeAtTarget = 0.0f;
 
 	Identities m_type = Identities::GUEST;
-	State m_state = State::NORMAL;
-	SearchType m_searchType = SearchType::DEADBODY;
 	glm::vec2 m_searchPos = {};
-	glm::vec2 m_miniSearchPos = {};
-	void* m_seachParam = nullptr;// can be anything
-	float m_miniSearchingMeter = 2.0f;
-	bool m_isLocationNew = true;
-	bool m_onSeachEnter = true;
+	void* m_searchParam = nullptr;// can be anything
+	bool m_isSearchLocationNew = true;
+	bool m_isRouteLocationNew = true;
+	bool m_searchFinish = false;
 
 	DisguiseState m_disguiseStates[5];
-	float m_suspiciousMeter = 0.0f;
-	float m_searchingMeter = 0.0f;
 	int m_health = 100;
 
 	float m_shootDur = 0.0f;

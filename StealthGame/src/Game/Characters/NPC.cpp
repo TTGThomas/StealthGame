@@ -19,19 +19,19 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 
 	// GUARD:
 	// 
-	//                  +------------+
-	//                  |SearchPlayer|
-	//                  +------------+
-	//                     ^      |
-	//                     |      v
-	// +-----+->+------+ +-----------+->+------------+
-	// |Alert|  |Attack| |SearchPoint|  |SeachGunShot|
-	// +-----+<-+------+ +-----------+<-+------------+
+	//       +------------+
+	//       |SearchPlayer|
+	//       +------------+
+	//          ^      |
+	//          |      v
+	// +-----+->+------+ +------------+
+	// |Alert|  |Attack| |SeachGunShot|
+	// +-----+<-+------+ +------------+
 	//  ^    |             ^      |
 	//  |    v             |      v
-	// +-----------+--- -->+------+->+---------+
+	// +-----------+------>+------+->+---------+
 	// |MoveOnRoute|       |Search|  |SeachBody|
-	// +-----------+<-- ---+------+<-+---------+
+	// +-----------+<------+------+<-+---------+
 	//    ^      |         ^      |
 	//    |      v         |      v
 	// +------------+      +------------+
@@ -51,9 +51,15 @@ void NPC::Init(std::vector<QuadInitDesc> desc, std::string name)
 
 	// DEAD:
 	//
-	// +--------+
-	// |DeadTick|
-	// +--------+
+	// +--------+-->+--------+
+	// |DeadTick|   |DragTick|
+	// +--------+<--+--------+
+	//               ^      |
+	//               |      |
+	//			  +-----------+
+	//			  |DisposeTick|
+	//			  +-----------+
+
 	ResetNodeGraph();
 
 	switch (m_type)
@@ -75,9 +81,12 @@ void NPC::NPCTick(GameTickDesc& desc)
 
 	// below are funcs that must get called every frame
 	m_animBP.Tick(this);
-	SetPos(GetPos());
-	//ApplyDamage();
-	DetectEverything();
+	if (m_health > 0)
+	{
+		SetPos(GetPos());
+		ApplyDamage();
+		DetectEverything();
+	}
 
 	//if (m_health > 0)
 	//{
@@ -105,7 +114,7 @@ void NPC::NPCTick(GameTickDesc& desc)
 	for (int bridgeIndex : node.m_relatedBridges)
 	{
 		Bridge& bridge = m_bridges[bridgeIndex];
-		if (bridge.m_determineFunc(this, time, frame))
+		if (bridge.m_determineFunc(time, frame))
 		{
 			m_nodePos = bridge.m_destIndex;
 			m_frameFromEnter = 0;
@@ -155,7 +164,9 @@ void NPC::EliminateMyself()
 {
 	m_isPlayerDetected = false;
 	m_health = 0;
-	m_state = State::NORMAL;
+	ResetNodeGraph();
+	NodeGraphDead();
+	CompileNodeGraph();
 	GlobalData::Get().m_gameScene->DeleteTarget(GetNPCUUID().GetUUID());
 }
 
@@ -305,425 +316,6 @@ void NPC::UpdateFrontVec()
 	m_frontVec.y += glm::cos(glm::radians(m_dir));
 }
 
-void NPC::TickGuest(GameTickDesc& desc)
-{
-	GlobalData& gData = GlobalData::Get();
-	Player* player = &gData.m_gameScene->GetPlayer();
-
-	if (IsPlayerDetected())
-	{
-		if (player->GetActionType() == Player::ActionType::ILLEGAL)
-		{
-			m_isWitness = true;
-		}
-	}
-
-	if (m_isWitness)
-	{
-		//MoveToTarget(desc.m_tickTimer->Second(), m_player->GetPos(), false);
-		//PointAtPoint(m_player->GetPos());
-		//EliminateMyself();
-	}
-}
-
-void NPC::TickGuard(GameTickDesc& desc)
-{
-	GlobalData& gData = GlobalData::Get();
-	Player* player = &gData.m_gameScene->GetPlayer();
-
-	if (m_state == State::NORMAL || m_state == State::SUSPICIOUS)
-		m_speed = m_normalSpeed;
-	else
-		m_speed = m_runningSpeed;
-
-	if (IsPlayerDetected())
-	{
-		if (player->GetActionType() == Player::ActionType::ILLEGAL)
-		{
-			m_state = State::PANIC;
-			m_disguiseStates[(int)player->GetDisguise()] = DisguiseState::ALERT;
-		}
-	}
-
-	if (m_disguiseStates[(int)player->GetDisguise()] == DisguiseState::ALERT)
-		m_state = State::PANIC;
-
-	if (m_state == State::PANIC)
-	{
-		if (m_disguiseStates[(int)player->GetDisguise()] == DisguiseState::NORMAL)
-		{
-			Search(nullptr, player->GetPos(), 10.0f, SearchType::GUNSHOT);
-		}
-
-		if (m_isLocationNew)
-			StartMoveToLocation(player->GetPos());
-
-		if (m_dynamicRoute.empty() && m_isDynamicRouteCalculated)
-		{
-			m_state = State::NORMAL;
-			m_searchingMeter = 0.0f;
-			m_isLocationNew = true;
-		}
-
-		if (!desc.m_collision->Collide(0, GetPos(), player->GetPos()).m_hasHit)
-		{
-			MoveToTarget(desc.m_tickTimer->Second(), player->GetPos());
-			m_isLocationNew = true;
-			
-			// shoot
-			if (glm::distance(player->GetPos(), GetPos()) < 3.0f)
-			{
-				if (m_shootDur <= 0.0f)
-				{
-					m_shootDur = 1.0f;
-					gData.m_gameScene->GetProjectiles().emplace_back(GetQuad(0)->GetPos(), 4, GetQuad(2)->GetRotation(), gData.m_texBullet);
-				}
-				else
-					m_shootDur -= desc.m_tickTimer->Second();
-			}
-		}
-		else
-		{
-			if (!MoveToLocation(desc.m_tickTimer->Second()))
-			{
-				m_isLocationNew = false;
-			}
-			else
-				m_isLocationNew = true;
-		}
-		PointAtPoint(player->GetPos());
-	}
-
-	if (m_state == State::SEARCHING)
-	{
-		if (m_searchType == SearchType::DEADBODY)
-			TickGuardSearchBody(desc);
-		else if (m_searchType == SearchType::GUNSHOT)
-			TickGuardSearchGunShot(desc);
-		else if (m_searchType == SearchType::ILLEGALWEAPON)
-			TickGuardSearchILLEGALWEAPON(desc);
-	}
-
-	if (m_state != State::PANIC && m_isDynamicRouteCalculated)
-	{
-		// goes through every item the npc sees
-		for (uint64_t& uuid : m_detectedItems)
-		{
-			Item* item = gData.m_gameScene->GetItems().GetItem(uuid).get();
-		}
-
-		// goes through every npc the npc sees
-		for (uint64_t& uuid : m_detectedNPCs)
-		{
-			NPC* npc = &gData.m_gameScene->GetNPCs()[uuid];
-			if (npc->GetHealth() < 1)
-			{
-				if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
-				{
-					if (Search((void*)npc, npc->GetPos(), 20.0f, SearchType::DEADBODY))
-					{
-						m_detectedDeadNPCs.insert(uuid);
-						gData.m_bodiesFound++;
-					}
-				}
-			}
-			else
-			{
-				if (npc->GetState() == State::PANIC)
-					m_state = State::PANIC;
-			}
-		}
-
-		// goes through sounds
-		AudioManager& audio = desc.m_scene->GetAudio();
-		for (auto& [uuid, sound] : audio.GetSounds())
-		{
-			if (audio.GetSoundSource(uuid) != gData.m_audioGun1)
-				continue;
-
-			float dist = glm::distance(GetPos(), audio.GetSoundPos(uuid));
-			if (dist < audio.GetSoundMinDist(uuid))
-				Search(nullptr, audio.GetSoundPos(uuid), 10.0f, SearchType::GUNSHOT);
-		}
-	}
-}
-
-void NPC::TickNonStatic(GameTickDesc& desc)
-{
-	GlobalData& gData = GlobalData::Get();
-	Player* player = &gData.m_gameScene->GetPlayer();
-
-	AnimationPlayer::PlayAnimation(GetUUID(1).GetUUID(), 30.0f, 3, 8);
-
-	if (m_state != State::PANIC && m_state != State::SEARCHING)
-	{
-		float dst = glm::distance(GetPos(), player->GetPos());
-		if (dst < 0.2f)
-		{
-			m_suspiciousMeter = 1.0f;
-			m_state = State::SUSPICIOUS;
-		}
-		else if (dst < 0.5f)
-		{
-			if (glm::length(player->GetVelocity()) != 0.0f)
-			{
-				if (!player->GetIsCrouching())
-				{
-					m_suspiciousMeter = 1.0f;
-					m_state = State::SUSPICIOUS;
-				}
-			}
-		}
-
-		if (m_state == State::SUSPICIOUS)
-		{
-			m_suspiciousMeter -= desc.m_tickTimer->Second();
-			if (m_suspiciousMeter < 0.0f)
-			{
-				m_suspiciousMeter = 0.0f;
-				m_state = State::NORMAL;
-			}
-		}
-
-		if (m_state == State::SUSPICIOUS)
-		{
-			PointAtPoint(player->GetPos());
-		}
-
-		if (m_state == State::NORMAL)
-		{
-			if (m_route.size() > 0)
-			{
-				if (m_isAtTarget)
-				{
-					if (((float)glfwGetTime() - m_timeAtTarget) * 1000.0f > (float)m_route[m_targetRouteIndex].m_waitMs)
-					{
-						m_isAtTarget = false;
-						m_targetRouteIndex++;
-						if (m_targetRouteIndex >= (int)m_route.size())
-							m_targetRouteIndex -= (int)m_route.size();
-					}
-				}
-				else
-				{
-					if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
-					{
-						m_isAtTarget = true;
-						m_timeAtTarget = (float)glfwGetTime();
-					}
-					else
-					{
-						m_isAtTarget = false;
-						PointAtPoint(m_route[m_targetRouteIndex].m_pos);
-					}
-				}
-			}
-			else
-			{
-				m_targetDir = 0.0f;
-			}
-		}
-	}
-
-	float t0 = m_targetDir - m_dir;
-	float t1 = 360 - glm::abs(t0);
-	float amount = 0.0f;
-	if (glm::abs(t0) < glm::abs(t1))
-		amount = t0;
-	else
-		amount = (m_dir + t1 > 360.0f ? t1 : -t1);
-	float dirSpeed = desc.m_tickTimer->Second() * 200.0f;
-	if (amount > 0.0f)
-		m_dir += glm::min(dirSpeed, amount);
-	else
-		m_dir -= glm::min(dirSpeed, -amount);
-}
-
-void NPC::TickDead(GameTickDesc& desc)
-{
-	Scene* scene = GlobalData::Get().m_scene;
-	scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texNPCDead);
-
-	scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
-
-	if (m_isBeingDragged && !m_isDisposed)
-	{
-		// do stuffs related to being dragged
-		Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
-		m_isBeingDragged = player->GetIsDragging();
-		if (glm::distance(GetPos(), player->GetPos()) > 0.5f)
-		{
-			glm::vec2 pos = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
-			if (pos.x == FP_NAN || pos.y == FP_NAN)
-				pos = { 0.0f, 1.0f };
-			pos *= 0.5f;
-			SetPos(player->GetPos() + pos);
-		}
-		float angle;
-		if (glm::length(player->GetPos() - GetQuad(0)->GetPos()) != 0.0f)
-			angle = AngleFromPoint(player->GetPos());
-		else
-			angle = 90.0f;
-		scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(angle + 90.0f);
-		
-		{
-			glm::vec2 pos;
-			pos = scene->GetQuads()[GetUUID(0).GetUUID()].GetPos();
-			pos.x += glm::sin(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
-			pos.y += glm::cos(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
-			scene->GetQuads()[GetUUID(1).GetUUID()].SetPos(pos);
-		}
-
-		if (!m_isBeingDragged)
-		{
-			GetQuad(0)->SetPos(GetQuad(1)->GetPos());
-		}
-	}
-
-	if (m_isDisposed)
-	{
-		GetQuad(0)->SetRadius({});
-		GetQuad(1)->SetRadius({ m_normalScale.x, m_normalScale.y });
-		GetQuad(1)->SetRotation(90);
-	}
-}
-
-void NPC::TickGuardSearchBody(GameTickDesc& desc)
-{
-	Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
-
-	if (m_searchingMeter > 0.0f)
-	{
-		// phrase 1 - search body
-		m_searchingMeter -= desc.m_tickTimer->Second();
-		if (IsPlayerDetected())
-		{
-			if (m_onSeachEnter)
-			{
-				m_onSeachEnter = false;
-				if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
-					m_state = State::PANIC;
-			}
-		}
-
-		if (m_isLocationNew)
-			StartMoveToLocation(m_miniSearchPos);
-
-		if (MoveToLocation(desc.m_tickTimer->Second()))
-		{
-			if (m_miniSearchingMeter > 0.0f)
-			{
-				m_miniSearchingMeter -= desc.m_tickTimer->Second();
-			}
-			else
-			{
-				m_isLocationNew = true;
-
-				glm::vec2 add = {};
-				float deg = (float)rand() / (float)RAND_MAX * glm::radians(360.0f);
-				add.x = 0.5f * glm::sin(deg);
-				add.y = 0.5f * glm::cos(deg);
-				m_miniSearchPos = m_searchPos + add;
-				m_miniSearchingMeter = 2.0f;
-			}
-		}
-		else
-		{
-			m_isLocationNew = false;
-		}
-
-		if (m_searchingMeter < 0.0f)
-		{
-			m_searchingMeter = 0.0f;
-			m_isLocationNew = true;
-		}
-	}
-	else if (m_searchingMeter == 0.0f)
-	{
-		// phrase 2 - return to route and teleport body to point
-		if (m_isLocationNew)
-		{
-			((NPC*)m_seachParam)->SetPos(GlobalData::Get().m_bodyConcentrationPos);
-			StartMoveToLocation(m_route[m_targetRouteIndex].m_pos);
-		}
-
-		if (MoveToLocation(desc.m_tickTimer->Second()))
-		{
-			m_state = State::NORMAL;
-			m_searchingMeter = 0.0f;
-		}
-		else
-		{
-			m_isLocationNew = false;
-		}
-	}
-}
-
-void NPC::TickGuardSearchGunShot(GameTickDesc& desc)
-{
-	Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
-
-	if (m_searchingMeter > 0.0f)
-	{
-		// phrase 1 - search gunshot source
-		m_searchingMeter -= desc.m_tickTimer->Second();
-		if (IsPlayerDetected())
-		{
-			if (m_onSeachEnter)
-			{
-				m_onSeachEnter = false;
-				if (glm::distance(player->GetPos(), m_searchPos) < 1.0f)
-					m_state = State::PANIC;
-			}
-		}
-
-		if (m_isLocationNew)
-			StartMoveToLocation(m_searchPos);
-
-		if (m_dynamicRoute.empty() && m_isDynamicRouteCalculated)
-		{
-			m_state = State::NORMAL;
-			m_searchingMeter = 0.0f;
-			m_isLocationNew = true;
-		}
-		
-		if (!MoveToLocation(desc.m_tickTimer->Second()))
-			m_isLocationNew = false;
-
-		if (m_searchingMeter < 0.0f)
-		{
-			m_searchingMeter = 0.0f;
-			m_isLocationNew = true;
-		}
-	}
-	else if (m_searchingMeter == 0.0f)
-	{
-		// phrase 2 - return to route
-		if (m_isLocationNew)
-			StartMoveToLocation(m_route[m_targetRouteIndex].m_pos);
-
-		if (MoveToLocation(desc.m_tickTimer->Second()))
-		{
-			m_state = State::NORMAL;
-			m_searchingMeter = 0.0f;
-			m_isLocationNew = true;
-			m_disguiseStates[0] = (DisguiseState)0;
-			m_disguiseStates[1] = (DisguiseState)0;
-			m_disguiseStates[2] = (DisguiseState)0;
-			m_disguiseStates[3] = (DisguiseState)0;
-			m_disguiseStates[4] = (DisguiseState)0;
-		}
-		else
-		{
-			m_isLocationNew = false;
-		}
-	}
-}
-
-void NPC::TickGuardSearchILLEGALWEAPON(GameTickDesc& desc)
-{
-}
-
 bool NPC::IsThetaInView(float cosTheta)
 {
 	//return glm::acos(cosTheta) < glm::radians(70.0f);
@@ -771,7 +363,6 @@ bool NPC::MoveToLocation(float dt)
 	if (m_isDynamicRouteCalculated && m_dynamicTargetRouteIndex < m_dynamicRoute.size())
 	{
 		ret = MoveToTarget(dt, m_dynamicRoute[m_dynamicTargetRouteIndex].m_pos);
-		PointAtPoint(m_dynamicRoute[m_dynamicTargetRouteIndex].m_pos);
 		if (ret && m_dynamicTargetRouteIndex < m_dynamicRoute.size() - 1)
 			m_dynamicTargetRouteIndex++;
 	}
@@ -826,7 +417,13 @@ void NPC::NodeGraphGuard()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
-				if (MoveToTarget(desc.m_tickTimer->Second(), m_route[m_targetRouteIndex].m_pos))
+				m_speed = m_normalSpeed;
+				glm::vec2 location = m_route[m_targetRouteIndex].m_pos;
+
+				if (m_isRouteLocationNew)
+					StartMoveToLocation(location);
+
+				if (MoveToLocation(desc.m_tickTimer->Second()))
 				{
 					if (!m_isAtTarget)
 					{
@@ -835,6 +432,7 @@ void NPC::NodeGraphGuard()
 					}
 					else if (1000.0f * ((float)glfwGetTime() - m_timeAtTarget) > m_route[m_targetRouteIndex].m_waitMs)
 					{
+						m_isRouteLocationNew = true;
 						m_targetRouteIndex++;
 						if (m_targetRouteIndex == m_route.size())
 							m_targetRouteIndex = 0;
@@ -843,7 +441,9 @@ void NPC::NodeGraphGuard()
 				else
 				{
 					m_isAtTarget = false;
-					PointAtPoint(GetPos() + m_velocity);
+					m_isRouteLocationNew = false;
+					if (m_velocity != glm::vec2(0.0f))
+						PointAtPoint(GetPos() + m_velocity);
 				}
 			};
 	}
@@ -852,6 +452,7 @@ void NPC::NodeGraphGuard()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
+				m_speed = m_normalSpeed;
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
 				PointAtPoint(player.GetPos());
 			};
@@ -861,23 +462,122 @@ void NPC::NodeGraphGuard()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
+				m_speed = m_runningSpeed;
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
 				MoveToTarget(desc.m_tickTimer->Second(), player.GetPos());
 				PointAtPoint(player.GetPos());
 			};
 	}
 	int attackIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_speed = m_runningSpeed;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				m_searchFinish = false;
+				if (timeFromEnter < 3.0f)
+				{
+					// phrase 1 - search gunshot source
+					if (m_isSearchLocationNew)
+						StartMoveToLocation(m_searchPos);
+					
+					if (!m_isDynamicRouteCalculated)
+						m_timeWhenEnter = (float)glfwGetTime();
+
+					if (!MoveToLocation(desc.m_tickTimer->Second()))
+					{
+						m_timeWhenEnter = (float)glfwGetTime();
+						m_isSearchLocationNew = false;
+						PointAtPoint(GetPos() + m_velocity);
+					}
+				}
+				else
+				{
+					m_searchFinish = true;
+					memset(m_disguiseStates, 0, sizeof(DisguiseState));
+				}
+			};
+	}
+	int searchGunShotIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_speed = m_runningSpeed;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				NPC* body = (NPC*)m_searchParam;
+				m_searchFinish = false;
+				if (timeFromEnter < 3.0f)
+				{
+					// phrase 1 - search body place
+					if (m_isSearchLocationNew)
+						StartMoveToLocation(body->GetPos());
+
+					if (!m_isDynamicRouteCalculated)
+						m_timeWhenEnter = (float)glfwGetTime();
+
+					if (!MoveToLocation(desc.m_tickTimer->Second()))
+					{
+						m_timeWhenEnter = (float)glfwGetTime();
+						m_isSearchLocationNew = false;
+						PointAtPoint(GetPos() + m_velocity);
+					}
+				}
+				else
+				{
+					// teleport body to concentration location;
+					body->SetPos(GlobalData::Get().m_bodyConcentrationPos);
+
+					m_searchFinish = true;
+					memset(m_disguiseStates, 0, sizeof(DisguiseState));
+				}
+			};
+	}
+	int searchBodyIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_speed = m_runningSpeed;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				m_searchFinish = false;
+				if (timeFromEnter < 3.0f)
+				{
+					// phrase 1 - search player last pos
+					if (m_isSearchLocationNew)
+						StartMoveToLocation(player->GetPos());
+
+					if (!m_isDynamicRouteCalculated)
+						m_timeWhenEnter = (float)glfwGetTime();
+
+					if (!MoveToLocation(desc.m_tickTimer->Second()))
+					{
+						m_timeWhenEnter = (float)glfwGetTime();
+						m_isSearchLocationNew = false;
+					}
+					PointAtPoint(GetPos() + m_velocity);
+				}
+				else
+				{
+					m_searchFinish = true;
+				}
+			};
+	}
+	int searchPlayerIndex = m_nodes.size() - 1;
 
 	// bridges
 	{
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
 		bridge.m_destIndex = lookAtPlayerIndex;
-		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
-				float dist = glm::distance(player.GetPos(), npc->GetPos());
-				if (dist < 0.4f)
+				float dist = glm::distance(player.GetPos(), GetPos());
+				if (dist < 0.2f)
+					return true;
+				if (dist < 0.5f && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 					return true;
 				return false;
 			};
@@ -886,11 +586,33 @@ void NPC::NodeGraphGuard()
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
 		bridge.m_destIndex = moveOnRouteIndex;
-		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
-				float dist = glm::distance(player.GetPos(), npc->GetPos());
-				if (dist < 0.4f)
+				float dist = glm::distance(player.GetPos(), GetPos());
+				if (dist < 0.1f)
+					return false;
+				if (dist < 0.5f && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
+				{
+					m_timeWhenEnter = (float)glfwGetTime();
+					return false;
+				}
+				return time > 1.0f;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
+				if (!IsPlayerDetected())
+					return false;
+				if (m_disguiseStates[(int)player.GetDisguise()] == DisguiseState::COMPROMISED)
+					return true;
+				if (player.GetActionType() != Player::ActionType::ILLEGAL)
 					return false;
 				return true;
 			};
@@ -899,15 +621,260 @@ void NPC::NodeGraphGuard()
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
 		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
-		bridge.m_destIndex = attackIndex;
-		bridge.m_determineFunc = [](NPC* npc, float time, int frame) -> bool
+		bridge.m_destIndex = searchGunShotIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
-				if (!npc->IsPlayerDetected())
-					return false;
-				if (player.GetActionType() != Player::ActionType::ILLEGAL)
-					return false;
-				return true;
+				GlobalData& gData = GlobalData::Get();
+				AudioManager& audio = gData.m_scene->GetAudio();
+				for (auto& [uuid, sound] : audio.GetSounds())
+				{
+					glm::vec2 soundPos = audio.GetSoundPos(uuid);
+					if (glm::distance(soundPos, GetPos()) < 10.0f)
+					{
+						if (audio.GetSoundSource(uuid) == gData.m_audioGun1)
+						{
+							m_searchPos = soundPos;
+							return true;
+						}
+					}
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchGunShotIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				if (m_searchFinish)
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchGunShotIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				Player& player = gData.m_gameScene->GetPlayer();
+
+				bool ret = false;
+				float dist = glm::distance(m_searchPos, player.GetPos());
+				if (IsPlayerDetected() && dist < 1.0f && time < 0.1f)
+					ret = true;
+				if (ret)
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
+		bridge.m_destIndex = searchBodyIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				for (uint64_t& uuid : m_detectedNPCs)
+				{
+					NPC& npc = gData.m_gameScene->GetNPCs()[uuid];
+					if (npc.GetHealth() <= 0)
+					{
+						if (m_detectedDeadNPCs.find(uuid) == m_detectedDeadNPCs.end())
+						{
+							m_detectedDeadNPCs.insert(uuid);
+							m_searchParam = (void*)&npc;
+							return true;
+						}
+					}
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchBodyIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				if (m_searchFinish)
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchBodyIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				Player& player = gData.m_gameScene->GetPlayer();
+				NPC* body = (NPC*)m_searchParam;
+
+				bool ret = false;
+				float dist = glm::distance(body->GetPos(), player.GetPos());
+				if (IsPlayerDetected() && dist < 1.0f && time < 0.1f)
+					ret = true;
+				if (ret)
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(attackIndex);
+		bridge.m_destIndex = searchPlayerIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				Player& player = gData.m_gameScene->GetPlayer();
+				return !IsPlayerDetected();
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchPlayerIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				Player& player = gData.m_gameScene->GetPlayer();
+				if (IsPlayerDetected())
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchPlayerIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				// returns if the player is lossed or not
+				GlobalData& gData = GlobalData::Get();
+				Player& player = gData.m_gameScene->GetPlayer();
+
+				if (m_searchFinish)
+				{
+					m_isSearchLocationNew = true;
+					m_disguiseStates[(int)player.GetDisguise()] = DisguiseState::COMPROMISED;
+					return true;
+				}
+				return false;
+			};
+	}
+}
+
+void NPC::NodeGraphDead()
+{
+	// nodes
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				Scene* scene = desc.m_scene;
+				scene->GetRenderQuads()[GetUUID(1).GetUUID()].SetTextureUUID(GlobalData::Get().m_texNPCDead);
+				scene->GetRenderQuads()[GetUUID(2).GetUUID()].SetVisibility(false);
+
+			};
+	}
+	int deadTick = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				Scene* scene = desc.m_scene;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				m_isBeingDragged = player->GetIsDragging();
+				if (!m_isBeingDragged)
+					return;
+
+				if (glm::distance(GetPos(), player->GetPos()) > 0.5f)
+				{
+					glm::vec2 vec = glm::normalize(GetQuad(0)->GetPos() - player->GetPos());
+					if (vec.x == FP_NAN || vec.y == FP_NAN)
+						vec = { 0.0f, 1.0f };
+							vec *= 0.5f;
+					SetPos(player->GetPos() + vec);
+				}
+				float angle;
+				if (glm::length(player->GetPos() - GetQuad(0)->GetPos()) != 0.0f)
+					angle = AngleFromPoint(player->GetPos());
+				else
+					angle = 90.0f;
+				scene->GetQuads()[GetUUID(1).GetUUID()].SetRotation(angle + 90.0f);
+		
+				{
+					glm::vec2 pos;
+					pos = scene->GetQuads()[GetUUID(0).GetUUID()].GetPos();
+					pos.x += glm::sin(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
+					pos.y += glm::cos(glm::radians(angle)) * GetQuad(1)->GetRadius().x;
+					scene->GetQuads()[GetUUID(1).GetUUID()].SetPos(pos);
+				}
+			};
+	}
+	int dragTick = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				GetQuad(0)->SetRadius({});
+				GetQuad(1)->SetPos(GetQuad(0)->GetPos());
+				GetQuad(1)->SetRotation(90);
+			};
+	}
+	int disposeTick = m_nodes.size() - 1;
+
+	// bridges
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(deadTick);
+		bridge.m_destIndex = dragTick;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				return GetIsBeingDragged();
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(dragTick);
+		bridge.m_destIndex = deadTick;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				bool ret = !GetIsBeingDragged() && !GetIsDisposed();
+				if (ret)
+				{
+					GetQuad(0)->SetPos(GetQuad(1)->GetPos());
+				}
+				return ret;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(dragTick);
+		bridge.m_destIndex = disposeTick;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				return GetIsDisposed();
 			};
 	}
 }
