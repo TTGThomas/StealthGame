@@ -39,11 +39,6 @@ public:
 	uint64_t m_texNPC2;
 	uint64_t m_texNPC3;
 	uint64_t m_texNPC4;
-	uint64_t m_texDisguise0;
-	uint64_t m_texDisguise1;
-	uint64_t m_texDisguise2;
-	uint64_t m_texDisguise3;
-	uint64_t m_texDisguiseSTD;
 	uint64_t m_texNPCDead;
 	uint64_t m_texNPCDir;
 	uint64_t m_texBullet;

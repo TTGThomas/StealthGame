@@ -669,7 +669,7 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_texPlayerCursor = cursor.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(cursor);
 
-	Texture player("res/Player/playerIdle.png");
+	Texture player("res/Player/masterAtlas.png");
 	GlobalData::Get().m_texPlayer = player.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(player);
 
@@ -677,23 +677,23 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_texNPCDead = npcDead.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npcDead);
 
-	Texture npc0("res/NPC/NPC0/idle.png");
+	Texture npc0("res/NPC/NPC0/masterAtlas.png");
 	GlobalData::Get().m_texNPC0 = npc0.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc0);
 
-	Texture npc1("res/NPC/NPC1/idle.png");
+	Texture npc1("res/NPC/NPC1/masterAtlas.png");
 	GlobalData::Get().m_texNPC1 = npc1.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc1);
 
-	Texture npc2("res/NPC/NPC2/idle.png");
+	Texture npc2("res/NPC/NPC2/masterAtlas.png");
 	GlobalData::Get().m_texNPC2 = npc2.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc2);
 
-	Texture npc3("res/NPC/NPC3/idle.png");
+	Texture npc3("res/NPC/NPC3/masterAtlas.png");
 	GlobalData::Get().m_texNPC3 = npc3.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc3);
 
-	Texture npc4("res/NPC/NPC4/idle.png");
+	Texture npc4("res/NPC/NPC4/masterAtlas.png");
 	GlobalData::Get().m_texNPC4 = npc4.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(npc4);
 
@@ -712,14 +712,6 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	Texture door("res/SpecialObjects/Door.png");
 	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(door);
-
-	Texture disguiseSTD("res/Player/disguise.png");
-	GlobalData::Get().m_texDisguiseSTD = disguiseSTD.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(disguiseSTD);
-
-	Texture disguise0("res/NPC/NPC0/disguise.png");
-	GlobalData::Get().m_texDisguise0 = disguise0.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(disguise0);
 }
 
 void SceneLoader::LoadAudio(GameTickDesc& desc)

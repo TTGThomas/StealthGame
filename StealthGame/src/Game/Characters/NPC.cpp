@@ -590,7 +590,7 @@ void NPC::NodeGraphGuard()
 			{
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
 				float dist = glm::distance(player.GetPos(), GetPos());
-				if (dist < 0.1f)
+				if (dist < 0.2f)
 					return false;
 				if (dist < 0.5f && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 				{

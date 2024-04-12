@@ -7,39 +7,38 @@ void PlayerAnimBP::Init()
 {
 	GlobalData& gData = GlobalData::Get();
 
-	Texture playerArmTexture("res/Player/playerArm.png");
-	m_playerArmTexture = playerArmTexture.GetUUID().GetUUID();
-	gData.m_renderer->AddTexture(playerArmTexture);
-
 	// tex is 4 * 8
 	// idleTex is 32 * 32
 	// player size is 0.2f
-	float pixelSize = 0.2f / 16.0f;
-	float halfPSize = pixelSize / 2.0f;
+	//pixelSize = 0.2f / 16.0f;
 	{
 		Quad leftArmQuad;
 		leftArmQuad.SetPos({0.0f, 0.0f});
-		leftArmQuad.SetRadius({ 4.0f * halfPSize, 8.0f * halfPSize });
+		leftArmQuad.SetRadius({ 0.2f, 0.2f });
 		m_leftArm = leftArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
 		desc.m_depth = 0.25f;
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
-		desc.m_textureUUID = m_playerArmTexture;
+		desc.m_textureUUID = gData.m_texPlayer;
 		gData.m_scene->AddQuad(leftArmQuad, desc);
 	}
 	{
 		Quad rightArmQuad;
 		rightArmQuad.SetPos({ 0.0f, 0.0f });
-		rightArmQuad.SetRadius({ 4.0f * halfPSize, 8.0f * halfPSize });
+		rightArmQuad.SetRadius({0.2f, 0.2f});
 		m_rightArm = rightArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
 		desc.m_depth = 0.25f;
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
-		desc.m_textureUUID = m_playerArmTexture;
+		desc.m_textureUUID = gData.m_texPlayer;
 		gData.m_scene->AddQuad(rightArmQuad, desc);
 	}
+	gData.m_scene->GetRenderQuads()[m_leftArm].SetFrameIndex(1);
+	gData.m_scene->GetRenderQuads()[m_leftArm].SetSideFrames(4);
+	gData.m_scene->GetRenderQuads()[m_rightArm].SetFrameIndex(1);
+	gData.m_scene->GetRenderQuads()[m_rightArm].SetSideFrames(4);
 
 	m_animNodes.push_back(AnimNode(
 		[](Player* player) -> bool
@@ -52,10 +51,10 @@ void PlayerAnimBP::Init()
 		[](PlayerAnimBP* animBP, Player* player)
 		{
 		},
-		"res/Player/playerIdle.png",
 		0.0f,
-		1,
-		1
+		4,
+		7,
+		7
 	));
 
 	m_animNodes.push_back(AnimNode(
@@ -69,10 +68,10 @@ void PlayerAnimBP::Init()
 		[](PlayerAnimBP* animBP, Player* player)
 		{
 		},
-		"res/Player/playerWalk.png",
 		30.0f,
-		3,
-		8
+		4,
+		8,
+		15
 	));
 
 	m_animNodes.push_back(AnimNode(
@@ -86,10 +85,10 @@ void PlayerAnimBP::Init()
 		[](PlayerAnimBP* animBP, Player* player)
 		{
 		},
-		"res/Player/playerCrouchIdle.png",
 		0.0f,
-		1,
-		1
+		4,
+		2,
+		2
 	));
 
 	m_animNodes.push_back(AnimNode(
@@ -100,13 +99,13 @@ void PlayerAnimBP::Init()
 				player->GetIsCrouching();
 		},
 		State::CROUCHWALKING, 
-		[this, pixelSize](PlayerAnimBP* animBP, Player* player)
+		[this](PlayerAnimBP* animBP, Player* player)
 		{
 		},
-		"res/Player/playerCrouchWalk.png",
 		10.0f,
-		2,
-		4
+		4,
+		3,
+		6
 	));
 }
 
@@ -123,11 +122,8 @@ void PlayerAnimBP::Tick(Player* player)
 	{
 		if (node.m_determineFunc(player))
 		{
-			if (m_state != node.m_representState)
-				AnimationPlayer::SetAnimationAtlas(uuid, node.m_filePath);
-			m_state = node.m_representState;
 			node.m_execFunc(this, player);
-			AnimationPlayer::PlayAnimation(uuid, node.m_framesPerSecond, node.m_sideFrames, node.m_validFrames);
+			AnimationPlayer::PlayAnimation(uuid, node.m_framesPerSecond, node.m_sideFrames, node.m_startFrame, node.m_endFrame);
 			break;
 		}
 	}
@@ -195,8 +191,8 @@ void PlayerAnimBP::UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 righ
 	leftArm.SetRotation(leftAngle);
 	rightArm.SetRotation(rightAngle);
 
-	leftArm.ChangePos(leftArm.GetRadius().x * glm::vec2(glm::sin(glm::radians(leftAngle)), glm::cos(glm::radians(leftAngle))));
-	rightArm.ChangePos(rightArm.GetRadius().x * glm::vec2(glm::sin(glm::radians(rightAngle)), glm::cos(glm::radians(rightAngle))));
+	leftArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(leftAngle)), glm::cos(glm::radians(leftAngle))));
+	rightArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(rightAngle)), glm::cos(glm::radians(rightAngle))));
 }
 
 float PlayerAnimBP::GetAngleFromVec(glm::vec2 vec)

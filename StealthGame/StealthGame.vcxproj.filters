@@ -387,12 +387,6 @@
     <Image Include="res\logo.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\playerIdle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC0\idle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\Player\Cursor.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -402,13 +396,7 @@
     <Image Include="res\NPC\NPCDead.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC2\idle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\Fonts\sample-atlas.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC4\idle.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Icons\Eliminate.png">
@@ -450,43 +438,22 @@
     <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\playerWalk.png">
+    <Image Include="res\Player\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\playerCrouchIdle.png">
+    <Image Include="res\NPC\NPC2\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\playerCrouchWalk.png">
+    <Image Include="res\NPC\NPC3\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Player\playerArm.png">
+    <Image Include="res\NPC\NPC4\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC1\idle.png">
+    <Image Include="res\NPC\NPC0\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NPC\NPC3\idle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC0\walk.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC1\walk.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC2\walk.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC3\walk.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC4\walk.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\NPC\NPC0\disguise.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Player\disguise.png">
+    <Image Include="res\NPC\NPC1\masterAtlas.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

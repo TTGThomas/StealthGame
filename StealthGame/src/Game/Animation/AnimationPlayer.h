@@ -16,7 +16,8 @@ public:
 
 	static void ResetAnimationCursor(uint64_t uuid);
 	static void SetAnimationAtlas(uint64_t uuid, const char* atlasPath);
-	static void PlayAnimation(uint64_t uuid, float framesPerSecond, int sideFrames, int frames);
+	// includes start and end frame
+	static void PlayAnimation(uint64_t uuid, float framesPerSecond, int sideFrames, int startFrame, int endFrame);
 private:
 	// TODO: deprecate std::string
 	static std::unordered_map<std::string, uint64_t> m_texUUIDs;

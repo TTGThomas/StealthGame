@@ -38,17 +38,20 @@ void AnimationPlayer::SetAnimationAtlas(uint64_t uuid, const char* atlasPath)
 	renderQuad.SetTextureUUID(texUUID);
 }
 
-void AnimationPlayer::PlayAnimation(uint64_t uuid, float framesPerSecond, int sideFrames, int frames)
+void AnimationPlayer::PlayAnimation(uint64_t uuid, float framesPerSecond, int sideFrames, int startFrame, int endFrame)
 {
 	GlobalData& gData = GlobalData::Get();
 	RenderQuad& renderQuad = gData.m_scene->GetRenderQuads()[uuid];
 
 	renderQuad.SetSideFrames(sideFrames);
 	float frameIndex = renderQuad.GetFrameIndex();
+
+	if ((int)frameIndex < startFrame)
+		frameIndex = startFrame;
 	
 	frameIndex += gData.m_deltaTime * framesPerSecond;
-	if (frameIndex >= frames)
-		frameIndex -= frames;
+	if ((int)frameIndex > endFrame)
+		frameIndex = startFrame;
 
 	renderQuad.SetFrameIndex(frameIndex);
 }

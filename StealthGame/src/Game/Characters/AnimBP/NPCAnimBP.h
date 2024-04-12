@@ -20,27 +20,27 @@ class NPCAnimBP
 			std::function<bool(class NPC*)> determineFunc,
 			State representState,
 			std::function<void(NPCAnimBP*, NPC*)> execFunc,
-			char* filePath,
 			float framesPerSecond,
 			int sideFrames,
-			int validFrames
+			int startFrame,
+			int endFrame
 		)
 			:
 			m_determineFunc(determineFunc),
 			m_representState(representState),
 			m_execFunc(execFunc),
-			m_filePath(filePath),
 			m_framesPerSecond(framesPerSecond),
 			m_sideFrames(sideFrames),
-			m_validFrames(validFrames) {}
+			m_startFrame(startFrame),
+			m_endFrame(endFrame) {}
 
 		std::function<bool(NPC*)> m_determineFunc;
 		State m_representState;
 		std::function<void(NPCAnimBP*, NPC*)> m_execFunc;
-		char* m_filePath;
 		float m_framesPerSecond;
 		int m_sideFrames;
-		int m_validFrames;
+		int m_startFrame;
+		int m_endFrame;
 	};
 public:
 	NPCAnimBP() = default;
@@ -49,12 +49,10 @@ public:
 
 	void Tick(NPC* npc);
 
-	void SetState(State state) { m_state = state; }
+	void UpdateArms(NPC* npc, glm::vec2 leftLook, glm::vec2 rightLook);
+private:
+	float GetAngleFromVec(glm::vec2 vec);
 private:
 	std::vector<AnimNode> m_animNodes;
-	State m_state;
-
-	char m_idlePath[22];
-	char m_walkPath[22];
-	char m_deadPath[20];
+	uint64_t m_leftArm, m_rightArm;
 };

@@ -18,6 +18,8 @@ void Disguise::Init(Identities type, glm::vec2 pos, float depth, uint64_t shader
 
 	scene->AddQuad(quad, renderDesc);
 	scene->GetRenderQuads()[uuid].UpdateRenderQuad(scene, uuid);
+	scene->GetRenderQuads()[uuid].SetSideFrames(4);
+	scene->GetRenderQuads()[uuid].SetFrameIndex(0);
 	scene->GetAABBs()[uuid].SetEnabled(false);
 
 	m_uuid = uuid;
@@ -42,15 +44,15 @@ uint64_t Disguise::DisguiseFromIdentity(Identities type)
 	GlobalData& gData = GlobalData::Get();
 
 	if (type == Identities::STANDARD)
-		return gData.m_texDisguiseSTD;
+		return gData.m_texPlayer;
 	else if (type == Identities::GUEST)
-		return gData.m_texDisguise0;
+		return gData.m_texNPC0;
 	else if (type == Identities::VIPGUEST)
-		return gData.m_texDisguise1;
+		return gData.m_texNPC1;
 	else if (type == Identities::GUARD)
-		return gData.m_texDisguise2;
+		return gData.m_texNPC2;
 	else if (type == Identities::VIPGUARD)
-		return gData.m_texDisguise3;
+		return gData.m_texNPC3;
 	return 0;
 }
 
