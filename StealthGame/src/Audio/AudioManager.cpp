@@ -31,7 +31,7 @@ void AudioManager::Cleanup()
     m_sounds = {};
 }
 
-GameUUID AudioManager::AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos)
+GameUUID AudioManager::AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos, bool loop)
 {
     GameUUID uuid;
     ma_result result = ma_sound_init_from_file(m_engine, filePath, 0, NULL, NULL, &m_sounds[uuid.GetUUID()]);
@@ -40,12 +40,12 @@ GameUUID AudioManager::AddSound(const char* filePath, glm::vec2 pos, float minDi
     else
         printf("Audio: %s; SUCCESS\n", filePath);
 
-    ConfigSound(uuid, pos, minDist, maxDist, deleteOnFinish, ignorePos);
+    ConfigSound(uuid, pos, minDist, maxDist, deleteOnFinish, ignorePos, loop);
 
     return uuid;
 }
 
-GameUUID AudioManager::AddSound(GameUUID source, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos)
+GameUUID AudioManager::AddSound(GameUUID source, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos, bool loop)
 {
     GameUUID uuid;
     ma_result result = ma_sound_init_copy(m_engine, &m_sounds[source.GetUUID()], 0, NULL, &m_sounds[uuid.GetUUID()]);
@@ -56,7 +56,7 @@ GameUUID AudioManager::AddSound(GameUUID source, glm::vec2 pos, float minDist, f
 
     m_sources[uuid.GetUUID()] = source.GetUUID();
 
-    ConfigSound(uuid, pos, minDist, maxDist, deleteOnFinish, ignorePos);
+    ConfigSound(uuid, pos, minDist, maxDist, deleteOnFinish, ignorePos, loop);
 
     return uuid;
 }
@@ -83,6 +83,10 @@ void AudioManager::StartSound(GameUUID uuid, int frameIndex)
 void AudioManager::UpdateAllSound(glm::vec2 listenPos)
 {
     ma_engine_listener_set_position(m_engine, 0, listenPos.x, listenPos.y, 0.0f);
+    
+    for (uint64_t& uuid : m_followers)
+        ma_sound_set_position(&m_sounds[uuid], listenPos.x, listenPos.y, 0.0f);
+
     for (GameUUID& uuid : m_deletes)
         DeleteSound(uuid);
 }
@@ -120,7 +124,7 @@ uint64_t AudioManager::GetSoundSource(GameUUID uuid)
     return 0;
 }
 
-void AudioManager::ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos)
+void AudioManager::ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos, bool loop)
 {
     if (deleteOnFinish)
     {
@@ -148,17 +152,12 @@ void AudioManager::ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, floa
             (void*)end
         );
     }
+    ma_sound_set_position(&m_sounds[uuid.GetUUID()], pos.x, pos.y, 0.0f);
+    ma_sound_set_attenuation_model(&m_sounds[uuid.GetUUID()], ma_attenuation_model_linear);
+    ma_sound_set_min_distance(&m_sounds[uuid.GetUUID()], minDist);
+    ma_sound_set_max_distance(&m_sounds[uuid.GetUUID()], maxDist);
+    ma_sound_set_looping(&m_sounds[uuid.GetUUID()], loop);
 
     if (ignorePos)
-    {
-        ma_sound_set_min_distance(&m_sounds[uuid.GetUUID()], 100000.0f);
-        ma_sound_set_max_distance(&m_sounds[uuid.GetUUID()], 10000000.0f);
-    }
-    else
-    {
-        ma_sound_set_position(&m_sounds[uuid.GetUUID()], pos.x, pos.y, 0.0f);
-        ma_sound_set_attenuation_model(&m_sounds[uuid.GetUUID()], ma_attenuation_model_linear);
-        ma_sound_set_min_distance(&m_sounds[uuid.GetUUID()], minDist);
-        ma_sound_set_max_distance(&m_sounds[uuid.GetUUID()], maxDist);
-    }
+        m_followers.emplace_back(uuid.GetUUID());
 }

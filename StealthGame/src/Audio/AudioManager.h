@@ -17,8 +17,8 @@ public:
 	void Init();
 	void Cleanup();
 
-	GameUUID AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false);
-	GameUUID AddSound(GameUUID source, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false);
+	GameUUID AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false, bool loop = false);
+	GameUUID AddSound(GameUUID source, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish = false, bool ignorePos = false, bool loop = false);
 	void DeleteSound(GameUUID uuid);
 
 	// delays the delete to tick
@@ -37,10 +37,11 @@ public:
 
 	std::unordered_map<uint64_t, ma_sound>& GetSounds() { return m_sounds; }
 private:
-	void ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos);
+	void ConfigSound(GameUUID uuid, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos, bool loop);
 private:
 	ma_engine* m_engine;
 	std::vector<GameUUID> m_deletes;
 	std::unordered_map<uint64_t, ma_sound> m_sounds;
 	std::unordered_map<uint64_t, uint64_t> m_sources;
+	std::vector<uint64_t> m_followers;// ignore pos
 };

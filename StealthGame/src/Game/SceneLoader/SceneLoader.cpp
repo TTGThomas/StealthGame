@@ -725,15 +725,19 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 		{},
 		1.0f, 5.0f,
 		false,
+		true,
 		false
 	).GetUUID();
 
 	gData.m_audioGun1 = audio.AddSound("res/Audio/Gun/gunshot1.mp3",
 		{},
-		1.0f, 5.0f,
+		10.0f, 50.0f,
+		false,
 		false,
 		false
 	).GetUUID();
+
+	audio.StartSound(gData.m_audioBR);
 }
 
 void SceneLoader::GetNPCDataFromFile(std::vector<std::string>* names, std::vector<NPCRoutePoint>* route, const char* path, int row, int line)
