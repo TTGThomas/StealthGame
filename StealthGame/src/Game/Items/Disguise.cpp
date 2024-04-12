@@ -32,7 +32,7 @@ void Disguise::OnCollect(GameScene* scene)
 
 	Identities type = m_type;
 	m_type = player.GetDisguise();
-	player.SetDisguise(type);
+	player.ChangeDisguise(type);
 
 	gData.m_scene->GetRenderQuads()[GetUUID().GetUUID()].SetTextureUUID(
 		DisguiseFromIdentity(m_type)

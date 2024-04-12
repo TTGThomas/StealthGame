@@ -155,14 +155,37 @@ void PlayerAnimBP::Tick(Player* player)
 	if (player->GetInventory().GetEquippiedType() == Inventory::Type::FIBERWIRE)
 	{
 		float averageRot = leftArm.GetRotation();
+
 		glm::vec2 pos = leftArm.GetPos() + rightArm.GetPos();
 		pos /= 2.0f;
-		pos.x += 3.0f * pixelSize * glm::sin(glm::radians(averageRot));
-		pos.y += 3.0f * pixelSize * glm::cos(glm::radians(averageRot));
+		pos.x += -8.0f * pixelSize * glm::sin(glm::radians(averageRot));
+		pos.y += -8.0f * pixelSize * glm::cos(glm::radians(averageRot));
 		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos);
 	}
 
 	UpdateArms(player, leftArmPos, rightArmPos);
+}
+
+void PlayerAnimBP::ChangeDisguise(Player* player, Identities type)
+{
+	GlobalData& gData = GlobalData::Get();
+	uint64_t uuid = player->GetUUID(2).GetUUID();
+
+	uint64_t textureUUID = 0;
+	if (type == Identities::STANDARD)
+		textureUUID = gData.m_texPlayer;
+	else if (type == Identities::GUEST)
+		textureUUID = gData.m_texNPC0;
+	else if (type == Identities::VIPGUEST)
+		textureUUID = gData.m_texNPC1;
+	else if (type == Identities::GUARD)
+		textureUUID = gData.m_texNPC2;
+	else if (type == Identities::VIPGUARD)
+		textureUUID = gData.m_texNPC3;
+
+	gData.m_scene->GetRenderQuads()[uuid].SetTextureUUID(textureUUID);
+	gData.m_scene->GetRenderQuads()[m_leftArm].SetTextureUUID(textureUUID);
+	gData.m_scene->GetRenderQuads()[m_rightArm].SetTextureUUID(textureUUID);
 }
 
 void PlayerAnimBP::UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 rightLook)

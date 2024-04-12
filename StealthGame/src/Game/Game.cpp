@@ -38,14 +38,17 @@ void Game::Tick(GameTickDesc& desc)
 
 	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
 	{
-		m_gameScene.GetPlayer().OnTrespassZone();
-		m_zonePopUp.OnTrespass();
-
+		if (m_gameScene.GetPlayer().OnTrespassZone())
+			m_zonePopUp.OnTrespass();
+		else
+			m_zonePopUp.OnExit(desc);
 	}
 	else if (m_gameScene.GetHostileZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
 	{
-		m_gameScene.GetPlayer().OnHostileZone();
-		m_zonePopUp.OnHostile();
+		if (m_gameScene.GetPlayer().OnHostileZone())
+			m_zonePopUp.OnHostile();
+		else
+			m_zonePopUp.OnExit(desc);
 	}
 	else
 	{

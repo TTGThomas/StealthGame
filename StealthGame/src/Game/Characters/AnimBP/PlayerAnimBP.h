@@ -47,6 +47,8 @@ public:
 
 	void Tick(Player* player);
 
+	void ChangeDisguise(Player* player, Identities type);
+
 	void UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 rightLook);
 private:
 	float GetAngleFromVec(glm::vec2 vec);

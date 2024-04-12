@@ -75,12 +75,23 @@ void NPCAnimBP::Init(NPC* npc)
 
 void NPCAnimBP::Tick(NPC* npc)
 {
+	GlobalData& gData = GlobalData::Get();
 	uint64_t uuid = npc->GetUUID(1).GetUUID();
 
 	Quad& leftArm = GlobalData::Get().m_scene->GetQuads()[m_leftArm];
 	Quad& rightArm = GlobalData::Get().m_scene->GetQuads()[m_rightArm];
 	glm::vec2 leftArmPos = leftArm.GetPos() + glm::vec2(0.0f, -1.0f);
 	glm::vec2 rightArmPos = rightArm.GetPos() + glm::vec2(0.0f, -1.0f);
+
+	if (npc->GetHealth() <= 0)
+	{
+		gData.m_scene->GetRenderQuads()[uuid].SetTextureUUID(gData.m_texNPCDead);
+		gData.m_scene->GetRenderQuads()[uuid].SetFrameIndex(0);
+		gData.m_scene->GetRenderQuads()[uuid].SetSideFrames(1);
+		leftArm.SetRadius({});
+		rightArm.SetRadius({});
+		return;
+	}
 
 	for (AnimNode& node : m_animNodes)
 	{

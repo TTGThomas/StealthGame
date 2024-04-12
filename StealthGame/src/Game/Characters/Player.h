@@ -48,13 +48,14 @@ public:
 	void SetIsDragging(bool newInput) { m_isDragging = newInput; }
 	void SetDraggedNPCID(uint64_t input) { m_draggedNPC = input; }
 	void SetActionType(ActionType type) { m_actionType = type; }
-	void SetDisguise(Identities type) { m_disguise = type; }
+
+	void ChangeDisguise(Identities type);
 
 	void HidePlayer(glm::vec2 pos);
 	void UnHidePlayer();
 	
-	void OnTrespassZone() { m_actionType = ActionType::ILLEGAL; }
-	void OnHostileZone() { m_actionType = ActionType::ILLEGAL; }
+	bool OnTrespassZone();
+	bool OnHostileZone();
 
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 	const glm::vec2& GetVelocity() { return m_velocity; }

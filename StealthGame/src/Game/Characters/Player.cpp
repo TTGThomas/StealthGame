@@ -67,6 +67,12 @@ void Player::ShowWindow()
 	ImGui::End();
 }
 
+void Player::ChangeDisguise(Identities type)
+{
+	m_disguise = type;
+	m_animBP.ChangeDisguise(this, type);
+}
+
 void Player::HidePlayer(glm::vec2 pos)
 {
 	m_isHidden = true;
@@ -79,6 +85,30 @@ void Player::UnHidePlayer()
 	SetPos(m_posBeforeHidden);
 	m_isHidden = false;
 	m_isCrouching = false;
+}
+
+bool Player::OnTrespassZone()
+{
+	bool ret = true;
+	if (m_disguise == Identities::GUARD)
+		ret = false;
+	else if (m_disguise == Identities::VIPGUARD)
+		ret = false;
+
+	if (ret)
+		m_actionType = ActionType::ILLEGAL;
+	return ret;
+}
+
+bool Player::OnHostileZone()
+{
+	bool ret = true;
+	if (m_disguise == Identities::VIPGUARD)
+		ret = false;
+
+	if (ret)
+		m_actionType = ActionType::ILLEGAL;
+	return ret;
 }
 
 void Player::EliminateNPC(NPC& victim)
