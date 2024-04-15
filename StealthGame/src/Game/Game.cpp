@@ -35,6 +35,11 @@ void Game::Tick(GameTickDesc& desc)
 	m_gameScene.GetTaskbar().ShowStatsWindow();
 
 	m_gameScene.GetPlayer().PlayerTick(desc);
+	if (m_gameScene.GetPlayer().GetHealth() <= 0)
+	{
+		m_gameScene.GetPlayer().SetHealth(1000);
+		OnExit(0);
+	}
 
 	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
 	{

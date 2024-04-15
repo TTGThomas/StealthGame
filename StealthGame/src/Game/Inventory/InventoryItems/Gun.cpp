@@ -28,6 +28,7 @@ void Gun::OnUnequip()
 
 void Gun::OnEquipping()
 {
+	m_isShooting = false;
 	GlobalData gData = GlobalData::Get();
 
 	gData.m_scene->GetQuads()[m_uuids[0].GetUUID()].SetPos(m_HUDpos);
@@ -63,6 +64,7 @@ void Gun::OnEquipping()
 			false
 		).GetUUID();
 		gData.m_scene->GetAudio().StartSound(t);
+		m_isShooting = true;
 	}
 }
 

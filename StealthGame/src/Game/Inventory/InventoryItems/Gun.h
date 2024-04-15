@@ -16,11 +16,14 @@ public:
 	virtual void OnResize(int x, int y) override;
 
 	static void ClearResources();
+	
+	bool IsShooting() { return m_isShooting; }
 private:
 	float AngleFromPoint(glm::vec2 start, glm::vec2 end);
 private:
 	static uint64_t m_texHUD;
 	static uint64_t m_texInGame;
+	bool m_isShooting = false;
 
 	glm::vec2 m_HUDpos;
 

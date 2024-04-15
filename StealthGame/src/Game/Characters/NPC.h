@@ -114,6 +114,7 @@ public:
 	bool GetIsTarget() { return m_isTarget; }
 	float GetSpeed() { return m_speed; }
 	glm::vec2 GetVelocity() { return m_velocity; }
+	bool GetIsAttacking() { return m_isAttacking; }
 private:
 	void SetDirPos(glm::vec2 pos);
 private:
@@ -172,6 +173,8 @@ private:
 
 	bool m_isBeingDragged = false;
 	bool m_isDisposed = false;
+
+	bool m_isAttacking = false;
 
 	bool m_isTarget = false;
 

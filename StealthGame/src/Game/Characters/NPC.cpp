@@ -191,13 +191,11 @@ void NPC::ApplyDamage()
 {
 	GlobalData& gData = GlobalData::Get();
 
-	//gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 	CollisionPayload payload = m_collision->Collide(2, GetUUID(0));
 	if (payload.m_hasHit)
 	{
 		EliminateMyself();
 	}
-	//gData.m_scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(false);
 }
 
 bool NPC::IsPlayerInSight()
@@ -424,6 +422,7 @@ void NPC::NodeGraphGuard()
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
 				m_speed = m_normalSpeed;
+				m_isAttacking = false;
 				glm::vec2 location = m_route[m_targetRouteIndex].m_pos;
 
 				if (m_isRouteLocationNew)
@@ -459,6 +458,7 @@ void NPC::NodeGraphGuard()
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
 				m_speed = m_normalSpeed;
+				m_isAttacking = false;
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
 				PointAtPoint(player.GetPos());
 			};
@@ -468,10 +468,31 @@ void NPC::NodeGraphGuard()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
-				m_speed = m_runningSpeed;
+				m_isAttacking = true;
+				GlobalData& gData = GlobalData::Get();
+
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
-				MoveToTarget(desc.m_tickTimer->Second(), player.GetPos());
+				glm::vec2 vec = glm::normalize(GetPos() - player.GetPos());
+				MoveToTarget(desc.m_tickTimer->Second(), player.GetPos() + vec);
 				PointAtPoint(player.GetPos());
+
+				m_speed = m_runningSpeed;
+				
+				if (timeFromEnter > 0.5f)
+				{
+					m_timeWhenEnter = (float)glfwGetTime();
+
+					// shoot
+					gData.m_gameScene->GetProjectiles().emplace_back(GetPos(), 4, m_dir, gData.m_texBullet);
+					uint64_t t = gData.m_scene->GetAudio().AddSound(
+						GameUUID(gData.m_audioGun1),
+						GetPos(),
+						5.0f, 7.0f,
+						true,
+						false
+					).GetUUID();
+					gData.m_scene->GetAudio().StartSound(t);
+				}
 			};
 	}
 	int attackIndex = m_nodes.size() - 1;
@@ -480,6 +501,7 @@ void NPC::NodeGraphGuard()
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
 				m_speed = m_runningSpeed;
+				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
 				if (timeFromEnter < 3.0f)
@@ -511,6 +533,7 @@ void NPC::NodeGraphGuard()
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
 				m_speed = m_runningSpeed;
+				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				NPC* body = (NPC*)m_searchParam;
 				m_searchFinish = false;
@@ -546,6 +569,7 @@ void NPC::NodeGraphGuard()
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
 				m_speed = m_runningSpeed;
+				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
 				if (timeFromEnter < 3.0f)
@@ -672,8 +696,12 @@ void NPC::NodeGraphGuard()
 
 				bool ret = false;
 				float dist = glm::distance(m_searchPos, player.GetPos());
+
 				if (IsPlayerDetected() && dist < 1.0f && time < 0.1f)
 					ret = true;
+				if (player.IsGunShooting())
+					ret = true;
+				
 				if (ret)
 				{
 					m_isSearchLocationNew = true;
@@ -734,6 +762,37 @@ void NPC::NodeGraphGuard()
 				float dist = glm::distance(body->GetPos(), player.GetPos());
 				if (IsPlayerDetected() && dist < 1.0f && time < 0.1f)
 					ret = true;
+				if (ret)
+				{
+					m_isSearchLocationNew = true;
+					return true;
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchGunShotIndex);
+		bridge.m_originIndexes.emplace_back(searchBodyIndex);
+		bridge.m_destIndex = attackIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+
+				bool ret = false;
+				for (uint64_t& uuid : m_detectedNPCs)
+				{
+					NPC& npc = gData.m_gameScene->GetNPCs()[uuid];
+					if (npc.GetHealth() > 0)
+					{
+						if (npc.GetIsAttacking())
+						{
+							ret = true;
+							break;
+						}
+					}
+				}
+
 				if (ret)
 				{
 					m_isSearchLocationNew = true;

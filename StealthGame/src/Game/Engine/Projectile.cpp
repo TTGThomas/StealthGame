@@ -7,7 +7,7 @@ Projectile::Projectile(glm::vec2 pos, int layer, float rot, uint64_t& texID)
 	m_lifeStart = (float)glfwGetTime();
 
 	m_vel = { glm::sin(glm::radians(rot)), glm::cos(glm::radians(rot)) };
-	m_pos = pos + m_vel * 0.5f;
+	m_pos = pos + m_vel * 0.2f;
 
 	std::vector<QuadInitDesc> descs;
 	float size = 0.05f;

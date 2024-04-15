@@ -48,6 +48,7 @@ public:
 	void SetIsDragging(bool newInput) { m_isDragging = newInput; }
 	void SetDraggedNPCID(uint64_t input) { m_draggedNPC = input; }
 	void SetActionType(ActionType type) { m_actionType = type; }
+	void SetHealth(int health) { m_health = health; }
 
 	void ChangeDisguise(Identities type);
 
@@ -56,6 +57,8 @@ public:
 	
 	bool OnTrespassZone();
 	bool OnHostileZone();
+
+	bool IsGunShooting();
 
 	const glm::vec2& GetPos() { return GetQuad(0)->GetPos(); }
 	const glm::vec2& GetVelocity() { return m_velocity; }
@@ -68,9 +71,13 @@ public:
 	ActionType GetActionType() { return m_actionType; }
 	Inventory& GetInventory() { return m_inventory; }
 	Identities GetDisguise() { return m_disguise; }
+	int GetHealth() { return m_health; }
 private:
 	void MovePlayer(GameTickDesc& desc);
+	void ApplyDamage();
 private:
+	int m_health = 100;
+
 	PlayerAnimBP m_animBP;
 	Inventory m_inventory;
 	glm::vec2 m_velocity{};

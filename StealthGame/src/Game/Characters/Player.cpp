@@ -22,7 +22,8 @@ void Player::BindCamera(Camera* camera)
 
 void Player::PlayerTick(GameTickDesc& desc)
 {
-	
+	ApplyDamage();
+
 	m_actionType = ActionType::NORMAL;
 	if (!m_inputEnabled)
 		return;
@@ -53,6 +54,8 @@ void Player::ShowWindow()
 	
 	float invDt = 1.0f / GlobalData::Get().m_deltaTime;
 	ImGui::Text("Speed: %f", glm::length(invDt * glm::vec2(m_velocity.x, m_velocity.y)));
+	
+	ImGui::Text("Health: %i", m_health);
 
 	const char* names[] =
 	{
@@ -111,6 +114,14 @@ bool Player::OnHostileZone()
 	return ret;
 }
 
+bool Player::IsGunShooting()
+{
+	if (m_inventory.GetEquippiedType() != Inventory::Type::GUN)
+		return false;
+
+	return ((Gun*)m_inventory.GetEquipped().get())->IsShooting();
+}
+
 void Player::EliminateNPC(NPC& victim)
 {
 	SetPos(victim.GetPos());
@@ -150,4 +161,18 @@ void Player::MovePlayer(GameTickDesc& desc)
 
 	// synch hitbox and character
 	GetQuad(2)->SetPos(GetQuad(0)->GetPos());
+}
+
+void Player::ApplyDamage()
+{
+	if (m_health > 200)// not a valid range
+		return;
+
+	GlobalData& gData = GlobalData::Get();
+
+	CollisionPayload payload = gData.m_collision->Collide(4, GetUUID(0));
+	if (payload.m_hasHit)
+	{
+		m_health = 0;
+	}
 }
