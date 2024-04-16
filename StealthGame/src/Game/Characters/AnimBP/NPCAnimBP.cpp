@@ -3,6 +3,8 @@
 #include "../NPC.h"
 #include "../../GameScene.h"
 
+uint64_t NPCAnimBP::m_texGun = 0;
+
 void NPCAnimBP::Init(NPC* npc)
 {
 	GlobalData& gData = GlobalData::Get();
@@ -39,6 +41,28 @@ void NPCAnimBP::Init(NPC* npc)
 	gData.m_scene->GetRenderQuads()[m_leftArm].SetSideFrames(4);
 	gData.m_scene->GetRenderQuads()[m_rightArm].SetFrameIndex(1);
 	gData.m_scene->GetRenderQuads()[m_rightArm].SetSideFrames(4);
+
+	{
+		Quad gunQuad;
+		gunQuad.SetPos({ 0.0f, 0.0f });
+		gunQuad.SetRadius({ 0.1f, 0.1f });
+		m_gun = gunQuad.GetUUID().GetUUID();
+		RenderQuadInitDesc desc;
+		desc.m_depth = 0.25f;
+		desc.m_followCameraOffset = true;
+		desc.m_shaderUUID = gData.m_defaultShader;
+
+		if (m_texGun == 0)
+		{
+			Texture texture;
+			texture.Init("res/Inventories/Gun.png");
+			m_texGun = texture.GetUUID().GetUUID();
+			gData.m_renderer->AddTexture(texture);
+		}
+
+		desc.m_textureUUID = m_texGun;
+		gData.m_scene->AddQuad(gunQuad, desc);
+	}
 
 	m_animNodes.push_back(AnimNode(
 		[](NPC* npc) -> bool
@@ -103,6 +127,8 @@ void NPCAnimBP::Tick(NPC* npc)
 		}
 	}
 	UpdateArms(npc, leftArmPos, rightArmPos);
+
+	gData.m_scene->GetRenderQuads()[m_gun].SetVisibility(false);
 }
 
 void NPCAnimBP::UpdateArms(NPC* npc, glm::vec2 leftLook, glm::vec2 rightLook)
@@ -125,6 +151,39 @@ void NPCAnimBP::UpdateArms(NPC* npc, glm::vec2 leftLook, glm::vec2 rightLook)
 
 	leftArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(leftAngle)), glm::cos(glm::radians(leftAngle))));
 	rightArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(rightAngle)), glm::cos(glm::radians(rightAngle))));
+}
+
+void NPCAnimBP::PointGunAt(NPC* npc, glm::vec2 point)
+{
+	GlobalData& gData = GlobalData::Get();
+	uint64_t uuid = npc->GetUUID(1).GetUUID();
+
+	gData.m_scene->GetRenderQuads()[m_gun].SetVisibility(true);
+
+	Quad& leftArm = gData.m_scene->GetQuads()[m_leftArm];
+	Quad& rightArm = gData.m_scene->GetQuads()[m_rightArm];
+	glm::vec2 leftArmPos = leftArm.GetPos() + glm::vec2(0.0f, -1.0f);
+	glm::vec2 rightArmPos = rightArm.GetPos() + glm::vec2(0.0f, -1.0f);
+
+	if (point.x > npc->GetPos().x)
+		rightArmPos = point;
+	else
+		leftArmPos = point;
+
+	UpdateArms(npc, leftArmPos, rightArmPos);
+
+	Quad& gun = gData.m_scene->GetQuads()[m_gun];
+	float rotation = GetAngleFromVec(glm::normalize(point - npc->GetPos()));
+
+	glm::vec2 pos = npc->GetPos();
+	glm::vec2 front = { glm::sin(glm::radians(rotation)), glm::cos(glm::radians(rotation)) };
+	pos += 0.15f * front;
+	if (rotation > 180.0f)
+		gun.SetRadius({ -0.1f, 0.1f });
+	else
+		gun.SetRadius({ 0.1f, 0.1f });
+	gun.SetPos(pos);
+	gun.SetRotation(rotation);
 }
 
 float NPCAnimBP::GetAngleFromVec(glm::vec2 vec)

@@ -476,6 +476,8 @@ void NPC::NodeGraphGuard()
 				MoveToTarget(desc.m_tickTimer->Second(), player.GetPos() + vec);
 				PointAtPoint(player.GetPos());
 
+				m_animBP.PointGunAt(this, player.GetPos());
+
 				m_speed = m_runningSpeed;
 				
 				if (timeFromEnter > 0.5f)

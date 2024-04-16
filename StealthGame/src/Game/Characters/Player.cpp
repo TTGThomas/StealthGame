@@ -13,6 +13,7 @@ void Player::Init(std::vector<QuadInitDesc>& descs)
 void Player::ClearResources()
 {
 	m_inventory.ClearResources();
+	NPCAnimBP::ClearResources();
 }
 
 void Player::BindCamera(Camera* camera)
@@ -165,6 +166,7 @@ void Player::MovePlayer(GameTickDesc& desc)
 
 void Player::ApplyDamage()
 {
+	return;
 	if (m_health > 200)// not a valid range
 		return;
 

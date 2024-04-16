@@ -44,10 +44,13 @@ class NPCAnimBP
 	};
 public:
 	NPCAnimBP() = default;
+	static void ClearResources() { m_texGun = 0; }
 
 	void Init(NPC* npc);
 
 	void Tick(NPC* npc);
+
+	void PointGunAt(NPC* npc, glm::vec2 point);
 
 	void UpdateArms(NPC* npc, glm::vec2 leftLook, glm::vec2 rightLook);
 private:
@@ -55,4 +58,6 @@ private:
 private:
 	std::vector<AnimNode> m_animNodes;
 	uint64_t m_leftArm, m_rightArm;
+	uint64_t m_gun;
+	static uint64_t m_texGun;
 };

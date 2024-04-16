@@ -18,6 +18,9 @@ public:
 	static void ClearResources();
 	
 	bool IsShooting() { return m_isShooting; }
+
+	static uint64_t GetTexHUD() { return m_texHUD; }
+	static uint64_t GetTexInGame() { return m_texInGame; }
 private:
 	float AngleFromPoint(glm::vec2 start, glm::vec2 end);
 private:
