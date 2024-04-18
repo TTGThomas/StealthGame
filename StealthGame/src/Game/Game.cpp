@@ -81,6 +81,8 @@ void Game::Tick(GameTickDesc& desc)
 		}
 	}
 
+	NetworkTick(desc);
+
 	DebugManager::RenderDebugs();
 }
 
@@ -225,4 +227,49 @@ void Game::ShowStatsWindow()
 	ImGui::Begin("Game");
 	ImGui::Text("Bodies found: %i", gData.m_bodiesFound);
 	ImGui::End();
+}
+
+void Game::NetworkTick(GameTickDesc& desc)
+{
+	GlobalData& gData = GlobalData::Get();
+	if (desc.m_network->GetRole() == NetworkManager::Role::SERVER)
+	{
+		std::array<std::array<unsigned char, PATCHSIZE>, MAXPLAYERS> data;
+		// fill in position
+		glm::vec2 pos = m_gameScene.GetPlayer().GetPos();
+		// x
+		data[1][0] = ((unsigned char*)&pos.x)[0];
+		data[1][1] = ((unsigned char*)&pos.x)[1];
+		data[1][2] = ((unsigned char*)&pos.x)[2];
+		data[1][3] = ((unsigned char*)&pos.x)[3];
+		// y
+		data[1][4] = ((unsigned char*)&pos.y)[0];
+		data[1][5] = ((unsigned char*)&pos.y)[1];
+		data[1][6] = ((unsigned char*)&pos.y)[2];
+		data[1][7] = ((unsigned char*)&pos.y)[3];
+		desc.m_network->ServerUpdateSendData(data);
+	}
+	else if (desc.m_network->GetRole() == NetworkManager::Role::CLIENT)
+	{
+		auto& recvData = desc.m_network->GetRecvData();
+		// decrypt position
+		glm::vec2 pos = {};
+		// x
+		int xInt = 0;
+		xInt |= recvData[1][0];
+		xInt |= recvData[1][1] << 8;
+		xInt |= recvData[1][2] << 16;
+		xInt |= recvData[1][3] << 24;
+		pos.x = *(float*)&xInt;
+		// y
+		int yInt = 0;
+		yInt |= recvData[1][4];
+		yInt |= recvData[1][5] << 8;
+		yInt |= recvData[1][6] << 16;
+		yInt |= recvData[1][7] << 24;
+		pos.y = *(float*)&yInt;
+
+		// do something
+		m_gameScene.GetPlayer().SetPos(pos);
+	}
 }

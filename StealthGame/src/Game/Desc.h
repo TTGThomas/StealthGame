@@ -8,10 +8,13 @@
 
 #include "../Utils/Timer.h"
 
+#include "../Networking/NetworkManager.h"
+
 struct GameTickDesc
 {
 	QuadRenderer* m_renderer;
 	CollisionDetector* m_collision;
+	NetworkManager* m_network;
 	Scene* m_scene;
 	Camera* m_camera;
 	Window* m_window;

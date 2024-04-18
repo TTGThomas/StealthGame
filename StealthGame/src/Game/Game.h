@@ -65,6 +65,8 @@ private:
 private:
 	void ShowStatsWindow();
 private:
+	void NetworkTick(GameTickDesc& desc);
+private:
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
 	float m_interactDist = 0.0f;

@@ -645,6 +645,15 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
 {
+	std::cout << "1 - Server\n2 - Client" << std::endl;
+	int choice = 0;
+	std::cin >> choice;
+	if (choice == 1)
+		desc.m_network->InitServer(8080);
+	if (choice == 2)
+		desc.m_network->InitClient(8080, "192.168.71.193");
+
+
 	LoadTextures(desc);
 	LoadAudio(desc);
 

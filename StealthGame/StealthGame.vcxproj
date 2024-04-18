@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Networking\Client.cpp" />
+    <ClCompile Include="src\Networking\Server.cpp" />
+    <ClCompile Include="src\Networking\NetworkManager.cpp" />
     <ClCompile Include="src\Audio\AudioManager.cpp" />
     <ClCompile Include="src\Game\Characters\AnimBP\NPCAnimBP.cpp" />
     <ClCompile Include="src\Game\Characters\AnimBP\PlayerAnimBP.cpp" />
@@ -201,6 +204,10 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Networking\Client.h" />
+    <ClInclude Include="src\Networking\NetworkConfig.h" />
+    <ClInclude Include="src\Networking\Server.h" />
+    <ClInclude Include="src\Networking\NetworkManager.h" />
     <ClInclude Include="src\Audio\AudioManager.h" />
     <ClInclude Include="src\Game\Characters\AnimBP\NPCAnimBP.h" />
     <ClInclude Include="src\Game\Characters\AnimBP\PlayerAnimBP.h" />

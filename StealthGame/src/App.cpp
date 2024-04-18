@@ -12,6 +12,7 @@ App::App()
 	desc.m_window = &m_window;
 	desc.m_renderer = &m_renderer;
 	desc.m_collision = &m_collision;
+	desc.m_network = &m_network;
 	desc.m_scene = &m_scene;
 	desc.m_camera = &m_camera;
 	desc.m_tickTimer = &m_tickTimer;
@@ -20,6 +21,7 @@ App::App()
 
 App::~App()
 {
+	m_network.TerminateSessions();
 }
 
 int App::Exec()
@@ -117,6 +119,7 @@ void App::UpdateGame()
 	desc.m_window = &m_window;
 	desc.m_renderer = &m_renderer;
 	desc.m_collision = &m_collision;
+	desc.m_network = &m_network;
 	desc.m_camera = &m_camera;
 	desc.m_tickTimer = &m_tickTimer;
 	desc.m_scene = &m_scene;

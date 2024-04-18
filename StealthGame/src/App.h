@@ -11,6 +11,8 @@
 #include "quadRenderer/QuadRenderer.h"
 #include "Collisions/CollisionDetector.h"
 
+#include "Networking/NetworkManager.h"
+
 #include "Scene.h"
 
 #include "Utils/Timer.h"
@@ -40,6 +42,7 @@ private:
 	Scene m_scene;
 	QuadRenderer m_renderer;
 	CollisionDetector m_collision;
+	NetworkManager m_network;
 
 	// timers here
 	Timer m_gpuTimer;
