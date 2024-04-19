@@ -192,6 +192,12 @@
     <ClCompile Include="src\Networking\Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Characters\OtherPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -396,6 +402,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Networking\NetworkConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Characters\OtherPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\PassData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

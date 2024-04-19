@@ -8,6 +8,7 @@
 #include "Items/ItemsManager.h"
 
 #include "Characters/Player.h"
+#include "Characters/OtherPlayer.h"
 #include "Characters/NPC.h"
 
 #include "UI/TaskBar.h"
@@ -28,9 +29,8 @@
 #include "Zones/Zone.h"
 
 #include "VisualLayers.h"
-
 #include "Desc.h"
-
+#include "PassData.h"
 #include "GlobalData.h"
 
 struct NPCInitDesc
@@ -78,6 +78,7 @@ public:
 	std::unordered_map<uint64_t, NPC>& GetNPCs() { return m_npcs; }
 	ItemsManager& GetItems() { return m_items; }
 	Player& GetPlayer() { return m_player; }
+	std::array<OtherPlayer, MAXPLAYERS>& GetOtherPlayers() { return m_otherPlayers; }
 	TaskBar& GetTaskbar() { return m_taskbar; }
 	Zone& GetTrespassZone() { return m_trespassZone; }
 	Zone& GetHostileZone() { return m_hostileZone; }
@@ -92,6 +93,7 @@ private:
 	ItemsManager m_items;
 	SpecialBlockManager m_specialBlockManager;
 	Player m_player;
+	std::array<OtherPlayer, MAXPLAYERS> m_otherPlayers;
 	TaskBar m_taskbar;
 
 	Zone m_trespassZone;

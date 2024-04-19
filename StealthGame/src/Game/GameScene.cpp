@@ -4,7 +4,9 @@
 
 void GameScene::Init(SceneInitDesc& desc)
 {
-	GlobalData::Get().m_gameScene = this;
+	GlobalData& gData = GlobalData::Get();
+
+	gData.m_gameScene = this;
 
 	m_trespassZone = Zone(*desc.m_trespassingZones);
 	m_hostileZone = Zone(*desc.m_hostileZones);
@@ -13,6 +15,19 @@ void GameScene::Init(SceneInitDesc& desc)
 	m_taskbar.Init(desc.m_gameTickDesc);
 	m_player.Init(*desc.m_player);
 	m_player.BindCamera(desc.m_playerCamera);
+
+	for (int i = 0; i < MAXPLAYERS; i++)
+	{
+		std::vector<QuadInitDesc> desc;
+		glm::vec2 pos = {};
+		uint64_t shader = gData.m_defaultShader;
+		uint64_t texture = gData.m_texPlayer;
+		desc.push_back({ pos, glm::vec2(0.2f, 0.2f), 0.25f, shader, gData.m_texLogo });
+		desc.push_back({ pos, glm::vec2(0.1f), 1.0f, shader, gData.m_texPlayerCursor });
+		desc.push_back({ pos, glm::vec2(0.2f), 0.25f, shader, texture });
+
+		m_otherPlayers[i].Init(desc);
+	}
 
 	for (int i = 0; i < desc.m_npcs->size(); i++)
 	{

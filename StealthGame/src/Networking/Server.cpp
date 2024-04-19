@@ -80,11 +80,11 @@ void Server::SendThread(int clientSocket, int index)
 {
     while (!m_shouldTerminate)
     {
-        unsigned char buffer[1025];
+        unsigned char buffer[BUFSIZE + 1];
         buffer[0] = index;
         m_sendFunc(buffer);
-        char out[1025];
-        for (int i = 0; i < 1025; i++)
+        char out[BUFSIZE + 1];
+        for (int i = 0; i < BUFSIZE + 1; i++)
             out[i] = buffer[i] - 128;
         send(clientSocket, out, sizeof(buffer), 0);
     }
@@ -94,13 +94,13 @@ void Server::RecvThread(int clientSocket, int index)
 {
     while (!m_shouldTerminate)
     {
-        char buffer[1024];
+        char buffer[PATCHSIZE];
         int len = recv(clientSocket, buffer, sizeof(buffer), 0);
         if (len > 0)
         {
-            unsigned char in[1025];
+            unsigned char in[PATCHSIZE + 1];
             in[0] = index;
-            for (int i = 0; i < 1024; i++)
+            for (int i = 0; i < PATCHSIZE; i++)
                 in[i + 1] = buffer[i] + 128;
             m_recvFunc(in);
         }

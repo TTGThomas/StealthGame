@@ -10,8 +10,11 @@ void Client::Exec(int port, const char* ip, std::function<void(unsigned char*)> 
     m_shouldTerminate = false;
     m_sendFunc = sendFunc;
     m_recvFunc = recvFunc;
+    
+    for (int i = 0; i < strlen(ip); i++)
+        m_ip[i] = ip[i];
 
-    MainThread(port, ip);
+    MainThread(port, m_ip);
 }
 
 void Client::Terminate()
@@ -48,10 +51,10 @@ void Client::SendThread()
 {
     while (!m_shouldTerminate)
     {
-        unsigned char buffer[1024];
+        unsigned char buffer[PATCHSIZE];
         m_sendFunc(buffer);
-        char out[1024];
-        for (int i = 0; i < 1024; i++)
+        char out[PATCHSIZE];
+        for (int i = 0; i < PATCHSIZE; i++)
             out[i] = buffer[i] - 128;
         send(m_serverSocket, out, sizeof(buffer), 0);
     }
@@ -61,12 +64,12 @@ void Client::RecvThread()
 {
     while (!m_shouldTerminate)
     {
-        char buffer[1025];
+        char buffer[BUFSIZE + 1];
         int len = recv(m_serverSocket, buffer, sizeof(buffer), 0);
         if (len > 0)
         {
-            unsigned char in[1025];
-            for (int i = 0; i < 1025; i++)
+            unsigned char in[BUFSIZE + 1];
+            for (int i = 0; i < BUFSIZE + 1; i++)
                 in[i] = buffer[i] + 128;
             m_recvFunc(in);
         }

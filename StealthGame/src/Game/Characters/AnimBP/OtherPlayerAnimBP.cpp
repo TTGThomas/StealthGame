@@ -1,9 +1,9 @@
-#include "PlayerAnimBP.h"
+#include "OtherPlayerAnimBP.h"
 
-#include "../Player.h"
+#include "../OtherPlayer.h"
 #include "../../GameScene.h"
 
-void PlayerAnimBP::Init()
+void OtherPlayerAnimBP::Init()
 {
 	GlobalData& gData = GlobalData::Get();
 
@@ -13,7 +13,7 @@ void PlayerAnimBP::Init()
 	//pixelSize = 0.2f / 16.0f;
 	{
 		Quad leftArmQuad;
-		leftArmQuad.SetPos({0.0f, 0.0f});
+		leftArmQuad.SetPos({ 0.0f, 0.0f });
 		leftArmQuad.SetRadius({ 0.2f, 0.2f });
 		m_leftArm = leftArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
@@ -26,7 +26,7 @@ void PlayerAnimBP::Init()
 	{
 		Quad rightArmQuad;
 		rightArmQuad.SetPos({ 0.0f, 0.0f });
-		rightArmQuad.SetRadius({0.2f, 0.2f});
+		rightArmQuad.SetRadius({ 0.2f, 0.2f });
 		m_rightArm = rightArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
 		desc.m_depth = 0.25f;
@@ -41,82 +41,77 @@ void PlayerAnimBP::Init()
 	gData.m_scene->GetRenderQuads()[m_rightArm].SetSideFrames(4);
 
 	m_animNodes.push_back(AnimNode(
-		[](Player* player) -> bool
+		[](OtherPlayer* player) -> bool
 		{
 			return
-				glm::length(player->GetVelocity()) == 0.0f &&
+				player->GetVelocity() == 0.0f &&
 				!player->GetIsCrouching();
 		},
 		State::IDLE,
-		[](PlayerAnimBP* animBP, Player* player)
+		[](OtherPlayerAnimBP* animBP, OtherPlayer* player)
 		{
 		},
 		0.0f,
 		4,
 		7,
 		7
-	));
+		));
 
 	m_animNodes.push_back(AnimNode(
-		[](Player* player) -> bool
+		[](OtherPlayer* player) -> bool
 		{
 			return
-				glm::length(player->GetVelocity()) != 0.0f &&
+				player->GetVelocity() != 0.0f &&
 				!player->GetIsCrouching();
 		},
 		State::WALKING,
-		[](PlayerAnimBP* animBP, Player* player)
+		[](OtherPlayerAnimBP* animBP, OtherPlayer* player)
 		{
 		},
 		30.0f,
 		4,
 		8,
 		15
-	));
+		));
 
 	m_animNodes.push_back(AnimNode(
-		[](Player* player) -> bool
+		[](OtherPlayer* player) -> bool
 		{
 			return
-				glm::length(player->GetVelocity()) == 0.0f &&
+				player->GetVelocity() == 0.0f &&
 				player->GetIsCrouching();
 		},
 		State::CROUCHIDLE,
-		[](PlayerAnimBP* animBP, Player* player)
+		[](OtherPlayerAnimBP* animBP, OtherPlayer* player)
 		{
 		},
 		0.0f,
 		4,
 		2,
 		2
-	));
+		));
 
 	m_animNodes.push_back(AnimNode(
-		[](Player* player) -> bool
+		[](OtherPlayer* player) -> bool
 		{
 			return
-				glm::length(player->GetVelocity()) != 0.0f &&
+				player->GetVelocity() != 0.0f &&
 				player->GetIsCrouching();
 		},
-		State::CROUCHWALKING, 
-		[this](PlayerAnimBP* animBP, Player* player)
+		State::CROUCHWALKING,
+		[this](OtherPlayerAnimBP* animBP, OtherPlayer* player)
 		{
 		},
 		10.0f,
 		4,
 		3,
 		6
-	));
+		));
 }
 
-void PlayerAnimBP::Tick(Player* player)
+void OtherPlayerAnimBP::Tick(OtherPlayer* player, float leftRot, float rightRot)
 {
 	uint64_t uuid = player->GetUUID(2).GetUUID();
-
-	Quad& leftArm = GlobalData::Get().m_scene->GetQuads()[m_leftArm];
-	Quad& rightArm = GlobalData::Get().m_scene->GetQuads()[m_rightArm];
-	glm::vec2 leftArmPos = leftArm.GetPos() + glm::vec2(0.0f, -1.0f);
-	glm::vec2 rightArmPos = rightArm.GetPos() + glm::vec2(0.0f, -1.0f);
 
 	for (AnimNode& node : m_animNodes)
 	{
@@ -128,45 +123,10 @@ void PlayerAnimBP::Tick(Player* player)
 		}
 	}
 
-	float pixelSize = 0.2f / 16.0f;
-
-	if (player->GetInventory().GetEquippiedType() == Inventory::Type::GUN)
-	{
-		float rotation = player->GetInventory().GetEquipped()->GetQuad(1).GetRotation();
-		glm::vec2 pos = player->GetInventory().GetEquipped()->GetQuad(1).GetPos();
-		if (rotation > 180.0f)
-		{
-			leftArmPos = pos;
-			if (player->GetIsDragging())
-				rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
-		}
-		else
-		{
-			rightArmPos = pos;
-			if (player->GetIsDragging())
-				leftArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
-		}
-	}
-	else if (player->GetIsDragging())
-	{
-		leftArmPos = rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
-	}
-
-	if (player->GetInventory().GetEquippiedType() == Inventory::Type::FIBERWIRE)
-	{
-		float averageRot = leftArm.GetRotation();
-
-		glm::vec2 pos = leftArm.GetPos() + rightArm.GetPos();
-		pos /= 2.0f;
-		pos.x += -8.0f * pixelSize * glm::sin(glm::radians(averageRot));
-		pos.y += -8.0f * pixelSize * glm::cos(glm::radians(averageRot));
-		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos);
-	}
-
-	UpdateArms(player, leftArmPos, rightArmPos);
+	UpdateArms(player, leftRot, rightRot);
 }
 
-void PlayerAnimBP::ChangeDisguise(Player* player, Identities type)
+void OtherPlayerAnimBP::ChangeDisguise(OtherPlayer* player, Identities type)
 {
 	GlobalData& gData = GlobalData::Get();
 	uint64_t uuid = player->GetUUID(2).GetUUID();
@@ -188,12 +148,12 @@ void PlayerAnimBP::ChangeDisguise(Player* player, Identities type)
 	gData.m_scene->GetRenderQuads()[m_rightArm].SetTextureUUID(textureUUID);
 }
 
-void PlayerAnimBP::UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 rightLook)
+void OtherPlayerAnimBP::UpdateArms(OtherPlayer* player, float leftRot, float rightRot)
 {
 	GlobalData& gData = GlobalData::Get();
 
 	float pixelSize = 0.2f / 16.0f;
-	
+
 	Quad& leftArm = gData.m_scene->GetQuads()[m_leftArm];
 	Quad& rightArm = gData.m_scene->GetQuads()[m_rightArm];
 
@@ -208,17 +168,14 @@ void PlayerAnimBP::UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 righ
 		rightArm.SetPos(player->GetPos() + glm::vec2(5.0f, -3.0f) * glm::vec2(pixelSize));
 	}
 
-	m_leftRot = GetAngleFromVec(glm::normalize(leftLook - leftArm.GetPos()));
-	m_rightRot = GetAngleFromVec(glm::normalize(rightLook - rightArm.GetPos()));
+	leftArm.SetRotation(leftRot);
+	rightArm.SetRotation(rightRot);
 
-	leftArm.SetRotation(m_leftRot);
-	rightArm.SetRotation(m_rightRot);
-
-	leftArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(m_leftRot)), glm::cos(glm::radians(m_leftRot))));
-	rightArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(m_rightRot)), glm::cos(glm::radians(m_rightRot))));
+	leftArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(leftRot)), glm::cos(glm::radians(leftRot))));
+	rightArm.ChangePos(14.0f * pixelSize * glm::vec2(glm::sin(glm::radians(rightRot)), glm::cos(glm::radians(rightRot))));
 }
 
-float PlayerAnimBP::GetAngleFromVec(glm::vec2 vec)
+float OtherPlayerAnimBP::GetAngleFromVec(glm::vec2 vec)
 {
 	glm::vec2 front = glm::vec2(0.0f, 1.0f);
 

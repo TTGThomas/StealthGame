@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.cpp" />
+    <ClCompile Include="src\Game\Characters\OtherPlayer.cpp" />
     <ClCompile Include="src\Networking\Client.cpp" />
     <ClCompile Include="src\Networking\Server.cpp" />
     <ClCompile Include="src\Networking\NetworkManager.cpp" />
@@ -204,6 +206,9 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.h" />
+    <ClInclude Include="src\Game\Characters\OtherPlayer.h" />
+    <ClInclude Include="src\Game\PassData.h" />
     <ClInclude Include="src\Networking\Client.h" />
     <ClInclude Include="src\Networking\NetworkConfig.h" />
     <ClInclude Include="src\Networking\Server.h" />

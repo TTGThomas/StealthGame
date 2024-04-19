@@ -47,6 +47,20 @@ void Player::PlayerTick(GameTickDesc& desc)
 		m_actionType = ActionType::ILLEGAL;
 }
 
+PassData Player::GetPassData()
+{
+	glm::vec2 pos = GetPos();
+	float vel = glm::length(m_velocity);
+
+	PassData passData;
+	passData.m_x = pos.x;
+	passData.m_y = pos.y;
+	passData.m_vel = vel;
+	passData.m_leftRot = m_animBP.GetLeftRot();
+	passData.m_rightRot = m_animBP.GetRightRot();
+	return passData;
+}
+
 void Player::ShowWindow()
 {
 	ImGui::Begin("Player");

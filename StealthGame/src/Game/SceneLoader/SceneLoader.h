@@ -35,9 +35,6 @@ public:
 
 	void LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game, int index);
 
-	void LoadDebugScene(GameTickDesc& desc, GameScene* scene, class Game* game);
-	void LoadTestLevel(GameTickDesc& desc, GameScene* scene, class Game* game);
-
 	void LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game);
 
 	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name);

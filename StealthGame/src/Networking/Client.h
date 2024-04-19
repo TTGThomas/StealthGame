@@ -27,4 +27,6 @@ private:
 	std::thread m_recvThread;
 
 	bool m_shouldTerminate = false;
+
+	char m_ip[20]{};
 };

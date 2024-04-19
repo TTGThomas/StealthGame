@@ -7,7 +7,7 @@
 
 #include "../../GlobalData.h"
 
-class PlayerAnimBP
+class OtherPlayerAnimBP
 {
 	enum class State
 	{
@@ -17,9 +17,9 @@ class PlayerAnimBP
 	struct AnimNode
 	{
 		AnimNode(
-			std::function<bool(class Player*)> determineFunc,
+			std::function<bool(class OtherPlayer*)> determineFunc,
 			State representState,
-			std::function<void(PlayerAnimBP*, Player*)> execFunc,
+			std::function<void(OtherPlayerAnimBP*, OtherPlayer*)> execFunc,
 			float framesPerSecond,
 			int sideFrames,
 			int startFrame,
@@ -34,9 +34,9 @@ class PlayerAnimBP
 			m_startFrame(startFrame),
 			m_endFrame(endFrame) {}
 
-		std::function<bool(Player*)> m_determineFunc;
+		std::function<bool(OtherPlayer*)> m_determineFunc;
 		State m_representState;
-		std::function<void(PlayerAnimBP*, Player*)> m_execFunc;
+		std::function<void(OtherPlayerAnimBP*, OtherPlayer*)> m_execFunc;
 		float m_framesPerSecond;
 		int m_sideFrames;
 		int m_startFrame;
@@ -45,18 +45,14 @@ class PlayerAnimBP
 public:
 	void Init();
 
-	void Tick(Player* player);
+	void Tick(OtherPlayer* player, float leftRot, float rightRot);
 
-	void ChangeDisguise(Player* player, Identities type);
+	void ChangeDisguise(OtherPlayer* player, Identities type);
 
-	void UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 rightLook);
-
-	float GetLeftRot() { return m_leftRot; }
-	float GetRightRot() { return m_rightRot; }
+	void UpdateArms(OtherPlayer* player, float leftRot, float rightRot);
 private:
 	float GetAngleFromVec(glm::vec2 vec);
 private:
 	std::vector<AnimNode> m_animNodes;
 	uint64_t m_leftArm, m_rightArm;
-	float m_leftRot, m_rightRot;
 };
