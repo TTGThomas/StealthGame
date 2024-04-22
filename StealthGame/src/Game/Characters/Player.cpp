@@ -58,11 +58,13 @@ PassData Player::GetPassData()
 	passData.m_vel = vel;
 	passData.m_leftRot = m_animBP.GetLeftRot();
 	passData.m_rightRot = m_animBP.GetRightRot();
+	passData.m_disguise = (int)m_disguise;
 	return passData;
 }
 
 void Player::ShowWindow()
 {
+#ifndef IMGUI_DISABLE
 	ImGui::Begin("Player");
 
 	ImGui::Text("Action Illegal: %i", m_actionType == ActionType::ILLEGAL ? 1 : 0);
@@ -83,7 +85,8 @@ void Player::ShowWindow()
 	ImGui::Text("Identity: %s", names[(int)m_disguise]);
 
 	ImGui::End();
-}
+#endif
+}	
 
 void Player::ChangeDisguise(Identities type)
 {
@@ -100,7 +103,7 @@ void Player::HidePlayer(glm::vec2 pos)
 
 void Player::UnHidePlayer()
 {
-	SetPos(m_posBeforeHidden);
+	SetPos(m_posBeforeHidden);							
 	m_isHidden = false;
 	m_isCrouching = false;
 }
@@ -180,10 +183,12 @@ void Player::MovePlayer(GameTickDesc& desc)
 
 void Player::ApplyDamage()
 {
+#ifndef NDEBUG
 	return;
+#endif
 	if (m_health > 200)// not a valid range
 		return;
-
+	
 	GlobalData& gData = GlobalData::Get();
 
 	CollisionPayload payload = gData.m_collision->Collide(4, GetUUID(0));

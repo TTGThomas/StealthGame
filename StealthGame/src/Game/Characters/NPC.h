@@ -51,7 +51,12 @@ class NPC : public Entity
 public:
 	enum class State
 	{
-		NORMAL, SUSPICIOUS, SEARCHING, PANIC
+		NORMAL, SEARCHING, ATTACK
+	};
+
+	enum class ReportSearch
+	{
+		NONE, REPORTING, DEADBODY, ILLEGALWEAPON, GUNSHOT, PLAYER
 	};
 
 	enum class SearchType
@@ -103,8 +108,11 @@ public:
 	void SetNPCUUID(GameUUID uuid) { m_uuid = uuid; }
 	void SetIsTarget(bool isTarget) { m_isTarget = isTarget; }
 
+	void SetReport(ReportSearch report) { m_reportedSearch = report; }
+
 	static glm::vec2 GetGridPos(glm::vec2 location);
 
+	State GetState() { return m_stateOverview; }
 	GameUUID& GetNPCUUID() { return m_uuid; }
 	int GetHealth() { return m_health; }
 	Identities GetType() { return m_type; }
@@ -152,10 +160,12 @@ private:
 
 	void CompileNodeGraph();
 	void NodeGraphGuard();
+	void NodeGraphGuest();
 	void NodeGraphDead();
 
 	void ResetTimer() { m_timeWhenEnter = 0.0f; }
 private:
+	State m_stateOverview = State::NORMAL;
 	GameUUID m_uuid;
 	CollisionDetector* m_collision;
 
@@ -170,12 +180,9 @@ private:
 	std::string m_name;
 
 	bool m_isPlayerDetected = false;
-
 	bool m_isBeingDragged = false;
 	bool m_isDisposed = false;
-
 	bool m_isAttacking = false;
-
 	bool m_isTarget = false;
 
 	float m_dir = 0.0f;
@@ -187,9 +194,8 @@ private:
 	Identities m_type = Identities::GUEST;
 	glm::vec2 m_searchPos = {};
 	void* m_searchParam = nullptr;// can be anything
-	bool m_isSearchLocationNew = true;
-	bool m_isRouteLocationNew = true;
 	bool m_searchFinish = false;
+	ReportSearch m_reportedSearch = ReportSearch::NONE;
 
 	DisguiseState m_disguiseStates[5];
 	int m_health = 100;

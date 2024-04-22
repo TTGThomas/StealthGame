@@ -22,12 +22,11 @@ void OtherPlayer::Tick(std::array<unsigned char, PATCHSIZE>& data)
 	m_velocity = recvData.m_vel;
 
 	m_animBP.Tick(this, recvData.m_leftRot, recvData.m_rightRot);
-
 	SetPos(pos);
+	m_disguise = (Identities)recvData.m_disguise;
 
 	// sync
 	GetQuad(2)->SetPos(pos);
-
 
 	m_lastTime = (float)glfwGetTime();
 }

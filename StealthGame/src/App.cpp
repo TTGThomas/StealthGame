@@ -6,20 +6,20 @@ App::App()
 	m_renderer(&m_scene), 
 	m_collision(&m_scene)
 {
-	std::cout << "For server: \"1 [port]\"" << std::endl;
-	std::cout << "For client: \"2 [port] [ip]\"" << std::endl;
-	int choice = 0;
-	int port = 0;
-	std::cin >> choice >> port;
-	if (choice == 1)
-		m_network.InitServer(port);
-	if (choice == 2)
-	{
-		char ip[20];
-		memset(ip, 0, sizeof(ip));
-		std::cin >> ip;
-		m_network.InitClient(port, ip);
-	}
+	//std::cout << "For server: \"1 [port]\"" << std::endl;
+	//std::cout << "For client: \"2 [port] [ip]\"" << std::endl;
+	//int choice = 0;
+	//int port = 0;
+	//std::cin >> choice >> port;
+	//if (choice == 1)
+	//	m_network.InitServer(port);
+	//if (choice == 2)
+	//{
+	//	char ip[20];
+	//	memset(ip, 0, sizeof(ip));
+	//	std::cin >> ip;
+	//	m_network.InitClient(port, ip);
+	//}
 
 	m_renderer.BindCamera(&m_camera);
 

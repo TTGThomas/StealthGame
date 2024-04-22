@@ -224,24 +224,32 @@ void Game::ShowStatsWindow()
 {
 	GlobalData& gData = GlobalData::Get();
 
+#ifndef IMGUI_DISABLE
 	ImGui::Begin("Game");
 	ImGui::Text("Bodies found: %i", gData.m_bodiesFound);
 	ImGui::End();
+#endif
 }
 
 void Game::NetworkTick(GameTickDesc& desc)
 {
+	if (!m_isOnline)
+		return;
+
 	GlobalData& gData = GlobalData::Get();
 	if (desc.m_network->GetRole() == NetworkManager::Role::SERVER)
 	{
 		std::array<std::array<unsigned char, PATCHSIZE>, MAXPLAYERS> data;
 
 		auto& recvData = desc.m_network->GetRecvData();
-		m_gameScene.GetOtherPlayers()[0].Tick(recvData[0]);
+		for (int i = 0; i < MAXPLAYERS; i++)
+			if (i != MAXPLAYERS - 1)
+				m_gameScene.GetOtherPlayers()[i].Tick(recvData[i]);
 
 		PassData passData = m_gameScene.GetPlayer().GetPassData();
-		data[1] = *(std::array<unsigned char, PATCHSIZE>*)&passData;
-		data[0] = *(std::array<unsigned char, PATCHSIZE>*)&recvData[0];
+		for (int i = 0; i < MAXPLAYERS - 1; i++)
+			data[i] = *(std::array<unsigned char, PATCHSIZE>*)&recvData[i];
+		data[MAXPLAYERS - 1] = *(std::array<unsigned char, PATCHSIZE>*)&passData;
 		desc.m_network->ServerUpdateSendData(data);
 	}
 	else if (desc.m_network->GetRole() == NetworkManager::Role::CLIENT)
@@ -249,7 +257,9 @@ void Game::NetworkTick(GameTickDesc& desc)
 		std::array<unsigned char, PATCHSIZE> data;
 
 		auto& recvData = desc.m_network->GetRecvData();
-		m_gameScene.GetOtherPlayers()[0].Tick(recvData[1]);
+		for (int i = 0; i < MAXPLAYERS; i++)
+			if (i != desc.m_network->ClientGetIndex())
+				m_gameScene.GetOtherPlayers()[i].Tick(recvData[i]);
 
 		PassData passData = m_gameScene.GetPlayer().GetPassData();
 		data = *(std::array<unsigned char, PATCHSIZE>*)&passData;

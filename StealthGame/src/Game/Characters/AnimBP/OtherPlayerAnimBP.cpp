@@ -122,6 +122,7 @@ void OtherPlayerAnimBP::Tick(OtherPlayer* player, float leftRot, float rightRot)
 			break;
 		}
 	}
+	ChangeDisguise(player, player->GetDisguise());
 
 	UpdateArms(player, leftRot, rightRot);
 }

@@ -67,6 +67,7 @@ private:
 private:
 	void NetworkTick(GameTickDesc& desc);
 private:
+	bool m_isOnline = false;
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;
 	float m_interactDist = 0.0f;

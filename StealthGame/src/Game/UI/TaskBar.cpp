@@ -85,12 +85,14 @@ void TaskBar::UpdateTaskbar(GameTickDesc& desc)
 
 void TaskBar::ShowStatsWindow()
 {
+#ifndef IMGUI_DISABLE
 	ImGui::Begin("TaskBarStats");
 	ImGui::DragFloat("FontSize", &m_fontSize, 0.01f);
 	ImGui::DragFloat2("StartPos", glm::value_ptr(m_startPos), 0.01f);
 	if (ImGui::Button("Refresh"))
 		m_changed = true;
 	ImGui::End();
+#endif
 }
 
 void TaskBar::AddLetter(GameTickDesc& desc, char letter, glm::vec2 pos, glm::vec3 color)
