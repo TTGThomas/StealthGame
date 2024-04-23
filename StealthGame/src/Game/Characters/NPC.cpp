@@ -901,8 +901,7 @@ void NPC::NodeGraphGuest()
 				if (frameFromEnter == 0)
 				{
 					// Tell guard to stop moving
-					guard.SetReport(ReportSearch::REPORTING);
-					
+					m_searchFinish = false;
 					StartMoveToLocation(guard.GetPos());
 				}
 
@@ -910,6 +909,11 @@ void NPC::NodeGraphGuest()
 				{
 					// Report guard
 					guard.SetReport(ReportSearch::DEADBODY);
+
+					if (glm::distance(GetPos(), guard.GetPos()) < MAP_SCALE)
+						m_searchFinish = true;
+					else
+						m_frameFromEnter = -1;
 				}
 				PointAtPoint(GetPos() + m_velocity);
 			};
@@ -959,6 +963,15 @@ void NPC::NodeGraphGuest()
 			{
 				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
 				return IsPlayerDetected() && player.GetActionType() == Player::ActionType::ILLEGAL;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(reportPlayerIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				return m_searchFinish;
 			};
 	}
 }
