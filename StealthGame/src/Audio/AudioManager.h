@@ -30,6 +30,8 @@ public:
 
 	bool IsSoundFinished(GameUUID uuid);
 
+	void SetSoundPos(GameUUID uuid, glm::vec2 pos);
+
 	float GetSoundMinDist(GameUUID uuid);
 	float GetSoundMaxDist(GameUUID uuid);
 	glm::vec2 GetSoundPos(GameUUID uuid);

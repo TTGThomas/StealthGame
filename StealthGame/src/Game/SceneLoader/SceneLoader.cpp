@@ -408,8 +408,8 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 		{},
 		1.0f, 5.0f,
 		false,
-		true,
-		false
+		false,
+		true
 	).GetUUID();
 
 	gData.m_audioGun1 = audio.AddSound("res/Audio/Gun/gunshot1.mp3",

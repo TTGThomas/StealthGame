@@ -16,6 +16,7 @@ public:
 
 	bool Tick();
 private:
+	uint64_t m_audio = 0;
 	Entity m_entity;
 	float m_lifeStart;
 

@@ -101,6 +101,11 @@ bool AudioManager::IsSoundFinished(GameUUID uuid)
     return ma_sound_at_end(&m_sounds[uuid.GetUUID()]);
 }
 
+void AudioManager::SetSoundPos(GameUUID uuid, glm::vec2 pos)
+{
+    ma_sound_set_position(&m_sounds[uuid.GetUUID()], pos.x, pos.y, 0.0f);
+}
+
 float AudioManager::GetSoundMinDist(GameUUID uuid)
 {
     return ma_sound_get_min_distance(&m_sounds[uuid.GetUUID()]);

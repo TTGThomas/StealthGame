@@ -4,6 +4,15 @@ Projectile::Projectile(glm::vec2 pos, int layer, float rot, uint64_t& texID)
 {
 	GlobalData& gData = GlobalData::Get();
 
+	m_audio = gData.m_scene->GetAudio().AddSound(
+		GameUUID(gData.m_audioGun1),
+		pos,
+		5.0f, 7.0f,
+		true,
+		false
+	).GetUUID();
+	gData.m_scene->GetAudio().StartSound(m_audio);
+
 	m_lifeStart = (float)glfwGetTime();
 
 	m_vel = { glm::sin(glm::radians(rot)), glm::cos(glm::radians(rot)) };
@@ -33,6 +42,8 @@ bool Projectile::Tick()
 
 	m_entity.GetQuad(0)->ChangePos(m_vel * m_speed * gData.m_deltaTime);
 	m_entity.GetQuad(1)->ChangePos(m_vel * m_speed * gData.m_deltaTime);
+
+	gData.m_scene->GetAudio().SetSoundPos(m_audio, m_entity.GetQuad(0)->GetPos());
 
 	if (!ret)
 	{
