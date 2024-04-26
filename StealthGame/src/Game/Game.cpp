@@ -63,7 +63,7 @@ void Game::Tick(GameTickDesc& desc)
 	InteractTick(desc);
 
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
-		npc.NPCTick(desc);
+		npc->NPCTick(desc);
 
 	if (m_exiting)
 	{
@@ -160,14 +160,14 @@ void Game::InteractNPC()
 	float victimDst = -1.0f;
 	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
 	{
-		glm::vec2 diff = npc.GetPos() - m_gameScene.GetPlayer().GetPos();
+		glm::vec2 diff = npc->GetPos() - m_gameScene.GetPlayer().GetPos();
 		float dst = glm::length(diff); // pythagoras
 		//float dst = glm::abs(diff.x) + glm::abs(diff.y); // manhattem
-		if (dst < 0.5f && !npc.IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc.GetIsBeingDragged())
+		if (dst < 0.5f && !npc->IsPlayerDetected() && (dst < victimDst || victimDst == -1.0f) && !npc->GetIsBeingDragged())
 		{
-			if (!GlobalData::Get().m_collision->Collide(0, m_gameScene.GetPlayer().GetPos(), npc.GetPos()).m_hasHit)
+			if (!GlobalData::Get().m_collision->Collide(0, m_gameScene.GetPlayer().GetPos(), npc->GetPos()).m_hasHit)
 			{
-				victim = &npc;
+				victim = npc.get();
 				victimDst = glm::length(diff);
 			}
 		}

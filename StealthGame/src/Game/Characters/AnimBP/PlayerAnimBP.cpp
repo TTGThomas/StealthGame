@@ -138,18 +138,18 @@ void PlayerAnimBP::Tick(Player* player)
 		{
 			leftArmPos = pos;
 			if (player->GetIsDragging())
-				rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
+				rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()]->GetPos();
 		}
 		else
 		{
 			rightArmPos = pos;
 			if (player->GetIsDragging())
-				leftArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
+				leftArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()]->GetPos();
 		}
 	}
 	else if (player->GetIsDragging())
 	{
-		leftArmPos = rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].GetPos();
+		leftArmPos = rightArmPos = GlobalData::Get().m_gameScene->GetNPCs()[player->GetDraggedNPCID().GetUUID()]->GetPos();
 	}
 
 	if (player->GetInventory().GetEquippiedType() == Inventory::Type::FIBERWIRE)

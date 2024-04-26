@@ -198,6 +198,12 @@
     <ClCompile Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Characters\NPCs\Guard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Characters\NPCs\Guest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -413,6 +419,15 @@
     <ClInclude Include="src\Game\PassData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Characters\NPCs\Guard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Characters\NPCs\Guest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WildException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -441,7 +456,7 @@
     <Image Include="res\Icons\Escape.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Levels\DebugLevel\DebugLevel-fore.png">
+    <Image Include="res\Levels\DebugLevel\Fore.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SpecialObjects\Container.png">
@@ -471,7 +486,7 @@
     <Image Include="res\Inventories\Bullet.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Levels\DebugLevel\DebugLevel-back.png">
+    <Image Include="res\Levels\DebugLevel\Back.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Player\masterAtlas.png">
@@ -497,12 +512,13 @@
     <Text Include="res\NPC\FormatInfo.txt" />
     <Text Include="Logs\Log.txt" />
     <Text Include="res\Levels\LevelFormat.txt" />
-    <Text Include="res\Levels\DebugLevel\DebugLevel.txt" />
+    <Text Include="res\Levels\DebugLevel\Level.txt" />
     <Text Include="res\Levels\DebugLevel\10#10.txt" />
     <Text Include="res\Levels\DebugLevel\6#15.txt" />
     <Text Include="res\Levels\DebugLevel\5#14.txt" />
-    <Text Include="res\Levels\DebugLevel\DebugLevel-zones.txt" />
+    <Text Include="res\Levels\DebugLevel\Zones.txt" />
     <Text Include="res\Levels\DebugLevel\5#15.txt" />
+    <Text Include="res\Levels\DebugLevel\Item.txt" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\Audio\BohemianRapsody.mp3" />

@@ -31,7 +31,16 @@
 class Player;
 class CollisionDetector;
 
-void CalculateDynamicRoute(GlobalData* gData, void* route, void* isRouteCalculated, glm::vec2 start, glm::vec2 location);
+struct NPCCalcDynamicIn
+{
+	void* m_route;
+	void* m_isRouteCalculated;
+	void* m_shouldTerminate;
+	glm::vec2 m_start;
+	glm::vec2 m_location;
+};
+
+void CalculateDynamicRoute(NPCCalcDynamicIn in);
 
 struct NPCRoutePoint
 {
@@ -56,7 +65,7 @@ public:
 
 	enum class ReportSearch
 	{
-		NONE, REPORTING, DEADBODY, ILLEGALWEAPON, GUNSHOT, PLAYER
+		NONE, DEADBODY, ILLEGALWEAPON, GUNSHOT, PLAYER
 	};
 
 	enum class SearchType
@@ -80,6 +89,7 @@ public:
 	};
 public:
 	NPC() = default;
+	~NPC();
 
 	void Init(std::vector<QuadInitDesc> desc, std::string name);
 
@@ -108,8 +118,6 @@ public:
 	void SetNPCUUID(GameUUID uuid) { m_uuid = uuid; }
 	void SetIsTarget(bool isTarget) { m_isTarget = isTarget; }
 
-	void SetReport(ReportSearch report) { m_reportedSearch = report; }
-
 	static glm::vec2 GetGridPos(glm::vec2 location);
 
 	State GetState() { return m_stateOverview; }
@@ -123,11 +131,11 @@ public:
 	float GetSpeed() { return m_speed; }
 	glm::vec2 GetVelocity() { return m_velocity; }
 	bool GetIsAttacking() { return m_isAttacking; }
-private:
+protected:
 	void SetDirPos(glm::vec2 pos);
-private:
+protected:
 	void ApplyDamage();
-private:
+protected:
 	bool IsPlayerInSight();
 	void DetectPlayer();
 	void DetectItems();
@@ -135,11 +143,11 @@ private:
 
 	// O(n^2 + n)
 	void DetectEverything();
-private:
+protected:
 	void UpdateFrontVec();
-private:
+protected:
 	inline bool IsThetaInView(float cosTheta);
-private:
+protected:
 	// returns if it is at point or not
 	// this does not applies BFS
 	bool MoveToTarget(float dt, glm::vec2 point, bool snapp = true);
@@ -150,7 +158,7 @@ private:
 	void PointAtPoint(glm::vec2 point);
 	float AngleFromPoint(glm::vec2 point);
 	void NPCMove(glm::vec2 vec);
-private:
+protected:
 	void ResetNodeGraph()
 	{
 		m_nodePos = 0;
@@ -159,12 +167,14 @@ private:
 	}
 
 	void CompileNodeGraph();
-	void NodeGraphGuard();
-	void NodeGraphGuest();
+	//void NodeGraphGuard();
+	//void NodeGraphGuest();
+
+	virtual void InitNodeGraph() {}
 	void NodeGraphDead();
 
 	void ResetTimer() { m_timeWhenEnter = 0.0f; }
-private:
+protected:
 	State m_stateOverview = State::NORMAL;
 	GameUUID m_uuid;
 	CollisionDetector* m_collision;
@@ -192,21 +202,17 @@ private:
 	float m_timeAtTarget = 0.0f;
 
 	Identities m_type = Identities::GUEST;
-	glm::vec2 m_searchPos = {};
-	void* m_searchParam = nullptr;// can be anything
-	bool m_searchFinish = false;
-	ReportSearch m_reportedSearch = ReportSearch::NONE;
-
 	DisguiseState m_disguiseStates[5];
-	int m_health = 100;
 
-	float m_shootDur = 0.0f;
+	int m_health = 100;
 
 	std::vector<NPCRoutePoint> m_route;
 	std::vector<NPCRoutePoint> m_dynamicRoute;
 	int m_dynamicTargetRouteIndex = 0;
 	int m_targetRouteIndex = 0;
 	bool m_isDynamicRouteCalculated = true;
+	bool m_shouldTerminateCalc = false;
+	std::thread m_routeThread;
 
 	glm::vec2 m_frontVec{};
 	glm::vec2 m_velocity{};

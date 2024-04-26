@@ -8,6 +8,7 @@
 #include <imgui.h>
 
 #include "../windows/Window.h"
+#include "../WildException.h"
 
 #include "../input/KeyBoard.h"
 #include "../input/Mouse.h"

@@ -13,7 +13,7 @@ void ContainerInteract::OnInteract()
 	if (player->GetIsDragging())
 	{
 		// hide body
-		NPC* npc = &m_scene->GetNPCs()[player->GetDraggedNPCID().GetUUID()];
+		NPC* npc = m_scene->GetNPCs()[player->GetDraggedNPCID().GetUUID()].get();
 
 		glm::vec2 pos = obj.GetQuad(0)->GetPos();
 		float spacing = npc->GetQuad(1)->GetRadius().x * 0.25f;

@@ -75,7 +75,7 @@ public:
 
 	std::vector<Object>& GetMap() { return m_map; }
 	const std::vector<uint64_t>& GetTargets() { return m_targets; }
-	std::unordered_map<uint64_t, NPC>& GetNPCs() { return m_npcs; }
+	std::unordered_map<uint64_t, std::unique_ptr<NPC>>& GetNPCs() { return m_npcs; }
 	ItemsManager& GetItems() { return m_items; }
 	Player& GetPlayer() { return m_player; }
 	std::array<OtherPlayer, MAXPLAYERS>& GetOtherPlayers() { return m_otherPlayers; }
@@ -88,7 +88,7 @@ private:
 	VisualLayers m_visualLayers;
 	std::vector<Object> m_map;
 	std::vector<Projectile> m_projectiles;
-	std::unordered_map<uint64_t, NPC> m_npcs;
+	std::unordered_map<uint64_t, std::unique_ptr<NPC>> m_npcs;
 	std::vector<uint64_t> m_targets;
 	ItemsManager m_items;
 	SpecialBlockManager m_specialBlockManager;

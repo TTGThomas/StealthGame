@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "SceneLoader/SceneLoader.h"
+
 void GameScene::Init(SceneInitDesc& desc)
 {
 	GlobalData& gData = GlobalData::Get();
@@ -34,14 +36,14 @@ void GameScene::Init(SceneInitDesc& desc)
 		NPCInitDesc& npcDesc = (*desc.m_npcs)[i];
 
 		uint64_t uuid = GameUUID{}.GetUUID();
-		m_npcs[uuid] = NPC();
-		m_npcs[uuid].SetNPCUUID(uuid);
-
-		m_npcs[uuid].SetType(npcDesc.m_type);
-		m_npcs[uuid].SetIsTarget(npcDesc.m_isTarget);
-		m_npcs[uuid].Init(npcDesc.m_desc, npcDesc.m_name);
-		m_npcs[uuid].BindCollision(desc.m_collision);
-		m_npcs[uuid].BindRoute(npcDesc.m_route);
+		m_npcs[uuid] = SceneLoader::Get().MakeNPC(npcDesc.m_type);
+		m_npcs[uuid]->SetNPCUUID(uuid);
+		
+		m_npcs[uuid]->SetType(npcDesc.m_type);
+		m_npcs[uuid]->SetIsTarget(npcDesc.m_isTarget);
+		m_npcs[uuid]->Init(npcDesc.m_desc, npcDesc.m_name);
+		m_npcs[uuid]->BindCollision(desc.m_collision);
+		m_npcs[uuid]->BindRoute(npcDesc.m_route);
 
 		if (npcDesc.m_isTarget)
 			m_targets.emplace_back(uuid);
@@ -59,7 +61,7 @@ void GameScene::Init(SceneInitDesc& desc)
 	for (uint64_t& targetID : m_targets)
 	{
 		std::string text = "Eliminate: ";
-		text.append(m_npcs[targetID].GetName().c_str());
+		text.append(m_npcs[targetID]->GetName().c_str());
 
 		m_taskbar.AddTask(TaskBar::Task(TaskBar::TaskType::ELIMINATE, text, GameUUID(targetID)));
 	}

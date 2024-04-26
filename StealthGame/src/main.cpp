@@ -1,3 +1,4 @@
+#include "WildException.h"
 #include "App.h"
 
 int main()

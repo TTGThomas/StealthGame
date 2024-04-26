@@ -10,7 +10,7 @@ void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game
 		LoadMenu(desc, scene, game);
 		break;
 	case 1:
-		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/", "DebugLevel");
+		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
 		break;
 	}
 }
@@ -95,7 +95,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	scene->Init(initDesc);
 }
 
-void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name)
+void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path)
 {
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
@@ -103,8 +103,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	std::ifstream mainFile;
 	
 	std::string mainFilePath = path;
-	mainFilePath.append(name);
-	mainFilePath.append(".txt");
+	mainFilePath.append("Level.txt");
 	mainFile.open(mainFilePath);
 	
 	if (!mainFile.is_open())
@@ -116,15 +115,13 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	LoadConstants(desc, scene, game);
 
 	std::string backgroundPath = path;
-	backgroundPath.append(name);
-	backgroundPath.append("-back.png");
+	backgroundPath.append("Back.png");
 	Texture background(backgroundPath.c_str());
 	uint64_t backgroundID = background.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(background);
 
 	std::string foregroundPath = path;
-	foregroundPath.append(name);
-	foregroundPath.append("-fore.png");
+	foregroundPath.append("Fore.png");
 	Texture foreground(foregroundPath.c_str());
 	uint64_t foregroundID = foreground.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(foreground);
@@ -151,21 +148,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		int noChar = 1;
 		for (char c : line)
 		{
-			//: nothing
-			//#: wall
-			//p : player
-			//q : guest
-			//w : vip guest
-			//e : guard
-			//r : vip guard
-			//Q : guest - target
-			//W : vip guest - target
-			//E : guard - target
-			//R : vip guard - target
-			//t : exit
-			//y : door
-			//u : containers
-
 			glm::vec2 pos = { (float)(noChar - 1) * MAP_SCALE, (float)(noLine - 1) * -MAP_SCALE };
 			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
 
@@ -175,7 +157,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				SetPlayer(&playerDesc, pos, gData.m_defaultShader, gData.m_texPlayer);
 			else if (c == '#')
 				LoadMap(&allMapDesc, pos, { MAP_RADIUS, MAP_RADIUS }, gData.m_defaultShader, gData.m_texLogo);
-			else if (c == 't')
+			else if (c == 'e')
 			{
 				Object object;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
@@ -187,7 +169,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
 			}
-			else if (c == 'y')
+			else if (c == 'd')
 			{
 				Object object;
 				glm::vec2 radius = { MAP_RADIUS - 0.000001f, MAP_RADIUS - 0.000001f };
@@ -200,7 +182,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
 			}
-			else if (c == 'u')
+			else if (c == 'c')
 			{
 				Object object;
 				std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
@@ -213,55 +195,24 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				specialBlockIndex++;
 			}
 			// npcs
-			else if (lowC == 'q')
+			else if (lowC == 'n')
 			{
-				std::vector<NPCRoutePoint> npcRoute;
-
-				GetNPCDataFromFile(&allNpcName, &npcRoute, path, noChar, noLine);
-
-				if (std::isupper(c))
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), true, pos, Identities::GUEST, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
-				else
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::GUEST, gData.m_defaultShader, gData.m_texNPC0, npcRoute);
-			}
-			else if (lowC == 'w')
-			{
-				std::vector<NPCRoutePoint> npcRoute;
-
-				GetNPCDataFromFile(&allNpcName, &npcRoute, path, noChar, noLine);
-
-				if (std::isupper(c))
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), true, pos, Identities::VIPGUEST, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
-				else
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::VIPGUEST, gData.m_defaultShader, gData.m_texNPC1, npcRoute);
-			}
-			else if (lowC == 'e')
-			{
-				std::vector<NPCRoutePoint> npcRoute;
-
-				GetNPCDataFromFile(&allNpcName, &npcRoute, path, noChar, noLine);
-
-				if (std::isupper(c))
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), true, pos, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
-				else
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::GUARD, gData.m_defaultShader, gData.m_texNPC2, npcRoute);
-			}
-			else if (lowC == 'r')
-			{
-				std::vector<NPCRoutePoint> npcRoute;
-
-				GetNPCDataFromFile(&allNpcName, &npcRoute, path, noChar, noLine);
-
-				if (std::isupper(c))
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), true, pos, Identities::VIPGUARD, gData.m_defaultShader, gData.m_texNPC4, npcRoute);
-				else
-					LoadNPC(&allNpcDesc, allNpcName.back().c_str(), false, pos, Identities::VIPGUARD, gData.m_defaultShader, gData.m_texNPC3, npcRoute);
+				LoadNPCDesc desc;
+				desc.m_isTarget = std::isupper(c);
+				desc.m_line = noLine;
+				desc.m_names = &allNpcName;
+				desc.m_npcMap = &allNpcDesc;
+				desc.m_path = path;
+				desc.m_pos = pos;
+				desc.m_row = noChar;
+				desc.m_shader = gData.m_defaultShader;
+				LoadNPC(desc);
 			}
 			// body concentration
 			else if (c == 'b')
 				gData.m_bodyConcentrationPos = pos;
 			// disguises
-			else if (c == '1')
+			else if (c >= '0' && c <= '9')
 			{
 				items.emplace_back(std::make_shared<Disguise>());
 				((Disguise*)items.back().get())->Init(Identities::GUEST, pos, 0.0f, gData.m_defaultShader);
@@ -272,37 +223,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		noLine++;
 	}
 
-	std::string zonesFilePath = path;
-	zonesFilePath.append(name);
-	zonesFilePath.append("-zones.txt");
-
-	std::ifstream zonesFile;
-	zonesFile.open(zonesFilePath);
-
-	noLine = 1;
-	while (std::getline(zonesFile, line))
-	{
-		int noChar = 1;
-		for (char c : line)
-		{
-			glm::vec2 pos = { (float)(noChar - 1) * MAP_SCALE, (float)(noLine - 1) * -MAP_SCALE };
-			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
-
-			glm::vec2 minPos = pos - glm::vec2(MAP_RADIUS, MAP_RADIUS);
-			glm::vec2 maxPos = pos + glm::vec2(MAP_RADIUS, MAP_RADIUS);
-
-			if (c == 'H')
-			{
-				hostileZones.emplace_back(AABB(minPos, maxPos, GameUUID()));
-			}
-			else if (c == 'T')
-			{
-				trespassingZones.emplace_back(AABB(minPos, maxPos, GameUUID()));
-			}
-			noChar++;
-		}
-		noLine++;
-	}
+	LoadZones(path, &hostileZones, &trespassingZones);
 
 	// Init
 	SceneInitDesc initDesc;
@@ -323,7 +244,54 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	scene->GetItems().AddItem(items);
 
 	mainFile.close();
-	zonesFile.close();
+}
+
+std::unique_ptr<NPC> SceneLoader::MakeNPC(Identities type)
+{
+	switch (type)
+	{
+	case Identities::STANDARD:
+		throw WildException("MakeNPC arg cannot be standard");
+		break;
+	case Identities::GUEST:
+	case Identities::VIPGUEST:
+		return std::make_unique<Guest>();
+		break;
+	case Identities::GUARD:
+	case Identities::VIPGUARD:
+		return std::make_unique<Guard>();
+		break;
+	default:
+		break;
+	}
+	return {};
+}
+
+uint64_t SceneLoader::NPCTex(Identities type)
+{
+	GlobalData& gData = GlobalData::Get();
+
+	switch (type)
+	{
+	case Identities::STANDARD:
+		throw WildException("NPCTex arg cannot be standard");
+		break;
+	case Identities::GUEST:
+		return gData.m_texNPC0;
+		break;
+	case Identities::VIPGUEST:
+		return gData.m_texNPC1;
+		break;
+	case Identities::GUARD:
+		return gData.m_texNPC2;
+		break;
+	case Identities::VIPGUARD:
+		return gData.m_texNPC3;
+		break;
+	default:
+		break;
+	}
+	return 0;
 }
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
@@ -423,61 +391,100 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 	audio.StartSound(gData.m_audioBR);
 }
 
-void SceneLoader::GetNPCDataFromFile(std::vector<std::string>* names, std::vector<NPCRoutePoint>* route, const char* path, int row, int line)
+void SceneLoader::LoadZones(const char* path, std::vector<AABB>* hostile, std::vector<AABB>* trespass)
 {
-	std::string filePath = path;
-	filePath.append(std::to_string(row));
+	std::string zonesFilePath = path;
+	zonesFilePath.append("Zones.txt");
+
+	std::ifstream zonesFile;
+	zonesFile.open(zonesFilePath);
+
+	int noLine = 1;
+	std::string line = "";
+	while (std::getline(zonesFile, line))
+	{
+		int noChar = 1;
+		for (char c : line)
+		{
+			glm::vec2 pos = { (float)(noChar - 1) * MAP_SCALE, (float)(noLine - 1) * -MAP_SCALE };
+			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
+
+			glm::vec2 minPos = pos - glm::vec2(MAP_RADIUS, MAP_RADIUS);
+			glm::vec2 maxPos = pos + glm::vec2(MAP_RADIUS, MAP_RADIUS);
+
+			if (c == 'H')
+			{
+				hostile->emplace_back(AABB(minPos, maxPos, GameUUID()));
+			}
+			else if (c == 'T')
+			{
+				trespass->emplace_back(AABB(minPos, maxPos, GameUUID()));
+			}
+			noChar++;
+		}
+		noLine++;
+	}
+	zonesFile.close();
+}
+
+void SceneLoader::LoadNPC(LoadNPCDesc& desc)
+{
+	// npc are from 0.0 -- 0.2
+	// npcdir are from 0.3 -- 0.5
+
+	std::vector<NPCRoutePoint> npcRoute;
+
+	std::string filePath = desc.m_path;
+	filePath.append(std::to_string(desc.m_row));
 	filePath.push_back('#');
-	filePath.append(std::to_string(line));
+	filePath.append(std::to_string(desc.m_line));
 	filePath.append(".txt");
 
 	std::ifstream file;
 	file.open(filePath);
 
+	Identities type = Identities::STANDARD;
+
 	std::string lineStr = "";
-	bool firstLine = true;
+	int lineIndex = 0;
 	while (std::getline(file, lineStr))
 	{
-		if (firstLine)
+		if (lineIndex == 0)
+			type = (Identities)std::stoi(lineStr);
+		else if (lineIndex == 1)
+			desc.m_names->push_back(lineStr);
+		else
 		{
-			firstLine = false;
-			names->push_back(lineStr);
-			continue;
-		}
+			int x = 0, y = 0, waitMs = 0;
+			int commaIdx = (int)lineStr.find_first_of(',');
+			int spaceIdx = (int)lineStr.find_last_of(' ');
+			x = std::stoi(lineStr.substr(0, commaIdx));
+			y = std::stoi(lineStr.substr(commaIdx + 1, spaceIdx - commaIdx));
+			waitMs = std::stoi(lineStr.substr(spaceIdx + 1));
 
-		int x = 0, y = 0, waitMs = 0;
-		int commaIdx = (int)lineStr.find_first_of(',');
-		int spaceIdx = (int)lineStr.find_last_of(' ');
-		x = std::stoi(lineStr.substr(0, commaIdx));
-		y = std::stoi(lineStr.substr(commaIdx +	1, spaceIdx - commaIdx));
-		waitMs = std::stoi(lineStr.substr(spaceIdx + 1));
-		
-		glm::vec2 pos = { (float)(x - 1) * MAP_SCALE, (float)(y - 1) * -MAP_SCALE };
-		pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
-		route->push_back(NPCRoutePoint(pos, waitMs));
+			glm::vec2 pos = { (float)(x - 1) * MAP_SCALE, (float)(y - 1) * -MAP_SCALE };
+			pos += glm::vec2(MAP_RADIUS, -MAP_RADIUS);
+			npcRoute.push_back(NPCRoutePoint(pos, waitMs));
+		}
+		lineIndex++;
 	}
 
-	file.close();
-}
-
-void SceneLoader::LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bool isTarget, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route)
-{
-	// npc are from 0.0 -- 0.2
-	// npcdir are from 0.3 -- 0.5
 	GlobalData& globalData = GlobalData::Get();
 	NPCInitDesc npcDesc{};
 	std::vector<QuadInitDesc> npcQuad;
-	float index = npcMap->size() * 0.000001f;
-	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture});
-	npcQuad.push_back({ pos, glm::vec2(0.2f), index, shader, texture });
-	npcQuad.push_back({ pos, glm::vec2(0.7f, 0.2f), (0.3f + index), shader, globalData.m_texNPCDir });
+	float index = desc.m_npcMap->size() * 0.000001f;
+	uint64_t texture = NPCTex(type);
+	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), index, desc.m_shader, texture});
+	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), index, desc.m_shader, texture });
+	npcQuad.push_back({ desc.m_pos, glm::vec2(0.7f, 0.2f), (0.3f + index), desc.m_shader, globalData.m_texNPCDir });
 	npcDesc.m_desc = npcQuad;
-	npcDesc.m_route = route;
+	npcDesc.m_route = npcRoute;
 	npcDesc.m_type = type;
-	npcDesc.m_name = name;
-	npcDesc.m_isTarget = isTarget;
+	npcDesc.m_name = desc.m_names->back().c_str();
+	npcDesc.m_isTarget = desc.m_isTarget;
 
-	npcMap->push_back(npcDesc);
+	desc.m_npcMap->push_back(npcDesc);
+	file.close();
 }
 
 void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture)

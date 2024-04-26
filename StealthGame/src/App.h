@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "windows/Window.h"
+#include "WildException.h"
 
 #include "input/KeyBoard.h"
 #include "input/Mouse.h"

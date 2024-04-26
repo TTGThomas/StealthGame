@@ -6,8 +6,13 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../../WildException.h"
+
 #include "../Characters/Player.h"
 #include "../Characters/NPC.h"
+
+#include "../Characters/NPCs/Guest.h"
+#include "../Characters/NPCs/Guard.h"
 
 #include "../Items/Item.h"
 #include "../Items/Disguise.h"
@@ -24,8 +29,23 @@
 
 #include "../Desc.h"
 
+#undef LoadMenu
+
 class SceneLoader
 {
+	struct LoadNPCDesc
+	{
+		LoadNPCDesc() = default;
+
+		std::vector<NPCInitDesc>* m_npcMap;
+		std::vector<std::string>* m_names;
+		const char* m_path;
+		int m_line;
+		int m_row;
+		bool m_isTarget;
+		glm::vec2 m_pos;
+		uint64_t m_shader;
+	};
 public:
 	static SceneLoader& Get()
 	{
@@ -34,17 +54,19 @@ public:
 	}
 
 	void LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game, int index);
-
 	void LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game);
+	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path);
 
-	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path, const char* name);
+	std::unique_ptr<NPC> MakeNPC(Identities type);
+	uint64_t NPCTex(Identities type);
 private:
 	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
 	void LoadTextures(GameTickDesc& desc);
 	void LoadAudio(GameTickDesc& desc);
 private:
-	void GetNPCDataFromFile(std::vector<std::string>* names, std::vector<NPCRoutePoint>* route, const char* path, int row, int line);
-	void LoadNPC(std::vector<NPCInitDesc>* npcMap, const char* name, bool isTarget, glm::vec2 pos, Identities type, uint64_t shader, uint64_t texture, std::vector<NPCRoutePoint>& route);
+	void LoadZones(const char* path, std::vector<AABB>* hostile, std::vector<AABB>* trespass);
+private:
+	void LoadNPC(LoadNPCDesc& desc);
 	void SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture);
 	void LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture);
 };
