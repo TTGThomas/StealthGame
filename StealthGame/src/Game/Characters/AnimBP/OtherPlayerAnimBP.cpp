@@ -3,6 +3,8 @@
 #include "../OtherPlayer.h"
 #include "../../GameScene.h"
 
+#include "../../SceneLoader/SceneLoader.h"
+
 void OtherPlayerAnimBP::Init()
 {
 	GlobalData& gData = GlobalData::Get();
@@ -17,7 +19,7 @@ void OtherPlayerAnimBP::Init()
 		leftArmQuad.SetRadius({ 0.2f, 0.2f });
 		m_leftArm = leftArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
-		desc.m_depth = 0.25f;
+		desc.m_depth = SceneLoader::Depth(0.25f);
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
 		desc.m_textureUUID = gData.m_texPlayer;
@@ -29,7 +31,7 @@ void OtherPlayerAnimBP::Init()
 		rightArmQuad.SetRadius({ 0.2f, 0.2f });
 		m_rightArm = rightArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
-		desc.m_depth = 0.25f;
+		desc.m_depth = SceneLoader::Depth(0.25f);
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
 		desc.m_textureUUID = gData.m_texPlayer;

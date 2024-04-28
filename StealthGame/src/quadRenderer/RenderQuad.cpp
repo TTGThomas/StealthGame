@@ -45,7 +45,7 @@ void RenderQuad::Init(float depth, uint64_t shaderUUID, uint64_t textureUUID)
 
 void RenderQuad::Draw(RenderDesc& desc)
 {
-	if (m_screenRatioLoc == -1)
+	if (m_screenRatioLoc == -1 && desc.m_shader != nullptr)
 	{
 		m_screenRatioLoc = LOCATION(*desc.m_shader, "u_screenRatio");
 		m_matrixLoc = LOCATION(*desc.m_shader, "u_matrix");
@@ -62,15 +62,17 @@ void RenderQuad::Draw(RenderDesc& desc)
 	if (m_alpha == 0.0f)
 		return;
 
-	desc.m_shader->Bind();
-	desc.m_texture->Bind();
+	if (desc.m_shader != nullptr)
+		desc.m_shader->Bind();
+	if (desc.m_texture != nullptr)
+		desc.m_texture->Bind();
 
 	glUniform1f(m_screenRatioLoc, desc.m_ratio);
 
 	glm::mat4 matrix = glm::identity<glm::mat4>();
 
 	// view
-	if (m_followCamera)
+	if (m_followCamera && desc.m_camera != nullptr)
 	{
 		matrix = glm::scale(matrix, glm::vec3(glm::vec2(desc.m_camera->GetZoom()), 1.0f));
 		matrix = glm::translate(matrix, { -desc.m_camera->GetPosX(), -desc.m_camera->GetPosY(), 0.0f });
@@ -78,26 +80,28 @@ void RenderQuad::Draw(RenderDesc& desc)
 
 	// model
 	matrix = glm::translate(matrix, { m_pos.x, m_pos.y, 0.0f });
-	matrix = glm::rotate(matrix, glm::radians(-m_rotation), {0.0f, 0.0f, 1.0f});
+	matrix = glm::rotate(matrix, glm::radians(-m_rotation), { 0.0f, 0.0f, 1.0f });
 	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
 
 	glUniformMatrix4fv(m_matrixLoc, 1, GL_FALSE, glm::value_ptr(matrix));
-	
+
 	glUniform1f(m_alphaLoc, m_alpha);
 	glUniform1f(m_depthLoc, m_depth);
 
 	glUniform1i(m_frameIndexLoc, (int)m_frameIndex);
 	glUniform1i(m_sideFramesLoc, m_sideFrames);
 
-	glUniform1i(m_useTextureLoc, desc.m_useTexture ? 1: 0);
+	glUniform1i(m_useTextureLoc, desc.m_useTexture ? 1 : 0);
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	desc.m_texture->Unbind();
-	desc.m_shader->Unbind();
+	if (desc.m_texture != nullptr)
+		desc.m_texture->Unbind();
+	if (desc.m_shader != nullptr)
+		desc.m_shader->Unbind();
 }
 
 void RenderQuad::UpdateRenderQuad(Scene* scene)

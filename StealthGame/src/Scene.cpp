@@ -80,15 +80,6 @@ void Scene::UpdateDepthOrder()
 			}
 		}
 	} while (valChanged);
-
-	// check order
-	if (false)
-	{
-		std::vector<float> depths;
-		depths.resize(m_depthOrder.size());
-		for (int i = 0; i < m_depthOrder.size(); i++)
-			depths[i] = m_renderQuads[m_depthOrder[i]].GetDepth();
-	}
 }
 
 void Scene::DeleteQuad(uint64_t uuid)

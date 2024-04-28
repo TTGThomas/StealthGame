@@ -290,6 +290,8 @@
     <None Include="imgui.ini" />
     <None Include="shaders\default\Fragment.glsl" />
     <None Include="shaders\default\Vertex.glsl" />
+    <None Include="shaders\screen\Fragment.glsl" />
+    <None Include="shaders\screen\Vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Fonts\sample-atlas.png" />

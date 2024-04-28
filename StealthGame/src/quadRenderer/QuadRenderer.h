@@ -18,12 +18,12 @@
 #include "Camera.h"
 
 #include "../UUID.h"
+#include "../WildException.h"
 
 class QuadRenderer
 {
 public:
-	QuadRenderer(class Scene* parent)
-		: m_parent(parent) {}
+	QuadRenderer(class Scene* parent, class Window* window);
 
 	~QuadRenderer();
 
@@ -45,6 +45,15 @@ public:
 private:
 	bool InWindow(class Quad& quad, float ratio);
 private:
+	void RenderScreen();
+private:
+	unsigned int m_fbo = 0;
+	unsigned int m_colBuf = 0;
+	unsigned int m_rbo = 0;
+
+	Shader m_screenShader;
+	RenderQuad m_screen;
+
 	unsigned int m_quadRendered = 0;
 	Camera* m_camera = nullptr;
 	Scene* m_parent = nullptr;

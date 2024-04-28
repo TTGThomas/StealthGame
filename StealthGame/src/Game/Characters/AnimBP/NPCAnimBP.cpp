@@ -3,6 +3,8 @@
 #include "../NPC.h"
 #include "../../GameScene.h"
 
+#include "../../SceneLoader/SceneLoader.h"
+
 uint64_t NPCAnimBP::m_texGun = 0;
 
 void NPCAnimBP::Init(NPC* npc)
@@ -18,7 +20,7 @@ void NPCAnimBP::Init(NPC* npc)
 		leftArmQuad.SetRadius(glm::vec2(MAP_RADIUS));
 		m_leftArm = leftArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
-		desc.m_depth = 0.25f;
+		desc.m_depth = SceneLoader::Depth(0.25f);
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
 		desc.m_textureUUID = gData.m_scene->GetRenderQuads()[npc->GetUUID(1).GetUUID()].GetTextureUUID();
@@ -30,7 +32,7 @@ void NPCAnimBP::Init(NPC* npc)
 		rightArmQuad.SetRadius(glm::vec2(MAP_RADIUS));
 		m_rightArm = rightArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
-		desc.m_depth = 0.25f;
+		desc.m_depth = SceneLoader::Depth(0.25f);
 		desc.m_followCameraOffset = true;
 		desc.m_shaderUUID = gData.m_defaultShader;
 		desc.m_textureUUID = gData.m_scene->GetRenderQuads()[npc->GetUUID(1).GetUUID()].GetTextureUUID();

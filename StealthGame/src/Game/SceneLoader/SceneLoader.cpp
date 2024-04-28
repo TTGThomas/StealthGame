@@ -71,8 +71,8 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 1);
 		std::vector<QuadInitDesc> objectDesc;
 		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texLogo });
-		objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
+		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texLogo });
+		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 		object.Init(objectDesc);
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;
@@ -164,7 +164,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 0);
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
+				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
@@ -176,7 +176,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<DoorInteract> event = std::make_shared<DoorInteract>(scene, specialBlockIndex, radius);
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texDoor });
+				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
 				//desc.m_scene->GetAABBs()[object.GetUUID(0).GetUUID()].SetEnabled(false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
@@ -189,7 +189,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::vector<QuadInitDesc> objectDesc;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
 				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
-				objectDesc.push_back({ pos, radius, index, gData.m_defaultShader, gData.m_texContainer });
+				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texContainer });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
@@ -215,7 +215,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 			else if (c >= '0' && c <= '9')
 			{
 				items.emplace_back(std::make_shared<Disguise>());
-				((Disguise*)items.back().get())->Init(Identities::GUEST, pos, 0.0f, gData.m_defaultShader);
+				((Disguise*)items.back().get())->Init(Identities::GUEST, pos, Depth(0.0f), gData.m_defaultShader);
 			}
 
 			noChar++;
@@ -487,9 +487,9 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	std::vector<QuadInitDesc> npcQuad;
 	float index = desc.m_npcMap->size() * 0.000001f;
 	uint64_t texture = NPCTex(type);
-	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), index, desc.m_shader, texture});
-	npcQuad.push_back({ desc.m_pos, glm::vec2(MAP_RADIUS), index, desc.m_shader, texture });
-	npcQuad.push_back({ desc.m_pos, glm::vec2(0.7f, 0.2f), (0.3f + index), desc.m_shader, globalData.m_texNPCDir });
+	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), Depth(index), desc.m_shader, texture});
+	npcQuad.push_back({ desc.m_pos, glm::vec2(MAP_RADIUS), Depth(index), desc.m_shader, texture });
+	npcQuad.push_back({ desc.m_pos, glm::vec2(0.7f, 0.2f), Depth(0.3f + index), desc.m_shader, globalData.m_texNPCDir });
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = npcRoute;
 	npcDesc.m_type = type;
@@ -504,9 +504,9 @@ void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos
 {
 	GlobalData& globalData = GlobalData::Get();
 
-	playerDesc->push_back({ pos, glm::vec2(0.2f, 0.2f), 0.25f, shader, globalData.m_texLogo });
-	playerDesc->push_back({ pos, glm::vec2(0.1f), 1.0f, shader, globalData.m_texPlayerCursor });
-	playerDesc->push_back({ pos, glm::vec2(MAP_RADIUS), 0.25f, shader, texture });
+	playerDesc->push_back({ pos, glm::vec2(0.2f, 0.2f), Depth(0.25f), shader, globalData.m_texLogo });
+	playerDesc->push_back({ pos, glm::vec2(0.1f), Depth(1.0f), shader, globalData.m_texPlayerCursor });
+	playerDesc->push_back({ pos, glm::vec2(MAP_RADIUS), Depth(0.25f), shader, texture });
 }
 
 // actually the map hitbox
@@ -516,6 +516,11 @@ void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, gl
 
 	std::vector<QuadInitDesc> mapDesc{};
 	float index = (0.6f + (allMapDesc->size() * 0.000001f));
-	mapDesc.push_back({ pos, radius, index, shader, texture });
+	mapDesc.push_back({ pos, radius, Depth(index), shader, texture });
 	allMapDesc->push_back(mapDesc);
+}
+
+float SceneLoader::Depth(float depth)
+{
+	return depth;
 }

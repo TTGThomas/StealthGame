@@ -1,10 +1,68 @@
 #include "QuadRenderer.h"
 
 #include "../Scene.h"
+#include "../windows/Window.h"
+
+QuadRenderer::QuadRenderer(Scene* parent, Window* window)
+	: m_parent(parent)
+{
+	int wx = window->GetWidth();
+	int wy = window->GetHeight();
+
+	// init frame buffer
+	glGenFramebuffers(1, &m_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+	// Attach buffers
+
+	// Create texture
+	glGenTextures(1, &m_colBuf);
+	glBindTexture(GL_TEXTURE_2D, m_colBuf);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wx, wy, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	// bind
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colBuf, 0);
+
+	// Create RBO(depth)
+	glGenRenderbuffers(1, &m_rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
+	
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, wx, wy);
+	//GL_DEPTH24_STENCIL8;
+	
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//bind
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
+	//GL_DEPTH_STENCIL_ATTACHMENT;
+	
+	GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (result != GL_FRAMEBUFFER_COMPLETE)
+		throw WildException("Frame buffer init failed");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Init screen
+	m_screen.Init(0.5f, 0, 0);
+
+	m_screenShader.Init("shaders/screen/Vertex.glsl", "shaders/screen/Fragment.glsl");
+}
 
 QuadRenderer::~QuadRenderer()
 {
 	ClearResources();
+
+	m_screen.Cleanup();
+	m_screenShader.Cleanup();
+	glDeleteTextures(1, &m_colBuf);
+
+	// delete frame buffer
+	glDeleteFramebuffers(1, &m_fbo);
 }
 
 void QuadRenderer::BindCamera(Camera* camera)
@@ -45,6 +103,14 @@ void QuadRenderer::ClearResources()
 
 void QuadRenderer::Render(float ratio, int selectedIndex)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	m_quadRendered = 0;
 
 	RenderDesc desc;
@@ -69,6 +135,8 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 				m_quadRendered++;
 		}
 	}
+
+	RenderScreen();
 }
 
 void QuadRenderer::ShowStatsWindow()
@@ -106,4 +174,29 @@ bool QuadRenderer::InWindow(Quad& quad, float ratio)
 		return false;
 
 	return true;
+}
+
+void QuadRenderer::RenderScreen()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glDisable(GL_BLEND);
+
+	m_screenShader.Bind();
+	glBindTexture(GL_TEXTURE_2D, m_colBuf);
+
+	RenderDesc desc;
+	desc.m_camera = nullptr;
+	desc.m_isSelected = false;
+	desc.m_ratio = 1.0f;
+	desc.m_shader = nullptr;
+	desc.m_texture = nullptr;
+	desc.m_useTexture = true;
+	m_screen.Draw(desc);
+
+	m_screenShader.Unbind();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

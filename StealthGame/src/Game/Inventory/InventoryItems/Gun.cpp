@@ -64,7 +64,7 @@ void Gun::OnEquipping()
 		).GetUUID();
 		ProjectileInitDesc desc;
 		desc.m_audioUUID = t;
-		desc.m_colLayer = 4;
+		desc.m_colLayer = 2;
 		desc.m_lifeSpan = 5.0f;
 		desc.m_pos = pos;
 		desc.m_rot = rotation;

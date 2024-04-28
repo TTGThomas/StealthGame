@@ -59,6 +59,8 @@ public:
 
 	std::unique_ptr<NPC> MakeNPC(Identities type);
 	uint64_t NPCTex(Identities type);
+	// input ranges 0 - 1
+	static float Depth(float depth);
 private:
 	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
 	void LoadTextures(GameTickDesc& desc);
@@ -69,4 +71,5 @@ private:
 	void LoadNPC(LoadNPCDesc& desc);
 	void SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture);
 	void LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture);
+
 };

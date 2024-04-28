@@ -3,7 +3,7 @@
 App::App()
 //				name		   x    y    vSynch fullscreen maximize
 	: m_window("Stealth Game", 800, 600, false, false,     true ), 
-	m_renderer(&m_scene), 
+	m_renderer(&m_scene, &m_window), 
 	m_collision(&m_scene)
 {
 	//std::cout << "For server: \"1 [port]\"" << std::endl;
@@ -45,7 +45,6 @@ int App::Exec()
 	{
 		m_tickTimer.Start();
 		m_window.NewFrame();
-		glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 		Tick();
 		Mouse::Flush();
 		KeyBoard::Flush();
