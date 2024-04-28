@@ -24,10 +24,11 @@ struct ProjectileInitDesc
 class Projectile
 {
 public:
-	Projectile(ProjectileInitDesc desc);
+	Projectile() = default;
+	Projectile(ProjectileInitDesc& desc);
 
-	bool Tick();
-private:
+	virtual bool Tick();
+protected:
 	uint64_t m_audio = 0;
 	Entity m_entity;
 	float m_lifeStart;

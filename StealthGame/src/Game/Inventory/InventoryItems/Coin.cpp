@@ -42,6 +42,7 @@ void Coin::OnEquipping()
 	mousePos = mousePos / m_windowScale * 2.0f - 1.0f;
 	mousePos.x *= 1.0f / (m_windowScale.y / m_windowScale.x);
 	mousePos.y = -mousePos.y;
+	mousePos /= gData.m_camera->GetZoom();
 
 	float rotation = AngleFromPoint(player.GetPos(), player.GetPos() + mousePos);
 
@@ -58,13 +59,13 @@ void Coin::OnEquipping()
 		ProjectileInitDesc desc;
 		desc.m_audioUUID = t;
 		desc.m_colLayer = 4;
-		desc.m_lifeSpan = 5.0f;
+		desc.m_lifeSpan = 0.5f;
 		desc.m_pos = player.GetPos();;
 		desc.m_rot = rotation;
 		desc.m_size = 0.05f;
 		desc.m_speed = 10.0f;
 		desc.m_texID = gData.m_texBullet;
-		gData.m_gameScene->GetProjectiles().emplace_back(desc);
+		gData.m_gameScene->GetProjectiles().emplace_back(std::make_unique<CoinProj>(desc, player.GetPos() + mousePos));
 	}
 }
 

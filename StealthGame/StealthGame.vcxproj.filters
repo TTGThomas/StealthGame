@@ -207,6 +207,9 @@
     <ClCompile Include="src\Game\Inventory\InventoryItems\Coin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Projectiles\CoinProj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -435,6 +438,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Inventory\InventoryItems\Coin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Projectiles\CoinProj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

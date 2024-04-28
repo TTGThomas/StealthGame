@@ -96,7 +96,7 @@ void Guard::InitNodeGraph()
 					desc.m_size = 0.05f;
 					desc.m_speed = 10.0f;
 					desc.m_texID = gData.m_texBullet;
-					gData.m_gameScene->GetProjectiles().emplace_back(desc);
+					gData.m_gameScene->GetProjectiles().emplace_back(std::make_unique<Projectile>(desc));
 
 				}
 			};
@@ -328,9 +328,9 @@ void Guard::InitNodeGraph()
 				Player& player = gData.m_gameScene->GetPlayer();
 				float dist = glm::distance(m_searchPos, player.GetPos());
 
-				if (IsPlayerDetected() && dist < ATTACKRADIUS && time < 0.1f)
+				if (IsPlayerDetected() && dist < ATTACKRADIUS)
 					return true;
-				if (player.IsGunShooting())
+				if (IsPlayerDetected() && player.IsGunShooting())
 					return true;
 				return false;
 			};

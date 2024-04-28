@@ -10,6 +10,7 @@ void Inventory::ClearResources()
 {
 	Fist::ClearResources();
 	FiberWire::ClearResources();
+	Coin::ClearResources();
 	Gun::ClearResources();
 }
 

@@ -84,6 +84,8 @@ void Player::ShowWindow()
 	};
 	ImGui::Text("Identity: %s", names[(int)m_disguise]);
 
+	ImGui::Text("Shooting: %i", (int)IsGunShooting());
+
 	ImGui::End();
 #endif
 }	

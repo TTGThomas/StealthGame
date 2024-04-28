@@ -3,6 +3,8 @@
 #include "../../../input/KeyBoard.h"
 #include "../../../input/Mouse.h"
 
+#include "../../Projectiles/CoinProj.h"
+
 #include "InventoryItem.h"
 
 class Coin : public InventoryItem

@@ -71,7 +71,7 @@ void Gun::OnEquipping()
 		desc.m_size = 0.05f;
 		desc.m_speed = 10.0f;
 		desc.m_texID = gData.m_texBullet;
-		gData.m_gameScene->GetProjectiles().emplace_back(desc);
+		gData.m_gameScene->GetProjectiles().emplace_back(std::make_unique<Projectile>(desc));
 		m_isShooting = true;
 	}
 }

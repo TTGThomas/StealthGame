@@ -92,8 +92,8 @@ void GameScene::UpdateProjectiles()
 {
 	for (int i = 0; i < m_projectiles.size(); )
 	{
-		Projectile& proj = m_projectiles[i];
-		if (!proj.Tick())
+		Projectile* proj = m_projectiles[i].get();
+		if (!proj->Tick())
 			m_projectiles.erase(m_projectiles.begin() + i);
 		else
 			i++;
