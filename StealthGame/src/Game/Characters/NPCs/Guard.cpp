@@ -287,6 +287,15 @@ void Guard::InitNodeGraph()
 							return true;
 						}
 					}
+
+					if (glm::distance(soundPos, GetPos()) < NPCGUNSOUNDRADIUS)
+					{
+						if (audio.GetSoundSource(uuid) == gData.m_audioGun2)
+						{
+							m_searchPos = soundPos;
+							return true;
+						}
+					}
 				}
 				return false;
 			};

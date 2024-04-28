@@ -26,9 +26,9 @@
 class Guard : public NPC
 {
 public:
-	void Report(glm::vec2 pos, Identities identity)
+	void Report(glm::vec2 pos, Identities identity, int val)
 	{
-		m_disguiseStates[(int)identity] = DisguiseState::COMPROMISED;
+		m_disguiseStates[(int)identity] = (DisguiseState)val;
 		m_reported = true;
 		m_reportPos = pos;
 	}

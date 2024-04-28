@@ -96,7 +96,11 @@ void Guest::InitNodeGraph()
 				}
 
 				if (m_reportNPC == 0)
+				{
+					if (timeFromEnter > PANICTIME)
+						m_searchFinish = true;
 					return;
+				}
 
 				NPC& guard = *gData.m_gameScene->GetNPCs()[m_reportNPC];
 
@@ -110,7 +114,8 @@ void Guest::InitNodeGraph()
 						m_searchFinish = true;
 
 						// Report guard
-						((Guard*)&guard)->Report(m_reportPos, m_reportIdentity);
+						((Guard*)&guard)->Report(m_reportPos, m_reportIdentity, m_reportIdentityVal);
+						m_reportIdentityVal = (int)DisguiseState::NORMAL;
 					}
 					else
 						m_frameFromEnter = -1;
@@ -169,6 +174,7 @@ void Guest::InitNodeGraph()
 				if (IsPlayerDetected() && player.GetActionType() == Player::ActionType::ILLEGAL)
 				{
 					m_reportIdentity = player.GetDisguise();
+					m_reportIdentityVal = (int)DisguiseState::COMPROMISED;
 					return true;
 				}
 

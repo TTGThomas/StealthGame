@@ -5,7 +5,7 @@ Projectile::Projectile(glm::vec2 pos, int layer, float rot, uint64_t& texID)
 	GlobalData& gData = GlobalData::Get();
 
 	m_audio = gData.m_scene->GetAudio().AddSound(
-		GameUUID(gData.m_audioGun1),
+		GameUUID(gData.m_audioGun2),
 		pos,
 		5.0f, 7.0f,
 		true,

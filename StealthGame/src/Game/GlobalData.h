@@ -46,7 +46,8 @@ public:
 	uint64_t m_texDoor;
 
 	uint64_t m_audioBR;
-	uint64_t m_audioGun1;
+	uint64_t m_audioGun1;// silent
+	uint64_t m_audioGun2;// unsilent
 
 	glm::vec2 m_bodyConcentrationPos;
 	int m_bodiesFound = 0;

@@ -24,4 +24,5 @@ private:
 	uint64_t m_reportNPC = 0;
 	glm::vec2 m_reportPos = {};
 	Identities m_reportIdentity = Identities::STANDARD;
+	int m_reportIdentityVal = false;
 };
