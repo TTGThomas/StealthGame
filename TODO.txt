@@ -1,3 +1,2 @@
 Add Coin
 Add food for npc
-Make it 3D

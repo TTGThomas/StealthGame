@@ -80,15 +80,24 @@ void Guard::InitNodeGraph()
 					m_timeWhenEnter = (float)glfwGetTime();
 
 					// shoot
-					gData.m_gameScene->GetProjectiles().emplace_back(GetPos(), 4, m_dir, gData.m_texBullet);
 					uint64_t t = gData.m_scene->GetAudio().AddSound(
-						GameUUID(gData.m_audioGun1),
+					GameUUID(gData.m_audioGun2),
 						GetPos(),
 						5.0f, 7.0f,
 						true,
 						false
-					).GetUUID();
-					gData.m_scene->GetAudio().StartSound(t);
+						).GetUUID();
+					ProjectileInitDesc desc;
+					desc.m_audioUUID = t;
+					desc.m_colLayer = 4;
+					desc.m_lifeSpan = 5.0f;
+					desc.m_pos = GetPos();
+					desc.m_rot = m_dir;
+					desc.m_size = 0.05f;
+					desc.m_speed = 10.0f;
+					desc.m_texID = gData.m_texBullet;
+					gData.m_gameScene->GetProjectiles().emplace_back(desc);
+
 				}
 			};
 	}

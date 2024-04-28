@@ -236,8 +236,13 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	initDesc.m_gameTickDesc = desc;
 	initDesc.m_trespassingZones = &trespassingZones;
 	initDesc.m_hostileZones = &hostileZones;
+#if 0
 	initDesc.m_foregroundTexID = foregroundID;
 	initDesc.m_backgroundTexID = backgroundID;
+#else
+	initDesc.m_foregroundTexID = 0;
+	initDesc.m_backgroundTexID = 0;
+#endif
 
 	scene->Init(initDesc);
 

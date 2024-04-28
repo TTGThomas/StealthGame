@@ -18,6 +18,7 @@ public:
 	virtual void OnUnequip() {}
 	virtual void OnEquipping() {}
 	virtual void OnResize(int x, int y) {}
+	virtual bool IsIllegal() { return false; }
 
 	Quad& GetQuad(int index) { return GlobalData::Get().m_scene->GetQuads()[GetUUID(index)]; }
 	uint64_t GetUUID(int index) { return m_uuids[index].GetUUID(); }

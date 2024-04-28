@@ -62,6 +62,8 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_DEPTH);
+
     //glfwSetWindowContentScaleCallback(m_window, OnContentScaled);
     glfwSetFramebufferSizeCallback(m_window, OnResize);
     glfwSetKeyCallback(m_window, KeyBoard::KeyCallback);
@@ -118,7 +120,7 @@ void Window::NewFrame()
     ImGui::NewFrame();
 #endif
     glClear(GL_COLOR_BUFFER_BIT);
-    //glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::EndFrame()

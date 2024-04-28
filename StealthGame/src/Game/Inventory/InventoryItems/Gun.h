@@ -14,6 +14,7 @@ public:
 	virtual void OnUnequip() override;
 	virtual void OnEquipping() override;
 	virtual void OnResize(int x, int y) override;
+	virtual bool IsIllegal() override;
 
 	static void ClearResources();
 	

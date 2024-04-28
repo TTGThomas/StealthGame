@@ -17,7 +17,8 @@ void Inventory::GiveEverything()
 {
 	AddItem<Fist>(0);
 	AddItem<FiberWire>(1);
-	AddItem<Gun>(2);
+	AddItem<Coin>(2);
+	AddItem<Gun>(3);
 	GetEquipped()->OnEquip();
 }
 
@@ -35,6 +36,8 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 			EquipWithIndex(desc, 1);
 		if (KeyBoard::IsKeyPressDown(GLFW_KEY_3))
 			EquipWithIndex(desc, 2);
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_4))
+			EquipWithIndex(desc, 3);
 	}
 
 	GetEquipped()->OnEquipping();
@@ -45,9 +48,10 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 		m_items[0]->OnResize(m_resize.second.x, m_resize.second.y);
 		m_items[1]->OnResize(m_resize.second.x, m_resize.second.y);
 		m_items[2]->OnResize(m_resize.second.x, m_resize.second.y);
+		m_items[3]->OnResize(m_resize.second.x, m_resize.second.y);
 	}
 
-	if (GetEquippiedType() != Type::FIST && GlobalData::Get().m_gameScene->GetPlayer().GetDisguise() != Identities::GUARD && GlobalData::Get().m_gameScene->GetPlayer().GetDisguise() != Identities::VIPGUARD)
+	if (GetEquipped()->IsIllegal())
 		GlobalData::Get().m_gameScene->GetPlayer().SetActionType(Player::ActionType::ILLEGAL);
 }
 

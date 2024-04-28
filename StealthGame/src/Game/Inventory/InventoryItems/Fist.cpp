@@ -46,3 +46,8 @@ void Fist::OnResize(int x, int y)
 	float ratio = (float)y / (float)x;
 	m_HUDpos = { (1.0f / ratio) - 0.2f, -0.8f };
 }
+
+bool Fist::IsIllegal()
+{
+	return false;
+}

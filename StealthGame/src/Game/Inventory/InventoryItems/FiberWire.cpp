@@ -40,10 +40,17 @@ void FiberWire::OnEquipping()
 
 void FiberWire::OnResize(int x, int y)
 {
-	GlobalData gData = GlobalData::Get();
+	GlobalData& gData = GlobalData::Get();
 
 	float ratio = (float)y / (float)x;
 	m_HUDpos = { (1.0f / ratio) - 0.2f, -0.8f };
+}
+
+bool FiberWire::IsIllegal()
+{
+	GlobalData& gData = GlobalData::Get();
+	Player& player = gData.m_gameScene->GetPlayer();
+	return player.GetDisguise() < Identities::GUARD;
 }
 
 void FiberWire::ClearResources()

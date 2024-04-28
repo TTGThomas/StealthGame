@@ -22,9 +22,11 @@ public:
 	void ClearResources();
 
 	void AddPopUp(GameTickDesc& desc, PopUp& popUp);
+	void AddDelete(uint64_t id);
 	void DeletePopUp(GameTickDesc& desc, uint64_t id);
 
 	void UpdatePopUps(GameTickDesc& desc);
 private:
 	std::unordered_map<uint64_t, PopUp> m_popUps;
+	std::vector<uint64_t> m_deletes;
 };

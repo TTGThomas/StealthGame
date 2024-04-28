@@ -5,9 +5,7 @@
 
 #include "InventoryItem.h"
 
-#include "../../GlobalData.h"
-
-class Fist : public InventoryItem
+class Coin : public InventoryItem
 {
 public:
 	virtual void OnEquip() override;
@@ -18,8 +16,12 @@ public:
 
 	static void ClearResources();
 private:
+	float AngleFromPoint(glm::vec2 start, glm::vec2 end);
+private:
 	static uint64_t m_texHUD;
 	static uint64_t m_texInGame;
 
+	glm::vec2 m_windowScale;
 	glm::vec2 m_HUDpos;
 };
+

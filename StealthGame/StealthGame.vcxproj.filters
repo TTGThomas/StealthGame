@@ -204,6 +204,9 @@
     <ClCompile Include="src\Game\Characters\NPCs\Guest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Inventory\InventoryItems\Coin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -431,6 +434,9 @@
     <ClInclude Include="src\Game\Characters\NPCs\NPCConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Inventory\InventoryItems\Coin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -508,6 +514,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\NPC\NPC1\masterAtlas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\coin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\coinHUD.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

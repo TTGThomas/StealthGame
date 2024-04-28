@@ -2,6 +2,9 @@
 
 #include "PopUps/PopUpManager.h"
 
+#undef min
+#undef max
+
 class ExitCurtainPopUp
 {
 public:
