@@ -483,7 +483,7 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	float index = desc.m_npcMap->size() * 0.000001f;
 	uint64_t texture = NPCTex(type);
 	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), index, desc.m_shader, texture});
-	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), index, desc.m_shader, texture });
+	npcQuad.push_back({ desc.m_pos, glm::vec2(MAP_RADIUS), index, desc.m_shader, texture });
 	npcQuad.push_back({ desc.m_pos, glm::vec2(0.7f, 0.2f), (0.3f + index), desc.m_shader, globalData.m_texNPCDir });
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = npcRoute;
@@ -501,7 +501,7 @@ void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos
 
 	playerDesc->push_back({ pos, glm::vec2(0.2f, 0.2f), 0.25f, shader, globalData.m_texLogo });
 	playerDesc->push_back({ pos, glm::vec2(0.1f), 1.0f, shader, globalData.m_texPlayerCursor });
-	playerDesc->push_back({ pos, glm::vec2(0.2f), 0.25f, shader, texture });
+	playerDesc->push_back({ pos, glm::vec2(MAP_RADIUS), 0.25f, shader, texture });
 }
 
 // actually the map hitbox

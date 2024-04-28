@@ -7,14 +7,13 @@ void PlayerAnimBP::Init()
 {
 	GlobalData& gData = GlobalData::Get();
 
-	// tex is 4 * 8
 	// idleTex is 32 * 32
-	// player size is 0.2f
-	//pixelSize = 0.2f / 16.0f;
+	// player scale is 0.45
+	// pixelSize = 0.45f / 32;
 	{
 		Quad leftArmQuad;
 		leftArmQuad.SetPos({0.0f, 0.0f});
-		leftArmQuad.SetRadius({ 0.2f, 0.2f });
+		leftArmQuad.SetRadius(glm::vec2(MAP_RADIUS));
 		m_leftArm = leftArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
 		desc.m_depth = 0.25f;
@@ -26,7 +25,7 @@ void PlayerAnimBP::Init()
 	{
 		Quad rightArmQuad;
 		rightArmQuad.SetPos({ 0.0f, 0.0f });
-		rightArmQuad.SetRadius({0.2f, 0.2f});
+		rightArmQuad.SetRadius(glm::vec2(MAP_RADIUS));
 		m_rightArm = rightArmQuad.GetUUID().GetUUID();
 		RenderQuadInitDesc desc;
 		desc.m_depth = 0.25f;
@@ -128,7 +127,7 @@ void PlayerAnimBP::Tick(Player* player)
 		}
 	}
 
-	float pixelSize = 0.2f / 16.0f;
+	float pixelSize = MAP_SCALE / 32.0f;
 
 	if (player->GetInventory().GetEquippiedType() == Inventory::Type::GUN)
 	{
@@ -192,7 +191,7 @@ void PlayerAnimBP::UpdateArms(Player* player, glm::vec2 leftLook, glm::vec2 righ
 {
 	GlobalData& gData = GlobalData::Get();
 
-	float pixelSize = 0.2f / 16.0f;
+	float pixelSize = MAP_SCALE / 32.0f;
 	
 	Quad& leftArm = gData.m_scene->GetQuads()[m_leftArm];
 	Quad& rightArm = gData.m_scene->GetQuads()[m_rightArm];
