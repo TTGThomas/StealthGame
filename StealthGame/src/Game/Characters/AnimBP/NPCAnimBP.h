@@ -11,7 +11,7 @@ class NPCAnimBP
 {
 	enum class State
 	{
-		IDLE, WALKING, DEAD
+		IDLE, WALKING, PANIC, DEAD
 	};
 
 	struct AnimNode

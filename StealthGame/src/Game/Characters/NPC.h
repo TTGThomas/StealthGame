@@ -60,7 +60,7 @@ class NPC : public Entity
 public:
 	enum class State
 	{
-		NORMAL, SEARCHING, ATTACK
+		NORMAL, SEARCHING, ATTACK, PANIC
 	};
 
 	enum class ReportSearch

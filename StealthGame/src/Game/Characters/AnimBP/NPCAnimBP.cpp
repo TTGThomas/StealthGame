@@ -68,7 +68,8 @@ void NPCAnimBP::Init(NPC* npc)
 		[](NPC* npc) -> bool
 		{
 			return
-				glm::length(npc->GetVelocity()) == 0.0f;
+				glm::length(npc->GetVelocity()) == 0.0f &&
+				npc->GetState() != NPC::State::PANIC;
 		},
 		State::IDLE,
 		[](NPCAnimBP* animBP, NPC* npc)
@@ -94,6 +95,22 @@ void NPCAnimBP::Init(NPC* npc)
 		4,
 		8,
 		15
+		));
+
+	m_animNodes.push_back(AnimNode(
+		[](NPC* npc) -> bool
+		{
+			return
+				npc->GetState() == NPC::State::PANIC;
+		},
+		State::PANIC,
+		[](NPCAnimBP* animBP, NPC* npc)
+		{
+		},
+		0.0f,
+		4,
+		2,
+		2
 		));
 }
 
@@ -140,8 +157,16 @@ void NPCAnimBP::UpdateArms(NPC* npc, glm::vec2 leftLook, glm::vec2 rightLook)
 	Quad& leftArm = gData.m_scene->GetQuads()[m_leftArm];
 	Quad& rightArm = gData.m_scene->GetQuads()[m_rightArm];
 
-	leftArm.SetPos(npc->GetPos() + glm::vec2(-5.0f, 0.0f) * glm::vec2(pixelSize));
-	rightArm.SetPos(npc->GetPos() + glm::vec2(5.0f, 0.0f) * glm::vec2(pixelSize));
+	if (npc->GetState() == NPC::State::PANIC && npc->GetVelocity() == glm::vec2(0.0f))
+	{
+		leftArm.SetPos(npc->GetPos() + glm::vec2(-5.0f, -3.0f) * glm::vec2(pixelSize));
+		rightArm.SetPos(npc->GetPos() + glm::vec2(5.0f, -3.0f) * glm::vec2(pixelSize));
+	}
+	else
+	{
+		leftArm.SetPos(npc->GetPos() + glm::vec2(-5.0f, 0.0f) * glm::vec2(pixelSize));
+		rightArm.SetPos(npc->GetPos() + glm::vec2(5.0f, 0.0f) * glm::vec2(pixelSize));
+	}
 
 	float leftAngle = GetAngleFromVec(glm::normalize(leftLook - leftArm.GetPos()));
 	float rightAngle = GetAngleFromVec(glm::normalize(rightLook - rightArm.GetPos()));

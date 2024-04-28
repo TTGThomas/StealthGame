@@ -1,5 +1,8 @@
 #include "Guest.h"
 
+#include "Guard.h"
+#include "NPCConfig.h"
+
 #include "../../GameScene.h"
 
 void Guest::InitNodeGraph()
@@ -9,12 +12,16 @@ void Guest::InitNodeGraph()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
+				m_stateOverview = NPC::State::NORMAL;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
 				glm::vec2 location = m_route[m_targetRouteIndex].m_pos;
 
-				if (frameFromEnter == 0)
+				if (m_routeFinished)
+				{
+					m_routeFinished = false;
 					StartMoveToLocation(location);
+				}
 
 				if (MoveToLocation(desc.m_tickTimer->Second()))
 				{
@@ -25,7 +32,7 @@ void Guest::InitNodeGraph()
 					}
 					else if (1000.0f * ((float)glfwGetTime() - m_timeAtTarget) > m_route[m_targetRouteIndex].m_waitMs)
 					{
-						m_frameFromEnter = -1;
+						m_routeFinished = true;
 						m_targetRouteIndex++;
 						if (m_targetRouteIndex == m_route.size())
 							m_targetRouteIndex = 0;
@@ -41,6 +48,7 @@ void Guest::InitNodeGraph()
 	}
 	int moveOnRouteIndex = m_nodes.size() - 1;
 	{
+		m_stateOverview = NPC::State::NORMAL;
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
@@ -55,47 +63,55 @@ void Guest::InitNodeGraph()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
 			{
+				m_stateOverview = NPC::State::PANIC;
 				m_speed = m_runningSpeed;
 				m_isAttacking = false;
 				GlobalData& gData = GlobalData::Get();
 
-				uint64_t matchUUID = 0;
-				float matchDist = FLT_MAX;
-				for (auto& [npcUUID, npc] : gData.m_gameScene->GetNPCs())
-				{
-					if (npc->GetType() != Identities::GUARD && npc->GetType() != Identities::VIPGUARD)
-						continue;
-
-					float dist = glm::distance(GetPos(), npc->GetPos());
-					if (dist > matchDist)
-						continue;
-
-					if (npc->GetState() != State::NORMAL)
-						continue;
-
-					matchUUID = npcUUID;
-					matchDist = dist;
-				}
-
-				if (matchUUID == 0)
-					return;
-
-				NPC& guard = *gData.m_gameScene->GetNPCs()[matchUUID];
-
 				if (frameFromEnter == 0)
 				{
-					// Tell guard to stop moving
 					m_searchFinish = false;
-					StartMoveToLocation(guard.GetPos());
+
+					uint64_t matchUUID = 0;
+					float matchDist = FLT_MAX;
+					for (auto& [npcUUID, npc] : gData.m_gameScene->GetNPCs())
+					{
+						if (npc->GetType() != Identities::GUARD && npc->GetType() != Identities::VIPGUARD)
+							continue;
+
+						float dist = glm::distance(GetPos(), npc->GetPos());
+						if (dist > matchDist)
+							continue;
+
+						if (npc->GetState() != State::NORMAL)
+							continue;
+
+						if (npc->GetHealth() <= 0)
+							continue;
+
+						matchUUID = npcUUID;
+						matchDist = dist;
+					}
+					m_reportNPC = matchUUID;
 				}
+
+				if (m_reportNPC == 0)
+					return;
+
+				NPC& guard = *gData.m_gameScene->GetNPCs()[m_reportNPC];
+
+				if (frameFromEnter == 0)
+					StartMoveToLocation(guard.GetPos());
 
 				if (MoveToLocation(gData.m_deltaTime))
 				{
-					// Report guard
-					//guard.SetReport(ReportSearch::DEADBODY);
-
 					if (glm::distance(GetPos(), guard.GetPos()) < MAP_SCALE)
+					{
 						m_searchFinish = true;
+
+						// Report guard
+						((Guard*)&guard)->Report(m_reportPos, m_reportIdentity);
+					}
 					else
 						m_frameFromEnter = -1;
 				}
@@ -145,8 +161,33 @@ void Guest::InitNodeGraph()
 		bridge.m_destIndex = reportPlayerIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				Player& player = GlobalData::Get().m_gameScene->GetPlayer();
-				return IsPlayerDetected() && player.GetActionType() == Player::ActionType::ILLEGAL;
+				GlobalData& gData = GlobalData::Get();
+				AudioManager& audio = gData.m_scene->GetAudio();
+				Player& player = gData.m_gameScene->GetPlayer();
+				m_reportPos = player.GetPos();
+
+				if (IsPlayerDetected() && player.GetActionType() == Player::ActionType::ILLEGAL)
+				{
+					m_reportIdentity = player.GetDisguise();
+					return true;
+				}
+
+				for (uint64_t& uuid : m_detectedNPCs)
+				{
+					NPC* npc = gData.m_gameScene->GetNPCs()[uuid].get();
+					if (npc->GetHealth() <= 0)
+					{
+						m_reportPos = npc->GetPos();
+						return true;
+					}
+				}
+
+				for (auto& [uuid, sound] : audio.GetSounds())
+					if (glm::distance(audio.GetSoundPos(uuid), GetPos()) < GUNSOUNDRADIUS)
+						if (audio.GetSoundSource(uuid) == gData.m_audioGun1)
+							return true;
+
+				return false;
 			};
 	}
 	{

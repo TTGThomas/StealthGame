@@ -345,8 +345,6 @@ void NPC::StartMoveToLocation(glm::vec2 location)
 	m_dynamicTargetRouteIndex = 0;
 	m_dynamicRoute = {};
 	m_isDynamicRouteCalculated = false;
-	//m_routeThread.join();
-	std::thread::id;
 	if (m_routeThread.get_id() != std::thread::id())
 	{
 		m_shouldTerminateCalc = true;

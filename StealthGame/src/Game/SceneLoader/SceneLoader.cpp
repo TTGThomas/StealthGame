@@ -376,7 +376,7 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 		{},
 		1.0f, 5.0f,
 		false,
-		false,
+		true,
 		true
 	).GetUUID();
 

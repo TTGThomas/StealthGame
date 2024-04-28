@@ -19,7 +19,9 @@ public:
 protected:
 	virtual void InitNodeGraph() override;
 private:
-	glm::vec2 m_searchPos = {};
-	void* m_searchParam = nullptr;// can be anything
+	bool m_routeFinished = true;
 	bool m_searchFinish = false;
+	uint64_t m_reportNPC = 0;
+	glm::vec2 m_reportPos = {};
+	Identities m_reportIdentity = Identities::STANDARD;
 };

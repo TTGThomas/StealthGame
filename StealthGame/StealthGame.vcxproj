@@ -211,6 +211,7 @@
     <ClInclude Include="src\Game\Characters\NPCs\Guard.h" />
     <ClInclude Include="src\Game\Characters\AnimBP\OtherPlayerAnimBP.h" />
     <ClInclude Include="src\Game\Characters\NPCs\Guest.h" />
+    <ClInclude Include="src\Game\Characters\NPCs\NPCConfig.h" />
     <ClInclude Include="src\Game\Characters\OtherPlayer.h" />
     <ClInclude Include="src\Game\PassData.h" />
     <ClInclude Include="src\Networking\Client.h" />
