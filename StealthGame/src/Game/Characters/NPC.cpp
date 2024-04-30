@@ -625,6 +625,14 @@ void CalculateDynamicRoute(NPCCalcDynamicIn in)
 	
 	if (routeFound)
 	{
+		if (routeIndexFound == 0)
+		{
+			routePoints->clear();
+			routePoints->emplace_back(NPC::GetGridPos(in.m_start));
+			*isDynamicRouteCalculated = true;
+			return;
+		}
+
 		while (routeIndexFound != 0)
 		{
 			routePoints->emplace_back(locations[routeIndexFound].m_pos);
@@ -645,6 +653,7 @@ void CalculateDynamicRoute(NPCCalcDynamicIn in)
 	else
 	{
 		routePoints->clear();
+		routePoints->emplace_back(NPC::GetGridPos(in.m_start));
 	}
 
 	*isDynamicRouteCalculated = true;

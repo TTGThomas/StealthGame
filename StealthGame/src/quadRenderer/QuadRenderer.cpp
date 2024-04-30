@@ -4,10 +4,10 @@
 #include "../windows/Window.h"
 
 QuadRenderer::QuadRenderer(Scene* parent, Window* window)
-	: m_parent(parent)
+	: m_parent(parent), m_window(window)
 {
-	int wx = window->GetWidth();
-	int wy = window->GetHeight();
+	m_wx = m_window->GetWidth();
+	m_wy = m_window->GetHeight();
 
 	// init frame buffer
 	glGenFramebuffers(1, &m_fbo);
@@ -19,7 +19,7 @@ QuadRenderer::QuadRenderer(Scene* parent, Window* window)
 	glGenTextures(1, &m_colBuf);
 	glBindTexture(GL_TEXTURE_2D, m_colBuf);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wx, wy, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_wx, m_wy, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -33,7 +33,7 @@ QuadRenderer::QuadRenderer(Scene* parent, Window* window)
 	glGenRenderbuffers(1, &m_rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
 	
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, wx, wy);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, m_wx, m_wy);
 	//GL_DEPTH24_STENCIL8;
 	
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -103,6 +103,8 @@ void QuadRenderer::ClearResources()
 
 void QuadRenderer::Render(float ratio, int selectedIndex)
 {
+	Resize();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 	glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -199,4 +201,48 @@ void QuadRenderer::RenderScreen()
 
 	m_screenShader.Unbind();
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void QuadRenderer::Resize()
+{
+	if (m_wx != m_window->GetWidth() || m_wy != m_window->GetHeight())
+	{
+		m_wx = m_window->GetWidth();
+		m_wy = m_window->GetHeight();
+
+		// delete
+		glDeleteTextures(1, &m_colBuf);
+		glDeleteRenderbuffers(1, &m_rbo);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+		// create new texture and depth buffer
+		glGenTextures(1, &m_colBuf);
+		glBindTexture(GL_TEXTURE_2D, m_colBuf);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_wx, m_wy, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		// bind
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colBuf, 0);
+
+		// Create RBO(depth)
+		glGenRenderbuffers(1, &m_rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, m_wx, m_wy);
+		//GL_DEPTH24_STENCIL8;
+
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		//bind
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
+		//GL_DEPTH_STENCIL_ATTACHMENT;
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }

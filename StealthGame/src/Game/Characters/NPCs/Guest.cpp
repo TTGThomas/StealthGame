@@ -124,6 +124,37 @@ void Guest::InitNodeGraph()
 			};
 	}
 	int reportPlayerIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_stateOverview = State::SEARCHING;
+				m_speed = m_normalSpeed;
+				m_isAttacking = false;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				m_searchFinish = false;
+				if (timeFromEnter < SEARCHTIME)
+				{
+					if (frameFromEnter == 0)
+						StartMoveToLocation(m_searchPos);
+
+
+					if (!m_isDynamicRouteCalculated)
+						m_timeWhenEnter = (float)glfwGetTime();
+
+					if (!MoveToLocation(desc.m_tickTimer->Second()))
+					{
+						m_timeWhenEnter = (float)glfwGetTime();
+					}
+					PointAtPoint(GetPos() + m_velocity);
+				}
+				else
+				{
+					m_searchFinish = true;
+				}
+			};
+	}
+	int searchCoinIndex = m_nodes.size() - 1;
 
 	// bridges
 	{
@@ -157,6 +188,35 @@ void Guest::InitNodeGraph()
 					return false;
 				}
 				return time > 1.0f;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_destIndex = searchCoinIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				GlobalData& gData = GlobalData::Get();
+				AudioManager& audio = gData.m_scene->GetAudio();
+				for (auto& [uuid, sound] : audio.GetSounds())
+				{
+					glm::vec2 soundPos = audio.GetSoundPos(uuid);
+					if (!audio.IsSoundPlaying(uuid))
+						continue;
+
+					if (glm::distance(soundPos, GetPos()) < audio.GetSoundMinDist(uuid))
+					{
+						if (audio.GetSoundSource(uuid) == gData.m_audioCoin)
+						{
+							if (!gData.m_collision->Collide(0, GetPos(), soundPos).m_hasHit)
+							{
+								m_searchPos = soundPos;
+								return true;
+							}
+						}
+					}
+				}
+				return false;
 			};
 	}
 	{
@@ -199,6 +259,7 @@ void Guest::InitNodeGraph()
 	{
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(reportPlayerIndex);
+		bridge.m_originIndexes.emplace_back(searchCoinIndex);
 		bridge.m_destIndex = moveOnRouteIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{

@@ -238,6 +238,7 @@ void Guard::InitNodeGraph()
 					if (frameFromEnter == 0)
 						StartMoveToLocation(m_searchPos);
 
+
 					if (!m_isDynamicRouteCalculated)
 						m_timeWhenEnter = (float)glfwGetTime();
 
@@ -297,6 +298,8 @@ void Guard::InitNodeGraph()
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
 		bridge.m_originIndexes.emplace_back(lookAtPlayerIndex);
+		bridge.m_originIndexes.emplace_back(searchBodyIndex);
+		bridge.m_originIndexes.emplace_back(searchCoinIndex);
 		bridge.m_destIndex = attackIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
@@ -364,16 +367,6 @@ void Guard::InitNodeGraph()
 					}
 				}
 				return false;
-			};
-	}
-	{
-		Bridge& bridge = m_bridges.emplace_back(Bridge());
-		bridge.m_originIndexes.emplace_back(searchCoinIndex);
-		bridge.m_destIndex = lookAtPlayerIndex;
-		bridge.m_determineFunc = [this](float time, int frame) -> bool
-			{
-				std::cout << time << std::endl;
-				return IsPlayerDetected();
 			};
 	}
 	{

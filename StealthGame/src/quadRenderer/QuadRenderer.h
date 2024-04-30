@@ -31,7 +31,6 @@ public:
 
 	void AddShader(Shader& shader);
 	void AddTexture(Texture& texture);
-
 	void DeleteTexture(uint64_t key);
 
 	void ClearResources();
@@ -44,8 +43,8 @@ public:
 	std::unordered_map<uint64_t, Texture>& GetTextures() { return m_textures; }
 private:
 	bool InWindow(class Quad& quad, float ratio);
-private:
 	void RenderScreen();
+	void Resize();
 private:
 	unsigned int m_fbo = 0;
 	unsigned int m_colBuf = 0;
@@ -57,6 +56,8 @@ private:
 	unsigned int m_quadRendered = 0;
 	Camera* m_camera = nullptr;
 	Scene* m_parent = nullptr;
+	Window* m_window = nullptr;
+	int m_wx = 0, m_wy = 0;
 	std::unordered_map<uint64_t, Shader> m_shaders{};
 	std::unordered_map<uint64_t, Texture> m_textures{};
 
