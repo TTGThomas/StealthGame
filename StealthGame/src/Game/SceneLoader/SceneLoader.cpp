@@ -194,6 +194,18 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				specialBlockIndex++;
 			}
+			else if (c == 'f')
+			{
+				Object object;
+				std::shared_ptr<FoodInteract> event = std::make_shared<FoodInteract>(scene, specialBlockIndex);
+				std::vector<QuadInitDesc> objectDesc;
+				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
+				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texFood });
+				object.Init(objectDesc);
+				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+				specialBlockIndex++;
+			}
 			// npcs
 			else if (lowC == 'n')
 			{
@@ -371,6 +383,14 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	Texture door("res/SpecialObjects/Door.png");
 	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
 	desc.m_renderer->AddTexture(door);
+
+	Texture food("res/SpecialObjects/Food.png");
+	GlobalData::Get().m_texFood = food.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(food);
+
+	Texture foodPoisoned("res/SpecialObjects/FoodPoisoned.png");
+	GlobalData::Get().m_texFoodPoisoned = foodPoisoned.GetUUID().GetUUID();
+	desc.m_renderer->AddTexture(foodPoisoned); 
 }
 
 void SceneLoader::LoadAudio(GameTickDesc& desc)

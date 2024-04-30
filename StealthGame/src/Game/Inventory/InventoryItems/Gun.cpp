@@ -13,8 +13,8 @@ void Gun::OnEquip()
 		m_texHUD = CreateTexture("res/Inventories/GunHUD.png");
 	if (m_texInGame == 0)
 		m_texInGame = CreateTexture("res/Inventories/Gun.png");
-	AddQuad({}, { 0.1f, 0.1f }, false, m_texHUD);
-	AddQuad({}, { 0.1f, 0.1f }, true, m_texInGame);
+	AddQuad({}, { MAP_RADIUS, MAP_RADIUS }, false, m_texHUD);
+	AddQuad({}, { MAP_RADIUS, MAP_RADIUS }, true, m_texInGame);
 }
 
 void Gun::OnUnequip()

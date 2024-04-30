@@ -13,8 +13,8 @@ void Coin::OnEquip()
 		m_texHUD = CreateTexture("res/Inventories/coinHUD.png");
 	if (m_texInGame == 0)
 		m_texInGame = CreateTexture("res/Inventories/coin.png");
-	AddQuad({}, { 0.2f, 0.2f }, false, m_texHUD);
-	AddQuad({}, { 0.2f, 0.2f }, true, m_texInGame);
+	AddQuad({}, { MAP_RADIUS, MAP_RADIUS }, false, m_texHUD);
+	AddQuad({}, { MAP_RADIUS, MAP_RADIUS }, true, m_texInGame);
 }
 
 void Coin::OnUnequip()

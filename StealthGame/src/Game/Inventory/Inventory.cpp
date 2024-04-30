@@ -20,6 +20,7 @@ void Inventory::GiveEverything()
 	AddItem<FiberWire>(1);
 	AddItem<Coin>(2);
 	AddItem<Gun>(3);
+	AddItem<Poison>(4);
 	GetEquipped()->OnEquip();
 }
 
@@ -39,6 +40,8 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 			EquipWithIndex(desc, 2);
 		if (KeyBoard::IsKeyPressDown(GLFW_KEY_4))
 			EquipWithIndex(desc, 3);
+		if (KeyBoard::IsKeyPressDown(GLFW_KEY_5))
+			EquipWithIndex(desc, 4);
 	}
 
 	GetEquipped()->OnEquipping();
@@ -50,6 +53,7 @@ void Inventory::InventoryTick(GameTickDesc& desc)
 		m_items[1]->OnResize(m_resize.second.x, m_resize.second.y);
 		m_items[2]->OnResize(m_resize.second.x, m_resize.second.y);
 		m_items[3]->OnResize(m_resize.second.x, m_resize.second.y);
+		m_items[4]->OnResize(m_resize.second.x, m_resize.second.y);
 	}
 
 	if (GetEquipped()->IsIllegal())

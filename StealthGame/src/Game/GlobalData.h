@@ -45,6 +45,8 @@ public:
 	uint64_t m_texBullet;
 	uint64_t m_texContainer;
 	uint64_t m_texDoor;
+	uint64_t m_texFood;
+	uint64_t m_texFoodPoisoned;
 
 	uint64_t m_audioBR;
 	uint64_t m_audioGun1;// silent

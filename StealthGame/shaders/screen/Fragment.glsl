@@ -37,9 +37,6 @@ vec2 sampleOffset[9] = vec2[]
 
 void main()
 {
-	fragColor = vec4(SamplePoint(v_texCoord), 1.0f);
-	return;
-
 	vec3 color = vec3(0.0f);
 	for (int i = 0; i < 9; i++)
 		color += SamplePoint(v_texCoord + sampleOffset[i]) * kernel[i] * invDiv;

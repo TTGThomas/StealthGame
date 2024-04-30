@@ -210,6 +210,12 @@
     <ClCompile Include="src\Game\Projectiles\CoinProj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Inventory\InventoryItems\Poison.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Interact\FoodInteract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -443,6 +449,12 @@
     <ClInclude Include="src\Game\Projectiles\CoinProj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Inventory\InventoryItems\Poison.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Interact\FoodInteract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default\Vertex.glsl" />
@@ -530,6 +542,18 @@
     <Image Include="res\Inventories\coinHUD.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Inventories\poison.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Inventories\poisonHUD.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SpecialObjects\Food.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SpecialObjects\FoodPoisoned.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />
@@ -546,5 +570,6 @@
   <ItemGroup>
     <Media Include="res\Audio\BohemianRapsody.mp3" />
     <Media Include="res\Audio\Gun\gunshot1.mp3" />
+    <Media Include="res\Audio\coinDrop.mp3" />
   </ItemGroup>
 </Project>

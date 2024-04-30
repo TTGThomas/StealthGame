@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Interact\FoodInteract.cpp" />
+    <ClCompile Include="src\Game\Inventory\InventoryItems\Poison.cpp" />
     <ClCompile Include="src\Game\Projectiles\CoinProj.cpp" />
     <ClCompile Include="src\Game\Inventory\InventoryItems\Coin.cpp" />
     <ClCompile Include="src\Game\Characters\NPCs\Guard.cpp" />
@@ -210,6 +212,8 @@
     <ClCompile Include="src\Game\VisualLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Interact\FoodInteract.h" />
+    <ClInclude Include="src\Game\Inventory\InventoryItems\Poison.h" />
     <ClInclude Include="src\Game\Projectiles\CoinProj.h" />
     <ClInclude Include="src\Game\Inventory\InventoryItems\Coin.h" />
     <ClInclude Include="src\Game\Characters\NPCs\Guard.h" />
@@ -308,6 +312,8 @@
     <Image Include="res\Inventories\fistHUD.png" />
     <Image Include="res\Inventories\Gun.png" />
     <Image Include="res\Inventories\GunHUD.png" />
+    <Image Include="res\Inventories\poison.png" />
+    <Image Include="res\Inventories\poisonHUD.png" />
     <Image Include="res\Levels\DebugLevel\Fore.png" />
     <Image Include="res\Levels\DebugLevel\Back.png" />
     <Image Include="res\logo.png" />
@@ -322,6 +328,8 @@
     <Image Include="res\Player\masterAtlas.png" />
     <Image Include="res\SpecialObjects\Container.png" />
     <Image Include="res\SpecialObjects\Door.png" />
+    <Image Include="res\SpecialObjects\Food.png" />
+    <Image Include="res\SpecialObjects\FoodPoisoned.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Logs\Log.txt" />

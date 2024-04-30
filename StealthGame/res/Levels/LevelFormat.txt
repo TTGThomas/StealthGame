@@ -9,6 +9,7 @@ e: exit
 d: door
 c: containers
 b: body concentration
+f: food
 
 for npc
 file is npc pos
@@ -27,5 +28,5 @@ use index to tag them
 the type of item would be evaluated from Item.txt
 real value is the index line of Item.txt
 
-world is split into quads that are 0.3f in radius
-each quad gets 20 pixels
+world is split into quads that are 0.225f in radius
+each quad gets 32 pixels

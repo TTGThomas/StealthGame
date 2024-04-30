@@ -20,6 +20,7 @@
 #include "../Interact/ContainerInteract.h"
 #include "../Interact/DoorInteract.h"
 #include "../Interact/ExitInteract.h"
+#include "../Interact/FoodInteract.h"
 
 #include "SceneConfig.h"
 

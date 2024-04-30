@@ -170,6 +170,13 @@ void PlayerAnimBP::Tick(Player* player)
 		pos.y += -8.0f * pixelSize * glm::cos(glm::radians(leftArm.GetRotation()));
 		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos);
 	}
+	else if (player->GetInventory().GetEquippiedType() == Inventory::Type::POISON)
+	{
+		glm::vec2 pos = leftArm.GetPos();
+		pos.x += -8.0f * pixelSize * glm::sin(glm::radians(leftArm.GetRotation()));
+		pos.y += -8.0f * pixelSize * glm::cos(glm::radians(leftArm.GetRotation()));
+		player->GetInventory().GetEquipped()->GetQuad(1).SetPos(pos);
+	}
 
 	UpdateArms(player, leftArmPos, rightArmPos);
 }

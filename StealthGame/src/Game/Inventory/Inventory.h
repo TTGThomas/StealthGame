@@ -15,13 +15,14 @@
 #include "InventoryItems/FiberWire.h"
 #include "InventoryItems/Coin.h"
 #include "InventoryItems/Gun.h"
+#include "InventoryItems/Poison.h"
 
 class Inventory
 {
 public:
 	enum class Type
 	{
-		FIST, FIBERWIRE, COIN, GUN
+		FIST, FIBERWIRE, COIN, GUN, POISON
 	};
 public:
 	Inventory();
@@ -44,7 +45,7 @@ public:
 	std::shared_ptr<InventoryItem> GetEquipped() { return m_items[m_equippedItem]; }
 	Type GetEquippiedType() { return (Type)m_equippedItem; }
 private:
-	std::array<std::shared_ptr<InventoryItem>, 4> m_items{};
+	std::array<std::shared_ptr<InventoryItem>, 5> m_items{};
 	int m_equippedItem = 0;
 
 	std::pair<bool, glm::vec<2, int>> m_resize;
