@@ -29,8 +29,10 @@ public:
 	void StopSound(GameUUID uuid);
 
 	bool IsSoundFinished(GameUUID uuid);
+	bool IsSoundPlaying(GameUUID uuid);
 
 	void SetSoundPos(GameUUID uuid, glm::vec2 pos);
+	void SetSoundVolume(GameUUID uuid, float volume);
 
 	float GetSoundMinDist(GameUUID uuid);
 	float GetSoundMaxDist(GameUUID uuid);

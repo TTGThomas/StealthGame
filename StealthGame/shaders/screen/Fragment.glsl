@@ -16,9 +16,9 @@ float kernel[9] = float[]
 	0.0f, 1.0f, 0.0f,
 	0.0f, 0.0f, 0.0f
 // Edge detection
-//	1.0f, 1.0f, 1.0f,
+//	1.0f,  1.0f, 1.0f,
 //	1.0f, -8.0f, 1.0f,
-//	1.0f, 1.0f, 1.0f
+//	1.0f,  1.0f, 1.0f
 // gaussian blur
 //	1.0f, 2.0f, 1.0f,
 //	2.0f, 4.0f, 2.0f,
@@ -26,7 +26,7 @@ float kernel[9] = float[]
 );
 float invDiv = 1.0f / 1.0f;
 
-float offset = 1.0f / 3000.0f;
+float offset = 1.0f / 300.0f;
 
 vec2 sampleOffset[9] = vec2[]
 (
@@ -37,6 +37,9 @@ vec2 sampleOffset[9] = vec2[]
 
 void main()
 {
+	fragColor = vec4(SamplePoint(v_texCoord), 1.0f);
+	return;
+
 	vec3 color = vec3(0.0f);
 	for (int i = 0; i < 9; i++)
 		color += SamplePoint(v_texCoord + sampleOffset[i]) * kernel[i] * invDiv;

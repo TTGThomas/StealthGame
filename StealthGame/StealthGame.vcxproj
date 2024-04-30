@@ -337,6 +337,7 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\Audio\BohemianRapsody.mp3" />
+    <Media Include="res\Audio\coinDrop.mp3" />
     <Media Include="res\Audio\Gun\gunshot1.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

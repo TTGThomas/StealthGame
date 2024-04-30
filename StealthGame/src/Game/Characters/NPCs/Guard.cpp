@@ -81,7 +81,7 @@ void Guard::InitNodeGraph()
 
 					// shoot
 					uint64_t t = gData.m_scene->GetAudio().AddSound(
-					GameUUID(gData.m_audioGun2),
+					GameUUID(gData.m_audioGun1),
 						GetPos(),
 						5.0f, 7.0f,
 						true,
@@ -224,6 +224,36 @@ void Guard::InitNodeGraph()
 			};
 	}
 	int doReportIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_stateOverview = State::SEARCHING;
+				m_speed = m_normalSpeed;
+				m_isAttacking = false;
+				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
+				m_searchFinish = false;
+				if (timeFromEnter < SEARCHTIME)
+				{
+					if (frameFromEnter == 0)
+						StartMoveToLocation(m_searchPos);
+
+					if (!m_isDynamicRouteCalculated)
+						m_timeWhenEnter = (float)glfwGetTime();
+
+					if (!MoveToLocation(desc.m_tickTimer->Second()))
+					{
+						m_timeWhenEnter = (float)glfwGetTime();
+					}
+					PointAtPoint(GetPos() + m_velocity);
+				}
+				else
+				{
+					m_searchFinish = true;
+				}
+			};
+	}
+	int searchCoinIndex = m_nodes.size() - 1;
 
 	// bridges
 	{
@@ -256,7 +286,11 @@ void Guard::InitNodeGraph()
 					m_timeWhenEnter = (float)glfwGetTime();
 					return false;
 				}
-				return time > 1.0f;
+
+				bool ret = time > 1.0f;
+				if (ret)
+					m_searchFinish = true;
+				return ret;
 			};
 	}
 	{
@@ -288,18 +322,12 @@ void Guard::InitNodeGraph()
 				for (auto& [uuid, sound] : audio.GetSounds())
 				{
 					glm::vec2 soundPos = audio.GetSoundPos(uuid);
-					if (glm::distance(soundPos, GetPos()) < GUNSOUNDRADIUS)
+					if (!audio.IsSoundPlaying(uuid))
+						continue;
+
+					if (glm::distance(soundPos, GetPos()) < audio.GetSoundMinDist(uuid))
 					{
 						if (audio.GetSoundSource(uuid) == gData.m_audioGun1)
-						{
-							m_searchPos = soundPos;
-							return true;
-						}
-					}
-
-					if (glm::distance(soundPos, GetPos()) < NPCGUNSOUNDRADIUS)
-					{
-						if (audio.GetSoundSource(uuid) == gData.m_audioGun2)
 						{
 							m_searchPos = soundPos;
 							return true;
@@ -311,11 +339,41 @@ void Guard::InitNodeGraph()
 	}
 	{
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
-		bridge.m_originIndexes.emplace_back(searchGunShotIndex);
-		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_destIndex = searchCoinIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				return m_searchFinish;
+				GlobalData& gData = GlobalData::Get();
+				AudioManager& audio = gData.m_scene->GetAudio();
+				for (auto& [uuid, sound] : audio.GetSounds())
+				{
+					glm::vec2 soundPos = audio.GetSoundPos(uuid);
+					if (!audio.IsSoundPlaying(uuid))
+						continue;
+
+					if (glm::distance(soundPos, GetPos()) < audio.GetSoundMinDist(uuid))
+					{
+						if (audio.GetSoundSource(uuid) == gData.m_audioCoin)
+						{
+							if (!gData.m_collision->Collide(0, GetPos(), soundPos).m_hasHit)
+							{
+								m_searchPos = soundPos;
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(searchCoinIndex);
+		bridge.m_destIndex = lookAtPlayerIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				std::cout << time << std::endl;
+				return IsPlayerDetected();
 			};
 	}
 	{
@@ -358,15 +416,6 @@ void Guard::InitNodeGraph()
 					}
 				}
 				return false;
-			};
-	}
-	{
-		Bridge& bridge = m_bridges.emplace_back(Bridge());
-		bridge.m_originIndexes.emplace_back(searchBodyIndex);
-		bridge.m_destIndex = moveOnRouteIndex;
-		bridge.m_determineFunc = [this](float time, int frame) -> bool
-			{
-				return m_searchFinish;
 			};
 	}
 	{
@@ -465,6 +514,9 @@ void Guard::InitNodeGraph()
 	{
 		Bridge& bridge = m_bridges.emplace_back(Bridge());
 		bridge.m_originIndexes.emplace_back(doReportIndex);
+		bridge.m_originIndexes.emplace_back(searchBodyIndex);
+		bridge.m_originIndexes.emplace_back(searchCoinIndex);
+		bridge.m_originIndexes.emplace_back(searchGunShotIndex);
 		bridge.m_destIndex = moveOnRouteIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{

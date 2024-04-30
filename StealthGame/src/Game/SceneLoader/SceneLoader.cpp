@@ -272,9 +272,12 @@ std::unique_ptr<NPC> SceneLoader::MakeNPC(Identities type)
 	return {};
 }
 
-uint64_t SceneLoader::NPCTex(Identities type)
+uint64_t SceneLoader::NPCTex(Identities type, bool isTarget)
 {
 	GlobalData& gData = GlobalData::Get();
+
+	if (isTarget)
+		return gData.m_texNPC4;
 
 	switch (type)
 	{
@@ -401,7 +404,16 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 		false
 	).GetUUID();
 
+	gData.m_audioCoin = audio.AddSound("res/Audio/coinDrop.mp3",
+		{},
+		10.0f, 50.0f,
+		false,
+		false,
+		false
+	).GetUUID();
+
 	audio.StartSound(gData.m_audioBR);
+	audio.SetSoundVolume(gData.m_audioBR, 0.1f);
 }
 
 void SceneLoader::LoadZones(const char* path, std::vector<AABB>* hostile, std::vector<AABB>* trespass)
@@ -486,7 +498,7 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	NPCInitDesc npcDesc{};
 	std::vector<QuadInitDesc> npcQuad;
 	float index = desc.m_npcMap->size() * 0.000001f;
-	uint64_t texture = NPCTex(type);
+	uint64_t texture = NPCTex(type, desc.m_isTarget);
 	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), Depth(index), desc.m_shader, texture});
 	npcQuad.push_back({ desc.m_pos, glm::vec2(MAP_RADIUS), Depth(index), desc.m_shader, texture });
 	npcQuad.push_back({ desc.m_pos, glm::vec2(0.7f, 0.2f), Depth(0.3f + index), desc.m_shader, globalData.m_texNPCDir });

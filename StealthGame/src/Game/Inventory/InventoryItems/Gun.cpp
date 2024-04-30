@@ -58,7 +58,7 @@ void Gun::OnEquipping()
 		uint64_t t = gData.m_scene->GetAudio().AddSound(
 			GameUUID(gData.m_audioGun1),
 			pos,
-			5.0f, 7.0f,
+			1.0f, 7.0f,
 			true,
 			false
 		).GetUUID();

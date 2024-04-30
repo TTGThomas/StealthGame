@@ -50,9 +50,9 @@ void Coin::OnEquipping()
 	{
 		// fire projectile
 		uint64_t t = gData.m_scene->GetAudio().AddSound(
-			GameUUID(gData.m_audioGun1),
-			player.GetPos(),
-			5.0f, 7.0f,
+			GameUUID(gData.m_audioCoin),
+			player.GetPos() + mousePos,
+			3.0f, 7.0f,
 			true,
 			false
 		).GetUUID();

@@ -11,5 +11,6 @@ void main()
 	vec2 offset = vec2(0.0f, 0.0f);
 
 	v_texCoord = vec2(a_texCoord.x, 1.0f - a_texCoord.y);
-	gl_Position = vec4(a_pos * vec3(scale * vec2(0.5f), 1.0f) + vec3(offset, 0.0f), 1.0f);
+	//gl_Position = vec4(a_pos * vec3(scale * vec2(0.5f), 1.0f) + vec3(offset, 0.0f), 1.0f);
+	gl_Position = vec4(a_pos, 1.0f);
 }

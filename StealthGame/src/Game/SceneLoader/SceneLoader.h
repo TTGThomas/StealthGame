@@ -58,7 +58,7 @@ public:
 	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path);
 
 	std::unique_ptr<NPC> MakeNPC(Identities type);
-	uint64_t NPCTex(Identities type);
+	uint64_t NPCTex(Identities type, bool isTarget);
 	// input ranges 0 - 1
 	static float Depth(float depth);
 private:

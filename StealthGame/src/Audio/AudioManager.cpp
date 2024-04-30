@@ -101,9 +101,19 @@ bool AudioManager::IsSoundFinished(GameUUID uuid)
     return ma_sound_at_end(&m_sounds[uuid.GetUUID()]);
 }
 
+bool AudioManager::IsSoundPlaying(GameUUID uuid)
+{
+    return ma_sound_is_playing(&m_sounds[uuid.GetUUID()]);
+}
+
 void AudioManager::SetSoundPos(GameUUID uuid, glm::vec2 pos)
 {
     ma_sound_set_position(&m_sounds[uuid.GetUUID()], pos.x, pos.y, 0.0f);
+}
+
+void AudioManager::SetSoundVolume(GameUUID uuid, float volume)
+{
+    ma_sound_set_volume(&m_sounds[uuid.GetUUID()], volume);
 }
 
 float AudioManager::GetSoundMinDist(GameUUID uuid)
