@@ -7,15 +7,12 @@ static void OnCreate(GameTickDesc& desc, PopUp* popUp)
 {
 	if (blackTexture == 0)
 	{
-		Texture texture;
 		unsigned char* data = new unsigned char[4];
 		data[0] = 0x00;
 		data[1] = 0x00;
 		data[2] = 0x00;
 		data[3] = 0xff;
-		texture.Init(data, 1, 1);
-		blackTexture = texture.GetUUID().GetUUID();
-		desc.m_renderer->AddTexture(texture);
+		blackTexture = desc.m_renderer->AddTexture(data, 1, 1);
 		delete[] data;
 	}
 	popUp->AddQuad(desc, blackTexture, { 100.0f, 100.0f }, { -50.0f, 50.0f });

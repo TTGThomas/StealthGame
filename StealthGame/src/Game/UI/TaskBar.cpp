@@ -19,13 +19,9 @@ void TaskBar::Init(GameTickDesc& desc)
 
 	m_iconTextures.resize(2);
 
-	Texture eliminate("res/Icons/Eliminate.png");
-	m_iconTextures[0] = eliminate.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(eliminate);
-
-	Texture escape("res/Icons/Escape.png");
-	m_iconTextures[1] = escape.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(escape);
+	m_iconTextures[0] = desc.m_renderer->AddTexture("res/Icons/Eliminate.png");
+	m_iconTextures[1] = desc.m_renderer->AddTexture("res/Icons/Escape.png");
+	
 }
 
 void TaskBar::AddTask(Task task)

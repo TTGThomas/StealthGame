@@ -56,9 +56,8 @@ void NPCAnimBP::Init(NPC* npc)
 		if (m_texGun == 0)
 		{
 			Texture texture;
-			texture.Init("res/Inventories/Gun.png");
-			m_texGun = texture.GetUUID().GetUUID();
-			gData.m_renderer->AddTexture(texture);
+			m_texGun = gData.m_renderer->AddTexture("res/Inventories/Gun.png");
+			
 		}
 
 		desc.m_textureUUID = m_texGun;

@@ -140,11 +140,8 @@ uint64_t Scene::GetTextureFromChar(QuadRenderer* renderer, glm::vec3 color, char
 			}
 		}
 
-		Texture texture;
-		texture.Init(ret, width, height);
-		renderer->AddTexture(texture);
+		m_letterTextures[texIndex] = renderer->AddTexture(ret, width, height);
 		delete[] ret;
-		m_letterTextures[texIndex] = texture.GetUUID().GetUUID();
 	}
 	return m_letterTextures[texIndex];
 }

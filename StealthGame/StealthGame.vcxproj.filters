@@ -216,6 +216,9 @@
     <ClCompile Include="src\Game\Interact\FoodInteract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="third\stbi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -462,6 +465,8 @@
     <None Include="imgui.ini" />
     <None Include="shaders\screen\Fragment.glsl" />
     <None Include="shaders\screen\Vertex.glsl" />
+    <None Include="shaders\Instance\Fragment.glsl" />
+    <None Include="shaders\Instance\Vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\logo.png">

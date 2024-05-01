@@ -13,16 +13,15 @@ void VisualLayers::Init(GameTickDesc& desc, uint64_t backgroundTexID, uint64_t f
 uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float depth, uint64_t texID)
 {
 	Scene* scene = desc.m_scene;
-	Texture& texture = desc.m_renderer->GetTextures()[texID];
+	QuadRenderer* renderer = desc.m_renderer;
 
-	float rate = MAP_RADIUS * 2.0f / 40.0f;
+	float rate = MAP_SCALE / 32.0f;
 	
-	// 20 px for 0.6
-	// 1 px for 0.6 / 20
-	// rate = 0.015
+	// 32 px for 0.45
+	// 1 px for 0.45 / 32
 	Quad quad;
 	uint64_t uuid = quad.GetUUID().GetUUID();
-	glm::vec2 radius = { (float)texture.GetWidth() * rate, (float)texture.GetHeight() * rate };
+	glm::vec2 radius = { (float)renderer->GetTextureWidth(texID) * rate, (float)renderer->GetTextureHeight(texID) * rate };
 	quad.SetRadius(radius);
 	quad.SetPos({ radius.x, -radius.y });
 	uint64_t ret = uuid;

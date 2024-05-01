@@ -15,15 +15,12 @@ static void CreateTrespass(GameTickDesc& desc, PopUp* popUp)
 
 	if (yellowTexture == 0)
 	{
-		Texture texture;
 		unsigned char* data = new unsigned char[4];
 		data[0] = 0xbb;
 		data[1] = 0xbb;
 		data[2] = 0x00;
 		data[3] = 0xff;
-		texture.Init(data, 1, 1);
-		yellowTexture = texture.GetUUID().GetUUID();
-		desc.m_renderer->AddTexture(texture);
+		yellowTexture = desc.m_renderer->AddTexture(data, 1, 1);
 		delete[] data;
 	}
 	popUp->AddQuad(desc, yellowTexture, { fontSize * 4.7f, fontSize }, startPos);
@@ -46,15 +43,12 @@ static void CreateHostile(GameTickDesc& desc, PopUp* popUp)
 
 	if (yellowTexture == 0)
 	{
-		Texture texture;
 		unsigned char* data = new unsigned char[4];
 		data[0] = 0xbb;
 		data[1] = 0xbb;
 		data[2] = 0x00;
 		data[3] = 0xff;
-		texture.Init(data, 1, 1);
-		yellowTexture = texture.GetUUID().GetUUID();
-		desc.m_renderer->AddTexture(texture);
+		yellowTexture = desc.m_renderer->AddTexture(data, 1, 1);
 		delete[] data;
 	}
 	popUp->AddQuad(desc, yellowTexture, { fontSize * 2.7f, fontSize }, startPos);

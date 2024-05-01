@@ -120,15 +120,11 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 	std::string backgroundPath = path;
 	backgroundPath.append("Back.png");
-	Texture background(backgroundPath.c_str());
-	uint64_t backgroundID = background.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(background);
+	uint64_t backgroundID = desc.m_renderer->AddTexture(backgroundPath.c_str());
 
 	std::string foregroundPath = path;
 	foregroundPath.append("Fore.png");
-	Texture foreground(foregroundPath.c_str());
-	uint64_t foregroundID = foreground.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(foreground);
+	uint64_t foregroundID = desc.m_renderer->AddTexture(foregroundPath.c_str());
 
 	GlobalData& gData = GlobalData::Get();
 
@@ -335,65 +331,21 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	GlobalData::Get().m_defaultShader = shader.GetUUID().GetUUID();
 	desc.m_renderer->AddShader(shader);
 
-	Texture logo("res/logo.png");
-	GlobalData::Get().m_texLogo = logo.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(logo);
-
-	Texture cursor("res/Player/Cursor.png");
-	GlobalData::Get().m_texPlayerCursor = cursor.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(cursor);
-
-	Texture player("res/Player/masterAtlas.png");
-	GlobalData::Get().m_texPlayer = player.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(player);
-
-	Texture npcDead("res/NPC/NPCDead.png");
-	GlobalData::Get().m_texNPCDead = npcDead.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npcDead);
-
-	Texture npc0("res/NPC/NPC0/masterAtlas.png");
-	GlobalData::Get().m_texNPC0 = npc0.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npc0);
-
-	Texture npc1("res/NPC/NPC1/masterAtlas.png");
-	GlobalData::Get().m_texNPC1 = npc1.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npc1);
-
-	Texture npc2("res/NPC/NPC2/masterAtlas.png");
-	GlobalData::Get().m_texNPC2 = npc2.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npc2);
-
-	Texture npc3("res/NPC/NPC3/masterAtlas.png");
-	GlobalData::Get().m_texNPC3 = npc3.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npc3);
-
-	Texture npc4("res/NPC/NPC4/masterAtlas.png");
-	GlobalData::Get().m_texNPC4 = npc4.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npc4);
-
-	Texture npcDir("res/NPC/Dir.png");
-	GlobalData::Get().m_texNPCDir = npcDir.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(npcDir);
-
-	Texture bullet("res/Inventories/Bullet.png");
-	GlobalData::Get().m_texBullet = bullet.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(bullet);
-
-	Texture container("res/SpecialObjects/Container.png");
-	GlobalData::Get().m_texContainer = container.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(container);
-
-	Texture door("res/SpecialObjects/Door.png");
-	GlobalData::Get().m_texDoor = door.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(door);
-
-	Texture food("res/SpecialObjects/Food.png");
-	GlobalData::Get().m_texFood = food.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(food);
-
-	Texture foodPoisoned("res/SpecialObjects/FoodPoisoned.png");
-	GlobalData::Get().m_texFoodPoisoned = foodPoisoned.GetUUID().GetUUID();
-	desc.m_renderer->AddTexture(foodPoisoned); 
+	GlobalData::Get().m_texLogo = desc.m_renderer->AddTexture("res/logo.png");
+	GlobalData::Get().m_texPlayerCursor = desc.m_renderer->AddTexture("res/Player/Cursor.png");
+	GlobalData::Get().m_texPlayer = desc.m_renderer->AddTexture("res/Player/masterAtlas.png");
+	GlobalData::Get().m_texNPCDead = desc.m_renderer->AddTexture("res/NPC/NPCDead.png");
+	GlobalData::Get().m_texNPC0 = desc.m_renderer->AddTexture("res/NPC/NPC0/masterAtlas.png");
+	GlobalData::Get().m_texNPC1 = desc.m_renderer->AddTexture("res/NPC/NPC1/masterAtlas.png");
+	GlobalData::Get().m_texNPC2 = desc.m_renderer->AddTexture("res/NPC/NPC2/masterAtlas.png");
+	GlobalData::Get().m_texNPC3 = desc.m_renderer->AddTexture("res/NPC/NPC3/masterAtlas.png");
+	GlobalData::Get().m_texNPC4 = desc.m_renderer->AddTexture("res/NPC/NPC4/masterAtlas.png");
+	GlobalData::Get().m_texNPCDir = desc.m_renderer->AddTexture("res/NPC/Dir.png");
+	GlobalData::Get().m_texBullet = desc.m_renderer->AddTexture("res/Inventories/Bullet.png");
+	GlobalData::Get().m_texContainer = desc.m_renderer->AddTexture("res/SpecialObjects/Container.png");
+	GlobalData::Get().m_texDoor = desc.m_renderer->AddTexture("res/SpecialObjects/Door.png");
+	GlobalData::Get().m_texFood = desc.m_renderer->AddTexture("res/SpecialObjects/Food.png");
+	GlobalData::Get().m_texFoodPoisoned = desc.m_renderer->AddTexture("res/SpecialObjects/FoodPoisoned.png");
 }
 
 void SceneLoader::LoadAudio(GameTickDesc& desc)

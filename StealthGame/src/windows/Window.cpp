@@ -30,8 +30,8 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
 		return false;
 	}
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     if (maximized && !fullScreen)
@@ -82,7 +82,7 @@ bool Window::Init(const char* title, int width, int height, bool vSynch, bool fu
     ImGui::StyleColorsDark();
     
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 440");
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.TabRounding = 8.0f;

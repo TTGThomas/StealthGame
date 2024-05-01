@@ -11,6 +11,7 @@ RenderQuad::RenderQuad(RenderQuadInitDesc& desc, GameUUID uuid)
 
 void RenderQuad::Cleanup()
 {
+	return;
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteBuffers(1, &m_ebo);
@@ -18,33 +19,35 @@ void RenderQuad::Cleanup()
 
 void RenderQuad::Init(float depth, uint64_t shaderUUID, uint64_t textureUUID)
 {
-	m_shaderUUID = shaderUUID;
+	//m_shaderUUID = shaderUUID;
 	m_textureUUID = textureUUID;
 	m_depth = depth;
-
-	glGenVertexArrays(1, &m_vao);
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ebo);
-
-	glBindVertexArray(m_vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_pos));
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoord));
-
-	glBindVertexArray(0);
+	//
+	//glGenVertexArrays(1, &m_vao);
+	//glGenBuffers(1, &m_vbo);
+	//glGenBuffers(1, &m_ebo);
+	//
+	//glBindVertexArray(m_vao);
+	//
+	//glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+	//
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
+	//
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_pos));
+	//
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoord));
+	//
+	//glBindVertexArray(0);
 }
 
 void RenderQuad::Draw(RenderDesc& desc)
 {
+	return;
+
 	if (m_screenRatioLoc == -1 && desc.m_shader != nullptr)
 	{
 		m_screenRatioLoc = LOCATION(*desc.m_shader, "u_screenRatio");
@@ -102,6 +105,24 @@ void RenderQuad::Draw(RenderDesc& desc)
 		desc.m_texture->Unbind();
 	if (desc.m_shader != nullptr)
 		desc.m_shader->Unbind();
+}
+
+glm::mat4 RenderQuad::Matrix(Camera* camera)
+{
+	glm::mat4 matrix = glm::identity<glm::mat4>();
+
+	// view
+	if (m_followCamera && camera != nullptr)
+	{
+		matrix = glm::scale(matrix, glm::vec3(glm::vec2(camera->GetZoom()), 1.0f));
+		matrix = glm::translate(matrix, { -camera->GetPosX(), -camera->GetPosY(), 0.0f });
+	}
+
+	// model
+	matrix = glm::translate(matrix, { m_pos.x, m_pos.y, 0.0f });
+	matrix = glm::rotate(matrix, glm::radians(-m_rotation), { 0.0f, 0.0f, 1.0f });
+	matrix = glm::scale(matrix, { m_radius.x, m_radius.y, 1.0f });
+	return matrix;
 }
 
 void RenderQuad::UpdateRenderQuad(Scene* scene)

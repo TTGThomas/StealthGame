@@ -23,17 +23,9 @@ void AnimationPlayer::SetAnimationAtlas(uint64_t uuid, const char* atlasPath)
 
 	auto pair = m_texUUIDs.find(std::string(atlasPath));
 	if (pair != m_texUUIDs.end())
-	{
 		texUUID = pair->second;
-	}
 	else
-	{
-		Texture texture(atlasPath);
-		texUUID = texture.GetUUID().GetUUID();
-		gData.m_renderer->AddTexture(texture);
-
-		m_texUUIDs[std::string(atlasPath)] = texUUID;
-	}
+		m_texUUIDs[std::string(atlasPath)] = gData.m_renderer->AddTexture(atlasPath);
 
 	renderQuad.SetTextureUUID(texUUID);
 }

@@ -13,19 +13,6 @@
 
 #include "../UUID.h"
 
-struct Vertex
-{
-	struct
-	{
-		float x, y, z;
-	} m_pos;
-
-	struct
-	{
-		float x, y;
-	} m_texCoord;
-};
-
 struct RenderDesc
 {
 	Camera* m_camera;
@@ -54,6 +41,7 @@ public:
 	void Cleanup();
 
 	void Draw(RenderDesc& desc);
+	glm::mat4 Matrix(Camera* camera);
 
 	void UpdateRenderQuad(class Scene* scene);
 	void UpdateRenderQuad(Scene* scene, GameUUID uuid);
@@ -70,6 +58,7 @@ public:
 	uint64_t getShaderUUID() { return m_shaderUUID; }
 	uint64_t GetTextureUUID() { return m_textureUUID;; }
 	float GetDepth() { return m_depth; }
+	float GetAlpha() { return m_alpha; }
 	bool GetVisible() { return m_visible; }
 	bool GetFollowCamera() { return m_followCamera; }
 	int GetSideFrames() { return m_sideFrames; }
@@ -103,15 +92,15 @@ private:
 	bool m_visible = true;
 	bool m_followCamera = true;
 
-	constexpr static Vertex m_vertices[4] = {
-		{{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f}},
-		{{ 1.0f,  1.0f, 0.0f}, {1.0f, 0.0f}},
-		{{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
-		{{ 1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
-	};
-
-	constexpr static unsigned int m_indices[6] = {
-		0, 2, 1,
-		1, 2, 3,
-	};
+	//constexpr static Vertex m_vertices[4] = {
+	//	{{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f}},
+	//	{{ 1.0f,  1.0f, 0.0f}, {1.0f, 0.0f}},
+	//	{{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
+	//	{{ 1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+	//};
+	//
+	//constexpr static unsigned int m_indices[6] = {
+	//	0, 2, 1,
+	//	1, 2, 3,
+	//};
 };

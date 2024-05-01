@@ -27,12 +27,7 @@ protected:
 	uint64_t CreateTexture(const char* path)
 	{
 		GlobalData gData = GlobalData::Get();
-
-		Texture texture;
-		texture.Init(path);
-		uint64_t ret = texture.GetUUID().GetUUID();
-		gData.m_renderer->AddTexture(texture);
-		return ret;
+		return gData.m_renderer->AddTexture(path);
 	}
 
 	void AddQuad(glm::vec2 pos, glm::vec2 radius, bool followCameraOffset, uint64_t texture)

@@ -210,6 +210,7 @@
     <ClCompile Include="src\Game\Zones\Zone.cpp" />
     <ClCompile Include="src\Game\UI\ZonePopUp.cpp" />
     <ClCompile Include="src\Game\VisualLayers.cpp" />
+    <ClCompile Include="third\stbi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Interact\FoodInteract.h" />
@@ -296,6 +297,8 @@
     <None Include="imgui.ini" />
     <None Include="shaders\default\Fragment.glsl" />
     <None Include="shaders\default\Vertex.glsl" />
+    <None Include="shaders\Instance\Fragment.glsl" />
+    <None Include="shaders\Instance\Vertex.glsl" />
     <None Include="shaders\screen\Fragment.glsl" />
     <None Include="shaders\screen\Vertex.glsl" />
   </ItemGroup>

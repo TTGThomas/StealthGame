@@ -3,11 +3,10 @@
 out vec4 fragColor;
 
 in vec2 v_texCoord;
+in float v_texIndex;
+in float v_alpha;
 
-uniform sampler2D u_texture;
-
-uniform float u_alpha;
-
+layout(binding = 0)uniform sampler2DArray u_textureArray;
 uniform int u_useTexture;
 
 vec4 MainGetColor();
@@ -24,12 +23,13 @@ void main()
 
 vec4 MainGetColor()
 {
-	vec4 texColor = texture(u_texture, v_texCoord);
+	vec4 texColor = texture(u_textureArray, vec3(v_texCoord, v_texIndex));
+	//vec4 texColor = vec4(v_texCoord, 0.0f, 1.0f);
 	float depth = gl_FragCoord.z;
-	if (u_alpha != -1.0f)
+	if (v_alpha != -1.0f)
 	{
-		texColor.w = u_alpha;
-		depth = u_alpha;
+		texColor.w = v_alpha;
+		depth = v_alpha;
 	}
 	return texColor;
 	//return vec4(vec3(depth), 1.0f);
