@@ -14,6 +14,8 @@ public:
 
 	// returns where you want the cursor to be at
 	virtual glm::vec2 OnTick(bool* show) override;
+
+	virtual Interaction::Type GetType() override { return Interaction::Type::CONTAINER; }
 private:
 	int m_objIndex = -1;
 	GameScene* m_scene = nullptr;

@@ -134,7 +134,7 @@ void NPC::EliminateMyself()
 	disguise->Init(m_type, GetPos(), 0.0f, GlobalData::Get().m_defaultShader);
 	GlobalData::Get().m_gameScene->GetItems().AddItem(disguise);
 
-	m_isPlayerDetected = false;
+	m_playerDetected = 0.0f;
 	m_health = 0;
 	ResetNodeGraph();
 	NodeGraphDead();
@@ -180,32 +180,41 @@ bool NPC::IsPlayerInSight()
 	if (!IsThetaInView(cosTheta))
 		return false;
 
-	Scene* scene = GlobalData::Get().m_scene;
+	Scene* scene = gData.m_scene;
+	SpecialBlockManager& sp = gData.m_gameScene->GetSpecialBlockManager();
 
-	bool ret = !m_collision->Collide(0, GetPos(), player->GetPos()).m_hasHit;
-	return ret;
+	for (int i = 0; i < sp.GetObjects().size(); i++)
+		if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
+			scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(false);
+
+	CollisionPayload ret = m_collision->Collide(0, GetPos(), player->GetPos());
+	
+	for (int i = 0; i < sp.GetObjects().size(); i++)
+		if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
+			scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(true);
+
+	return !ret.m_hasHit;
 }
 
 bool NPC::IsPlayerDetected()
 {
-	return m_isPlayerDetected;
+	return m_playerDetected > 0.0f;
 }
 
 void NPC::DetectPlayer()
 {
 	if (m_health == 0)
 	{
-		m_isPlayerDetected = false;
+		m_playerDetected = 0.0f;
 		return;
 	}
 
 	if (IsPlayerInSight())
 	{
-		m_isPlayerDetected = true;
-		return;
+		m_playerDetected = MEMTIME;
 	}
 
-	m_isPlayerDetected = false;
+	m_playerDetected -= GlobalData::Get().m_deltaTime;
 }
 
 void NPC::DetectItems()

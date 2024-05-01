@@ -4,6 +4,7 @@
 #include <string>
 
 #include <vector>
+#include <map>
 #include <unordered_map>
 
 #include "../../WildException.h"
@@ -34,12 +35,27 @@
 
 class SceneLoader
 {
+
+	struct RowLine
+	{
+		RowLine(int row, int line)
+			: m_row(row), m_line(line) {}
+
+		int Index() const { return m_row * 10000 + m_line; }
+
+		bool operator < (const RowLine& other) const
+		{
+			return Index() < other.Index();
+		}
+
+		int m_row;
+		int m_line;
+	};
+
 	struct LoadNPCDesc
 	{
 		LoadNPCDesc() = default;
 
-		std::vector<NPCInitDesc>* m_npcMap;
-		std::vector<std::string>* m_names;
 		const char* m_path;
 		int m_line;
 		int m_row;
@@ -67,10 +83,19 @@ private:
 	void LoadTextures(GameTickDesc& desc);
 	void LoadAudio(GameTickDesc& desc);
 private:
-	void LoadZones(const char* path, std::vector<AABB>* hostile, std::vector<AABB>* trespass);
+	void LoadZones(const char* path);
 private:
 	void LoadNPC(LoadNPCDesc& desc);
-	void SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture);
-	void LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture);
+	void SetPlayer(glm::vec2 pos, uint64_t shader, uint64_t texture);
+	void LoadMap(glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture);
+private:
+	std::vector<AABB> m_trespass;
+	std::vector<AABB> m_hostile;
 
+	// row, line objIndex
+	std::map<RowLine, int> m_specialMap;
+	std::vector<std::string> m_npcNames;
+	std::vector<NPCInitDesc> m_npcMap;
+	std::vector<QuadInitDesc> m_playerDesc;
+	std::vector<std::vector<QuadInitDesc>> m_allMapDesc;
 };

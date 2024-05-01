@@ -14,6 +14,13 @@ void Guard::InitNodeGraph()
 				m_stateOverview = State::NORMAL;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
+
+				if (m_targetRouteIndex >= m_route.size())
+					m_targetRouteIndex -= m_route.size();
+
+				if (m_route[m_targetRouteIndex].m_eat)
+					return;
+
 				glm::vec2 location = m_route[m_targetRouteIndex].m_pos;
 
 				if (m_routeFinished)
@@ -33,8 +40,6 @@ void Guard::InitNodeGraph()
 					{
 						m_routeFinished = true;
 						m_targetRouteIndex++;
-						if (m_targetRouteIndex == m_route.size())
-							m_targetRouteIndex = 0;
 					}
 				}
 				else
@@ -43,6 +48,9 @@ void Guard::InitNodeGraph()
 					if (m_velocity != glm::vec2(0.0f))
 						PointAtPoint(GetPos() + m_velocity);
 				}
+
+				if (m_targetRouteIndex >= m_route.size())
+					m_targetRouteIndex -= m_route.size();
 			};
 	}
 	int moveOnRouteIndex = m_nodes.size() - 1;
@@ -255,6 +263,16 @@ void Guard::InitNodeGraph()
 			};
 	}
 	int searchCoinIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+			{
+				m_stateOverview = State::EATING;
+				m_speed = m_normalSpeed;
+				m_isAttacking = false;
+			};
+	}
+	int eatIndex = m_nodes.size() - 1;
 
 	// bridges
 	{
@@ -270,6 +288,27 @@ void Guard::InitNodeGraph()
 				if (dist < LOOKOUTER && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 					return true;
 				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_destIndex = eatIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				return m_route[m_targetRouteIndex].m_eat;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(eatIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				bool ret = time > 3.0f;
+				if (ret)
+					m_targetRouteIndex++;
+				return ret;
 			};
 	}
 	{

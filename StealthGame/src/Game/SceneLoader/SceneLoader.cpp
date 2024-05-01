@@ -40,19 +40,23 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 
 	GlobalData& gData = GlobalData::Get();
 
+	m_playerDesc.clear();
+	m_npcMap.clear();
+	m_npcNames.clear();
+	m_allMapDesc.clear();
+	m_trespass.clear();
+	m_hostile.clear();
+
 	// Player
-	std::vector<QuadInitDesc> playerDesc{};
-	SetPlayer(&playerDesc, { 0.0f, 0.0f }, gData.m_defaultShader, gData.m_texPlayer);
+	SetPlayer({ 0.0f, 0.0f }, gData.m_defaultShader, gData.m_texPlayer);
 
 	// NPC
-	std::vector<NPCInitDesc> allNpcDesc{};
 
 	// Map
-	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
-	LoadMap(&allMapDesc, { 0.0f, 2.1f }, { 3.0f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
-	LoadMap(&allMapDesc, { -3.0f, 0.5f }, { 0.1f, 1.7f }, gData.m_defaultShader, gData.m_texLogo);
-	LoadMap(&allMapDesc, { 3.0f, 0.5f }, { 0.1f, 1.7f }, gData.m_defaultShader, gData.m_texLogo);
-	LoadMap(&allMapDesc, { 0.0f, -1.1f }, { 3.1f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap({ 0.0f, 2.1f }, { 3.0f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap({ -3.0f, 0.5f }, { 0.1f, 1.7f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap({ 3.0f, 0.5f }, { 0.1f, 1.7f }, gData.m_defaultShader, gData.m_texLogo);
+	LoadMap({ 0.0f, -1.1f }, { 3.1f, 0.1f }, gData.m_defaultShader, gData.m_texLogo);
 
 	// trespassing zones
 	std::vector<AABB> trespassingZones = {};
@@ -70,7 +74,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		glm::vec2 radius = { 0.3f, 0.3f };
 		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 1);
 		std::vector<QuadInitDesc> objectDesc;
-		float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+		float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texLogo });
 		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 		object.Init(objectDesc);
@@ -82,10 +86,10 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	SceneInitDesc initDesc;
 	initDesc.m_renderer = desc.m_renderer;
 	initDesc.m_collision = desc.m_collision;
-	initDesc.m_player = &playerDesc;
+	initDesc.m_player = &m_playerDesc;
 	initDesc.m_playerCamera = desc.m_camera;
-	initDesc.m_npcs = &allNpcDesc;
-	initDesc.m_map = &allMapDesc;
+	initDesc.m_npcs = &m_npcMap;
+	initDesc.m_map = &m_allMapDesc;
 	initDesc.m_gameTickDesc = desc;
 	initDesc.m_trespassingZones = &trespassingZones;
 	initDesc.m_hostileZones = &hostileZones;
@@ -128,14 +132,12 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 	GlobalData& gData = GlobalData::Get();
 
-	std::vector<QuadInitDesc> playerDesc{};
-
-	std::vector<NPCInitDesc> allNpcDesc{};
-	std::vector<std::string> allNpcName{};
-	std::vector<std::vector<QuadInitDesc>> allMapDesc{};
-	
-	std::vector<AABB> trespassingZones = {};
-	std::vector<AABB> hostileZones = {};
+	m_playerDesc.clear();
+	m_npcMap.clear();
+	m_npcNames.clear();
+	m_allMapDesc.clear();
+	m_trespass.clear();
+	m_hostile.clear();
 
 	std::vector<std::shared_ptr<Item>> items;
 	
@@ -154,19 +156,20 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 			char lowC = std::tolower(c);
 
 			if (c == 'p')
-				SetPlayer(&playerDesc, pos, gData.m_defaultShader, gData.m_texPlayer);
+				SetPlayer(pos, gData.m_defaultShader, gData.m_texPlayer);
 			else if (c == '#')
-				LoadMap(&allMapDesc, pos, { MAP_RADIUS, MAP_RADIUS }, gData.m_defaultShader, gData.m_texLogo);
+				LoadMap(pos, { MAP_RADIUS, MAP_RADIUS }, gData.m_defaultShader, gData.m_texLogo);
 			else if (c == 'e')
 			{
 				Object object;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
 				std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 0);
 				std::vector<QuadInitDesc> objectDesc;
-				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
 			}
 			else if (c == 'd')
@@ -175,11 +178,11 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				glm::vec2 radius = { MAP_RADIUS - 0.000001f, MAP_RADIUS - 0.000001f };
 				std::shared_ptr<DoorInteract> event = std::make_shared<DoorInteract>(scene, specialBlockIndex, radius);
 				std::vector<QuadInitDesc> objectDesc;
-				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
 				object.Init(objectDesc);
-				//desc.m_scene->GetAABBs()[object.GetUUID(0).GetUUID()].SetEnabled(false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
 			}
 			else if (c == 'c')
@@ -188,10 +191,11 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<ContainerInteract> event = std::make_shared<ContainerInteract>(scene, specialBlockIndex);
 				std::vector<QuadInitDesc> objectDesc;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
-				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texContainer });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
 			}
 			else if (c == 'f')
@@ -200,10 +204,11 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::shared_ptr<FoodInteract> event = std::make_shared<FoodInteract>(scene, specialBlockIndex);
 				std::vector<QuadInitDesc> objectDesc;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
-				float index = (0.6f + ((allMapDesc.size() + specialBlockIndex) * 0.000001f));
+				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texFood });
 				object.Init(objectDesc);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
+				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
 			}
 			// npcs
@@ -212,8 +217,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				LoadNPCDesc desc;
 				desc.m_isTarget = std::isupper(c);
 				desc.m_line = noLine;
-				desc.m_names = &allNpcName;
-				desc.m_npcMap = &allNpcDesc;
 				desc.m_path = path;
 				desc.m_pos = pos;
 				desc.m_row = noChar;
@@ -235,19 +238,19 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		noLine++;
 	}
 
-	LoadZones(path, &hostileZones, &trespassingZones);
+	LoadZones(path);
 
 	// Init
 	SceneInitDesc initDesc;
 	initDesc.m_renderer = desc.m_renderer;
 	initDesc.m_collision = desc.m_collision;
-	initDesc.m_player = &playerDesc;
+	initDesc.m_player = &m_playerDesc;
 	initDesc.m_playerCamera = desc.m_camera;
-	initDesc.m_npcs = &allNpcDesc;
-	initDesc.m_map = &allMapDesc;
+	initDesc.m_npcs = &m_npcMap;
+	initDesc.m_map = &m_allMapDesc;
 	initDesc.m_gameTickDesc = desc;
-	initDesc.m_trespassingZones = &trespassingZones;
-	initDesc.m_hostileZones = &hostileZones;
+	initDesc.m_trespassingZones = &m_trespass;
+	initDesc.m_hostileZones = &m_hostile;
 #if 0
 	initDesc.m_foregroundTexID = foregroundID;
 	initDesc.m_backgroundTexID = backgroundID;
@@ -436,7 +439,7 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 	audio.SetSoundVolume(gData.m_audioBR, 0.1f);
 }
 
-void SceneLoader::LoadZones(const char* path, std::vector<AABB>* hostile, std::vector<AABB>* trespass)
+void SceneLoader::LoadZones(const char* path)
 {
 	std::string zonesFilePath = path;
 	zonesFilePath.append("Zones.txt");
@@ -459,11 +462,11 @@ void SceneLoader::LoadZones(const char* path, std::vector<AABB>* hostile, std::v
 
 			if (c == 'H')
 			{
-				hostile->emplace_back(AABB(minPos, maxPos, GameUUID()));
+				m_hostile.emplace_back(AABB(minPos, maxPos, GameUUID()));
 			}
 			else if (c == 'T')
 			{
-				trespass->emplace_back(AABB(minPos, maxPos, GameUUID()));
+				m_trespass.emplace_back(AABB(minPos, maxPos, GameUUID()));
 			}
 			noChar++;
 		}
@@ -497,9 +500,20 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 		if (lineIndex == 0)
 			type = (Identities)std::stoi(lineStr);
 		else if (lineIndex == 1)
-			desc.m_names->push_back(lineStr);
+			m_npcNames.push_back(lineStr);
 		else
 		{
+			if (lineStr[0] == 'e')
+			{
+				int row = 0, line = 0;
+				int commaIdx = (int)lineStr.find_first_of(',');
+				row = std::stoi(lineStr.substr(2, commaIdx));
+				line = std::stoi(lineStr.substr(commaIdx + 1));
+
+				npcRoute.push_back(m_specialMap.at(RowLine(row, line)));
+				continue;
+			}
+			
 			int x = 0, y = 0, waitMs = 0;
 			int commaIdx = (int)lineStr.find_first_of(',');
 			int spaceIdx = (int)lineStr.find_last_of(' ');
@@ -517,7 +531,7 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	GlobalData& globalData = GlobalData::Get();
 	NPCInitDesc npcDesc{};
 	std::vector<QuadInitDesc> npcQuad;
-	float index = desc.m_npcMap->size() * 0.000001f;
+	float index = m_npcMap.size() * 0.000001f;
 	uint64_t texture = NPCTex(type, desc.m_isTarget);
 	npcQuad.push_back({ desc.m_pos, glm::vec2(0.2f), Depth(index), desc.m_shader, texture});
 	npcQuad.push_back({ desc.m_pos, glm::vec2(MAP_RADIUS), Depth(index), desc.m_shader, texture });
@@ -525,31 +539,31 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	npcDesc.m_desc = npcQuad;
 	npcDesc.m_route = npcRoute;
 	npcDesc.m_type = type;
-	npcDesc.m_name = desc.m_names->back().c_str();
+	npcDesc.m_name = m_npcNames.back().c_str();
 	npcDesc.m_isTarget = desc.m_isTarget;
 
-	desc.m_npcMap->push_back(npcDesc);
+	m_npcMap.push_back(npcDesc);
 	file.close();
 }
 
-void SceneLoader::SetPlayer(std::vector<QuadInitDesc>* playerDesc, glm::vec2 pos, uint64_t shader, uint64_t texture)
+void SceneLoader::SetPlayer(glm::vec2 pos, uint64_t shader, uint64_t texture)
 {
 	GlobalData& globalData = GlobalData::Get();
 
-	playerDesc->push_back({ pos, glm::vec2(0.2f, 0.2f), Depth(0.25f), shader, globalData.m_texLogo });
-	playerDesc->push_back({ pos, glm::vec2(0.1f), Depth(1.0f), shader, globalData.m_texPlayerCursor });
-	playerDesc->push_back({ pos, glm::vec2(MAP_RADIUS), Depth(0.25f), shader, texture });
+	m_playerDesc.push_back({ pos, glm::vec2(0.2f, 0.2f), Depth(0.25f), shader, globalData.m_texLogo });
+	m_playerDesc.push_back({ pos, glm::vec2(0.1f), Depth(1.0f), shader, globalData.m_texPlayerCursor });
+	m_playerDesc.push_back({ pos, glm::vec2(MAP_RADIUS), Depth(0.25f), shader, texture });
 }
 
 // actually the map hitbox
-void SceneLoader::LoadMap(std::vector<std::vector<QuadInitDesc>>* allMapDesc, glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture)
+void SceneLoader::LoadMap(glm::vec2 pos, glm::vec2 radius, uint64_t shader, uint64_t texture)
 {
 	// map is from 0.6 -- 0.9
 
 	std::vector<QuadInitDesc> mapDesc{};
-	float index = (0.6f + (allMapDesc->size() * 0.000001f));
+	float index = (0.6f + (m_allMapDesc.size() * 0.000001f));
 	mapDesc.push_back({ pos, radius, Depth(index), shader, texture });
-	allMapDesc->push_back(mapDesc);
+	m_allMapDesc.push_back(mapDesc);
 }
 
 float SceneLoader::Depth(float depth)

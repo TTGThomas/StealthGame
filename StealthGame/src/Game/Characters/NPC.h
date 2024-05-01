@@ -18,13 +18,13 @@
 #include "../Animation/AnimationPlayer.h"
 #include "AnimBP/NPCAnimBP.h"
 
-#include "../Desc.h"
-
 #include "../Items/Item.h"
 
+#include "../Desc.h"
 #include "../GlobalData.h"
-
 #include "../DebugManager.h"
+
+#include "NPCs/NPCConfig.h"
 
 #undef min
 
@@ -47,8 +47,14 @@ struct NPCRoutePoint
 	NPCRoutePoint(glm::vec2 pos, int waitMs = 0)
 		: m_pos(pos), m_waitMs(waitMs) {}
 
-	glm::vec2 m_pos;
+	NPCRoutePoint(int specialIndex)
+		: m_eat(true), m_specialIndex(specialIndex) {}
+
+	glm::vec2 m_pos{};
 	int m_waitMs = 0;
+
+	bool m_eat = false;
+	int m_specialIndex = -1;
 };
 
 // first quad in the list acts as the hitbox
@@ -60,7 +66,7 @@ class NPC : public Entity
 public:
 	enum class State
 	{
-		NORMAL, SEARCHING, ATTACK, PANIC
+		NORMAL, EATING, SEARCHING, ATTACK, PANIC
 	};
 
 	enum class ReportSearch
@@ -189,7 +195,9 @@ protected:
 
 	std::string m_name;
 
-	bool m_isPlayerDetected = false;
+	// is detected when this is > 0.0f
+	float m_playerDetected = 0.0f;
+
 	bool m_isBeingDragged = false;
 	bool m_isDisposed = false;
 	bool m_isAttacking = false;
