@@ -250,22 +250,6 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
-	//int index = 0;
-	//for (int y = -5; y < 5; y++)
-	//{
-	//	for (int x = -5; x < 5; x++)
-	//	{
-	//		glm::mat4 matrix = glm::identity<glm::mat4>();
-	//		matrix = glm::translate(matrix, glm::vec3((float)x / 10.0f, (float)y / 10.0f, 0.0f));
-	//		matrix = glm::scale(matrix, glm::vec3(0.06f, 0.06f, 1.0f));
-	//
-	//		glBufferSubData(GL_ARRAY_BUFFER, index * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(matrix));
-	//		index++;
-	//	}
-	//}
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	m_shader.Bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);

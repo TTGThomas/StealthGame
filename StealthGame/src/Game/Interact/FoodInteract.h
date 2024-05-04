@@ -20,6 +20,7 @@ public:
 	virtual glm::vec2 OnTick(bool* show) override;
 
 	virtual Interaction::Type GetType() override { return Interaction::Type::FOOD; }
+	bool IsPoisoned() { return m_poisoned; }
 private:
 	GameScene* m_scene = nullptr;
 	int m_objIndex = -1;

@@ -77,7 +77,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texLogo });
 		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
-		object.Init(objectDesc);
+		object.Init(objectDesc, true, false);
 		scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 		specialBlockIndex++;
 	}
@@ -163,7 +163,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
-				object.Init(objectDesc);
+				object.Init(objectDesc, true, false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
@@ -176,7 +176,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
-				object.Init(objectDesc);
+				object.Init(objectDesc, true, true);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
@@ -189,7 +189,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
 				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texContainer });
-				object.Init(objectDesc);
+				object.Init(objectDesc, true, false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
@@ -202,7 +202,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
 				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texFood });
-				object.Init(objectDesc);
+				object.Init(objectDesc, true, false);
 				scene->GetSpecialBlockManager().AddSpecialBlock(object, event);
 				m_specialMap[RowLine(noChar, noLine)] = specialBlockIndex;
 				specialBlockIndex++;
@@ -217,7 +217,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 				desc.m_pos = pos;
 				desc.m_row = noChar;
 				desc.m_shader = gData.m_defaultShader;
-				LoadNPC(desc);
+				m_npcLoad.emplace_back(desc);
 			}
 			// body concentration
 			else if (c == 'b')
@@ -233,6 +233,9 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 		}
 		noLine++;
 	}
+	
+	for (LoadNPCDesc& desc : m_npcLoad)
+		LoadNPC(desc);
 
 	LoadZones(path);
 
@@ -320,7 +323,7 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 
 	game->OnResize(desc.m_window->GetWidth(), desc.m_window->GetHeight());
 	scene->GetPlayer().GetInventory().GiveEverything();
-	desc.m_collision->SetLayers(5);
+	desc.m_collision->SetLayers(6);
 
 	GlobalData::Get().m_bodiesFound = 0;
 }
@@ -449,6 +452,9 @@ void SceneLoader::LoadNPC(LoadNPCDesc& desc)
 	int lineIndex = 0;
 	while (std::getline(file, lineStr))
 	{
+		if (lineStr[0] == '#')
+			continue;
+
 		if (lineIndex == 0)
 			type = (Identities)std::stoi(lineStr);
 		else if (lineIndex == 1)

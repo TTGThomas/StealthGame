@@ -12,6 +12,7 @@ void Inventory::ClearResources()
 	FiberWire::ClearResources();
 	Coin::ClearResources();
 	Gun::ClearResources();
+	Poison::ClearResources();
 }
 
 void Inventory::GiveEverything()

@@ -8,6 +8,8 @@
 
 #include "../Items/Disguise.h"
 
+#include "../Interact/DoorInteract.h"
+
 std::unordered_set<uint64_t> NPC::m_detectedDeadNPCs;
 
 NPC::~NPC()
@@ -77,7 +79,14 @@ void NPC::NPCTick(GameTickDesc& desc)
 	Node& node = m_nodes[m_nodePos];
 	float time = (float)glfwGetTime() - m_timeWhenEnter;
 	int frame = m_frameFromEnter;
-	node.m_func(desc, time, frame);
+	if (m_health > 0)
+	{
+		node.m_func(desc, time, frame);
+		if (m_health <= 0)
+			return;
+	}
+	else
+		node.m_func(desc, time, frame);
 	m_frameFromEnter++;
 	for (int bridgeIndex : node.m_relatedBridges)
 	{
@@ -183,15 +192,15 @@ bool NPC::IsPlayerInSight()
 	Scene* scene = gData.m_scene;
 	SpecialBlockManager& sp = gData.m_gameScene->GetSpecialBlockManager();
 
-	for (int i = 0; i < sp.GetObjects().size(); i++)
-		if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
-			scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(false);
+	//for (int i = 0; i < sp.GetObjects().size(); i++)
+	//	if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
+	//		scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(false);
 
 	CollisionPayload ret = m_collision->Collide(0, GetPos(), player->GetPos());
 	
-	for (int i = 0; i < sp.GetObjects().size(); i++)
-		if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
-			scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(true);
+	//for (int i = 0; i < sp.GetObjects().size(); i++)
+	//	if (sp.GetInteracts()[i]->GetType() != Interaction::Type::DOOR)
+	//		scene->GetAABBs()[sp.GetObjects()[i].GetUUID(0).GetUUID()].SetEnabled(true);
 
 	return !ret.m_hasHit;
 }
@@ -389,7 +398,21 @@ float NPC::AngleFromPoint(glm::vec2 point)
 
 void NPC::NPCMove(glm::vec2 vec)
 {
-	Move(m_collision, vec.x, vec.y);
+	Move(m_collision, 5, vec.x, vec.y);
+	// open doors
+	SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
+	for (int i = 0; i < manager.GetObjects().size(); i++)
+	{
+		DoorInteract* interact = reinterpret_cast<DoorInteract*>(manager.GetInteracts()[i].get());
+
+		if (interact->GetType() != Interaction::Type::DOOR)
+			continue;
+
+		glm::vec2 pos = GetPos();
+		glm::vec2 objPos = manager.GetObjects()[i].GetQuad(0)->GetPos();
+		if (glm::abs(pos.x - objPos.x) + glm::abs(pos.y - objPos.y) < MAP_SCALE)
+			interact->OpenDoor();
+	}
 }
 
 void NPC::CompileNodeGraph()
@@ -587,7 +610,8 @@ void CalculateDynamicRoute(NPCCalcDynamicIn in)
 			neighbour.m_pos += glm::vec2((float)dx[i] * MAP_SCALE, (float)dy[i] * MAP_SCALE);
 			neighbour.m_parentIndex = index;
 
-			if (gData.m_collision->Collide(0, neighbour.m_pos).m_hasHit)
+			CollisionPayload payload = gData.m_collision->Collide(5, neighbour.m_pos);
+			if (payload.m_hasHit)
 				continue;
 			bool inClosed = false;
 			for (int i : closedList)

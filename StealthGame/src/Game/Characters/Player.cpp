@@ -4,7 +4,7 @@ Player::Player()
 {
 }
 
-void Player::Init(std::vector<QuadInitDesc>& descs)
+void Player::Init(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor)
 {
 	Entity::Init(descs);
 	m_animBP.Init();
@@ -164,7 +164,7 @@ void Player::MovePlayer(GameTickDesc& desc)
 	if (KeyBoard::IsKeyDown(GLFW_KEY_D))
 		add.x += speed;
 
-	Move(desc.m_collision, add.x, add.y);
+	Move(desc.m_collision, 0, add.x, add.y);
 
 	m_velocity = GetPos() - lastPos;
 

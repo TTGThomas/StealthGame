@@ -25,9 +25,9 @@ class Object
 {
 public:
 	Object() = default;
-	Object(std::vector<QuadInitDesc>& descs);
+	Object(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor);
 
-	virtual void Init(std::vector<QuadInitDesc>& descs);
+	virtual void Init(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor);
 
 	Quad* GetQuad(int index) { return &GlobalData::Get().m_scene->GetQuads()[m_uuids[index].GetUUID()]; }
 	const std::vector<GameUUID>& GetUUIDs() { return m_uuids; }

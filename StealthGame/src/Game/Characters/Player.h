@@ -32,7 +32,7 @@ public:
 public:
 	Player();
 
-	virtual void Init(std::vector<QuadInitDesc>& descs) override;
+	virtual void Init(std::vector<QuadInitDesc>& descs, bool isSpecial = false, bool isDoor = false) override;
 
 	void ClearResources();
 

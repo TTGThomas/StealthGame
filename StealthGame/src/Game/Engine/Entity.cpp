@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-void Entity::Init(std::vector<QuadInitDesc>& descs)
+void Entity::Init(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
@@ -28,13 +28,13 @@ void Entity::Init(std::vector<QuadInitDesc>& descs)
 	GlobalData::Get().m_collision->AddToLayer(1, GetUUID(0).GetUUID());
 }
 
-void Entity::Move(CollisionDetector* collision, float x, float y)
+void Entity::Move(CollisionDetector* collision, int layer, float x, float y)
 {
 	GetQuad(0)->ChangePos({ x, 0 });
-	if (collision->Collide(0, GetUUID(0)).m_hasHit)
+	if (collision->Collide(layer, GetUUID(0)).m_hasHit)
 		GetQuad(0)->ChangePos({ -x, 0 });
 
 	GetQuad(0)->ChangePos({ 0, y });
-	if (collision->Collide(0, GetUUID(0)).m_hasHit)
+	if (collision->Collide(layer, GetUUID(0)).m_hasHit)
 		GetQuad(0)->ChangePos({ 0, -y });
 }

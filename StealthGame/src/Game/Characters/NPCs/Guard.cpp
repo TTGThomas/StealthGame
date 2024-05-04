@@ -2,6 +2,7 @@
 
 #include "NPCConfig.h"
 
+#include "../../Interact/FoodInteract.h"
 #include "../../GameScene.h"
 
 void Guard::InitNodeGraph()
@@ -270,6 +271,15 @@ void Guard::InitNodeGraph()
 				m_stateOverview = State::EATING;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
+
+				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
+
+				if (timeFromEnter > NPCEATTIME * 0.5f)
+				{
+					Interaction* interact = manager.GetInteracts()[m_route[m_targetRouteIndex].m_specialIndex].get();
+					if (reinterpret_cast<FoodInteract*>(interact)->IsPoisoned())
+						EliminateMyself();
+				}
 			};
 	}
 	int eatIndex = m_nodes.size() - 1;
@@ -305,7 +315,7 @@ void Guard::InitNodeGraph()
 		bridge.m_destIndex = moveOnRouteIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				bool ret = time > 3.0f;
+				bool ret = time > NPCEATTIME;
 				if (ret)
 					m_targetRouteIndex++;
 				return ret;

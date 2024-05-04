@@ -95,6 +95,7 @@ private:
 	// row, line objIndex
 	std::map<RowLine, int> m_specialMap;
 	std::vector<std::string> m_npcNames;
+	std::vector<LoadNPCDesc> m_npcLoad;
 	std::vector<NPCInitDesc> m_npcMap;
 	std::vector<QuadInitDesc> m_playerDesc;
 	std::vector<std::vector<QuadInitDesc>> m_allMapDesc;

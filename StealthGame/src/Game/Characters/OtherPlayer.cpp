@@ -4,7 +4,7 @@ OtherPlayer::OtherPlayer()
 {
 }
 
-void OtherPlayer::Init(std::vector<QuadInitDesc>& descs)
+void OtherPlayer::Init(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor)
 {
 	Entity::Init(descs);
 	m_animBP.Init();

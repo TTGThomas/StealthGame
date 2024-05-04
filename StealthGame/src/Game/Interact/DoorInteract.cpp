@@ -35,3 +35,9 @@ glm::vec2 DoorInteract::OnTick(bool* show)
 	Object& obj = m_scene->GetSpecialBlockManager().GetObjects()[m_objIndex];
 	return obj.GetQuad(0)->GetPos();
 }
+
+void DoorInteract::OpenDoor()
+{
+	if (!m_isOpen)
+		OnInteract();
+}

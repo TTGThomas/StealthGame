@@ -8,4 +8,5 @@
 #define GUNSOUNDRADIUS 1.0f
 #define NPCGUNSOUNDRADIUS 10.0f
 #define PANICTIME 10.0f
-#define MEMTIME 3.0f
+#define MEMTIME 0.7f
+#define NPCEATTIME 3.0f

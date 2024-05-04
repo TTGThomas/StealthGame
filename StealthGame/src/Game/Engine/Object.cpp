@@ -1,11 +1,11 @@
 #include "Object.h"
 
-Object::Object(std::vector<QuadInitDesc>& descs)
+Object::Object(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor)
 {
-	Init(descs);
+	Init(descs, isSpecial, isDoor);
 }
 
-void Object::Init(std::vector<QuadInitDesc>& descs)
+void Object::Init(std::vector<QuadInitDesc>& descs, bool isSpecial, bool isDoor)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 
@@ -30,4 +30,11 @@ void Object::Init(std::vector<QuadInitDesc>& descs)
 	scene->GetAABBs()[GetUUID(0).GetUUID()].SetEnabled(true);
 
 	GlobalData::Get().m_collision->AddToLayer(0, GetUUID(0).GetUUID());
+	if (!isSpecial)
+	{
+		GlobalData::Get().m_collision->AddToLayer(3, GetUUID(0).GetUUID());
+		GlobalData::Get().m_collision->AddToLayer(5, GetUUID(0).GetUUID());
+	}
+	else if (!isDoor)
+		GlobalData::Get().m_collision->AddToLayer(5, GetUUID(0).GetUUID());
 }

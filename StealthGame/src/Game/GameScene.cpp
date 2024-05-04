@@ -54,7 +54,7 @@ void GameScene::Init(SceneInitDesc& desc)
 	for (std::vector<QuadInitDesc>& objectDesc : *desc.m_map)
 	{
 		m_map.push_back(Object());
-		m_map.back().Init(objectDesc);
+		m_map.back().Init(objectDesc, false, false);
 		desc.m_collision->AddToLayer(3, m_map.back().GetUUID(0).GetUUID());
 	}
 
