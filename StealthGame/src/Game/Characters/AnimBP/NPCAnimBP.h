@@ -11,7 +11,7 @@ class NPCAnimBP
 {
 	enum class State
 	{
-		IDLE, WALKING, PANIC, DEAD
+		IDLE, EATING, WALKING, PANIC, DEAD
 	};
 
 	struct AnimNode
@@ -58,6 +58,10 @@ private:
 private:
 	std::vector<AnimNode> m_animNodes;
 	uint64_t m_leftArm, m_rightArm;
+	glm::vec2 m_leftArmPos;
+	glm::vec2 m_rightArmPos;
 	uint64_t m_gun;
+	State m_state;
+	float m_timeOnEnter = 0.0f;
 	static uint64_t m_texGun;
 };

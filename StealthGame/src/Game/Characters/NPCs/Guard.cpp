@@ -274,7 +274,7 @@ void Guard::InitNodeGraph()
 
 				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
 
-				if (timeFromEnter > NPCEATTIME * 0.5f)
+				if (timeFromEnter > NPCEATTIME)
 				{
 					Interaction* interact = manager.GetInteracts()[m_route[m_targetRouteIndex].m_specialIndex].get();
 					if (reinterpret_cast<FoodInteract*>(interact)->IsPoisoned())
@@ -315,7 +315,7 @@ void Guard::InitNodeGraph()
 		bridge.m_destIndex = moveOnRouteIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				bool ret = time > NPCEATTIME;
+				bool ret = time > NPCEATTIME + 0.2f;
 				if (ret)
 					m_targetRouteIndex++;
 				return ret;

@@ -15,6 +15,14 @@ void Game::Init(GameTickDesc& desc)
 	GlobalData::Get().m_renderer = desc.m_renderer;
 	GlobalData::Get().m_camera = desc.m_camera;
 
+	int count = 0;
+	std::for_each(m_gameState.begin(), m_gameState.end(), [&](GameStateNode& x) { x.m_state = (GameState)count++; });
+
+	m_gameState[0].m_bridges = { 1 };
+	m_gameState[1].m_bridges = { 0, 2 };
+	m_gameState[2].m_bridges = { 3, 1 };
+	m_gameState[3].m_bridges = { 2, 1 };
+
 	desc.m_camera->SetZoom(0.5f);
 
 	SceneLoader::Get().LoadMenu(desc, &m_gameScene, this);
@@ -22,69 +30,7 @@ void Game::Init(GameTickDesc& desc)
 
 void Game::Tick(GameTickDesc& desc)
 {
-	Scene* scene = GlobalData::Get().m_scene;
-	GlobalData& gData = GlobalData::Get();
-
-	gData.m_deltaTime = desc.m_tickTimer->Second();
-
-	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
-	m_popUpManager.UpdatePopUps(desc);
-	m_gameScene.UpdateProjectiles();
-
-	ShowStatsWindow();
-	m_gameScene.GetPlayer().ShowWindow();
-	m_gameScene.GetTaskbar().ShowStatsWindow();
-
-	m_gameScene.GetPlayer().PlayerTick(desc);
-	if (m_gameScene.GetPlayer().GetHealth() <= 0)
-	{
-		m_gameScene.GetPlayer().SetHealth(1000);
-		OnExit(0);
-	}
-
-	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
-	{
-		if (m_gameScene.GetPlayer().OnTrespassZone())
-			m_zonePopUp.OnTrespass();
-		else
-			m_zonePopUp.OnExit(desc);
-	}
-	else if (m_gameScene.GetHostileZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
-	{
-		if (m_gameScene.GetPlayer().OnHostileZone())
-			m_zonePopUp.OnHostile();
-		else
-			m_zonePopUp.OnExit(desc);
-	}
-	else
-	{
-		m_zonePopUp.OnExit(desc);
-	}
-
-	InteractTick(desc);
-
-	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
-		npc->NPCTick(desc);
-
-	if (m_exiting)
-	{
-		float time = (float)glfwGetTime() - m_exitStartTime;
-
-		m_exitPopUp.StartEnd(desc, &m_popUpManager);
-
-		if (time > 0.5f)
-		{
-			m_exiting = false;
-			ClearCurrentScene(desc);
-			SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_exitMap);
-			m_gameScene.GetPlayer().SetInputEnabled(true);
-			m_exitPopUp.StartStart(desc, &m_popUpManager);
-		}
-	}
-
-	NetworkTick(desc);
-
-	DebugManager::RenderDebugs();
+	GameTick(desc);
 }
 
 void Game::OnResize(int width, int height)
@@ -266,4 +212,75 @@ void Game::NetworkTick(GameTickDesc& desc)
 		data = *(std::array<unsigned char, PATCHSIZE>*)&passData;
 		desc.m_network->ClientUpdateSendData(data);
 	}
+}
+
+void Game::GameTick(GameTickDesc& desc)
+{
+	Scene* scene = GlobalData::Get().m_scene;
+	GlobalData& gData = GlobalData::Get();
+
+	gData.m_deltaTime = desc.m_tickTimer->Second();
+
+	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
+	m_popUpManager.UpdatePopUps(desc);
+	m_gameScene.UpdateProjectiles();
+
+	ShowStatsWindow();
+	m_gameScene.GetPlayer().ShowWindow();
+	m_gameScene.GetTaskbar().ShowStatsWindow();
+
+	m_gameScene.GetPlayer().PlayerTick(desc);
+	if (m_gameScene.GetPlayer().GetHealth() <= 0)
+	{
+		m_gameScene.GetPlayer().SetHealth(1000);
+		OnExit(0);
+	}
+
+	if (m_gameScene.GetTrespassZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+	{
+		if (m_gameScene.GetPlayer().OnTrespassZone())
+			m_zonePopUp.OnTrespass();
+		else
+			m_zonePopUp.OnExit(desc);
+	}
+	else if (m_gameScene.GetHostileZone().IsPointInZone(m_gameScene.GetPlayer().GetPos()))
+	{
+		if (m_gameScene.GetPlayer().OnHostileZone())
+			m_zonePopUp.OnHostile();
+		else
+			m_zonePopUp.OnExit(desc);
+	}
+	else
+	{
+		m_zonePopUp.OnExit(desc);
+	}
+
+	InteractTick(desc);
+
+	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
+		npc->NPCTick(desc);
+
+	if (m_exiting)
+	{
+		float time = (float)glfwGetTime() - m_exitStartTime;
+
+		m_exitPopUp.StartEnd(desc, &m_popUpManager);
+
+		if (time > 0.5f)
+		{
+			m_exiting = false;
+			ClearCurrentScene(desc);
+			SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_exitMap);
+			m_gameScene.GetPlayer().SetInputEnabled(true);
+			m_exitPopUp.StartStart(desc, &m_popUpManager);
+		}
+	}
+
+	NetworkTick(desc);
+
+	DebugManager::RenderDebugs();
+}
+
+void Game::MenuTick(GameTickDesc& desc)
+{
 }

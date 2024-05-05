@@ -41,6 +41,17 @@
 
 #include "DebugManager.h"
 
+enum class GameState
+{
+	START, MENU, GAME, PAUSE
+};
+
+struct GameStateNode
+{
+	GameState m_state;
+	std::vector<int> m_bridges;
+};
+
 class Game
 {
 public:
@@ -67,7 +78,11 @@ private:
 	void ShowStatsWindow();
 private:
 	void NetworkTick(GameTickDesc& desc);
+	void GameTick(GameTickDesc& desc);
+	void MenuTick(GameTickDesc& desc);
 private:
+	std::array<GameStateNode, 4> m_gameState;
+
 	bool m_isOnline = false;
 	GameScene m_gameScene;
 	std::shared_ptr<Interaction> m_interact;

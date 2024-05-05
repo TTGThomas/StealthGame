@@ -69,7 +69,8 @@ void NPCAnimBP::Init(NPC* npc)
 		{
 			return
 				glm::length(npc->GetVelocity()) == 0.0f &&
-				npc->GetState() != NPC::State::PANIC;
+				npc->GetState() != NPC::State::PANIC &&
+				npc->GetState() != NPC::State::EATING;
 		},
 		State::IDLE,
 		[](NPCAnimBP* animBP, NPC* npc)
@@ -85,7 +86,8 @@ void NPCAnimBP::Init(NPC* npc)
 		[](NPC* npc) -> bool
 		{
 			return
-				glm::length(npc->GetVelocity()) != 0.0f;
+				glm::length(npc->GetVelocity()) != 0.0f &&
+				npc->GetState() != NPC::State::EATING;
 		},
 		State::WALKING,
 		[](NPCAnimBP* animBP, NPC* npc)
@@ -112,6 +114,33 @@ void NPCAnimBP::Init(NPC* npc)
 		2,
 		2
 		));
+
+	m_animNodes.push_back(AnimNode(
+		[](NPC* npc) -> bool
+		{
+			return
+				npc->GetState() == NPC::State::EATING;
+		},
+		State::EATING,
+		[this](NPCAnimBP* animBP, NPC* npc)
+		{
+			// y = 1 - |(2x-t) / t|
+			Quad& leftArm = GlobalData::Get().m_scene->GetQuads()[m_leftArm];
+			Quad& rightArm = GlobalData::Get().m_scene->GetQuads()[m_rightArm];
+
+			float t = NPCEATTIME;
+			float x = std::min(t, (float)glfwGetTime() - m_timeOnEnter);
+			glm::vec2 add = {};
+			float deg = 180.0f + 180.0f * (1.0f - glm::abs((2.0f * x - t) / t));
+			add.x = glm::sin(glm::radians(deg)) * 1.0f;
+			add.y = glm::cos(glm::radians(deg)) * 1.0f;
+			m_leftArmPos = leftArm.GetPos() + add;
+		},
+		0.0f,
+		4,
+		7,
+		7
+		));
 }
 
 void NPCAnimBP::Tick(NPC* npc)
@@ -121,8 +150,8 @@ void NPCAnimBP::Tick(NPC* npc)
 
 	Quad& leftArm = GlobalData::Get().m_scene->GetQuads()[m_leftArm];
 	Quad& rightArm = GlobalData::Get().m_scene->GetQuads()[m_rightArm];
-	glm::vec2 leftArmPos = leftArm.GetPos() + glm::vec2(0.0f, -1.0f);
-	glm::vec2 rightArmPos = rightArm.GetPos() + glm::vec2(0.0f, -1.0f);
+	m_leftArmPos = leftArm.GetPos() + glm::vec2(0.0f, -1.0f);
+	m_rightArmPos = rightArm.GetPos() + glm::vec2(0.0f, -1.0f);
 
 	if (npc->GetHealth() <= 0)
 	{
@@ -138,12 +167,16 @@ void NPCAnimBP::Tick(NPC* npc)
 	{
 		if (node.m_determineFunc(npc))
 		{
+			if (m_state != node.m_representState)
+				m_timeOnEnter = (float)glfwGetTime();
+			m_state = node.m_representState;
 			node.m_execFunc(this, npc);
 			AnimationPlayer::PlayAnimation(uuid, node.m_framesPerSecond, node.m_sideFrames, node.m_startFrame, node.m_endFrame);
 			break;
 		}
 	}
-	UpdateArms(npc, leftArmPos, rightArmPos);
+
+	UpdateArms(npc, m_leftArmPos, m_rightArmPos);
 
 	gData.m_scene->GetRenderQuads()[m_gun].SetVisibility(false);
 }

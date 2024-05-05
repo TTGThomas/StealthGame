@@ -391,7 +391,7 @@ void SceneLoader::LoadAudio(GameTickDesc& desc)
 	).GetUUID();
 
 	audio.StartSound(gData.m_audioBR);
-	audio.SetSoundVolume(gData.m_audioBR, 0.1f);
+	audio.SetSoundVolume(gData.m_audioBR, 0.2f);
 }
 
 void SceneLoader::LoadZones(const char* path)
