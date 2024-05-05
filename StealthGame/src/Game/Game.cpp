@@ -16,21 +16,28 @@ void Game::Init(GameTickDesc& desc)
 	GlobalData::Get().m_camera = desc.m_camera;
 
 	int count = 0;
-	std::for_each(m_gameState.begin(), m_gameState.end(), [&](GameStateNode& x) { x.m_state = (GameState)count++; });
+	std::for_each(m_gameStates.begin(), m_gameStates.end(), [&](GameStateNode& x) { x.m_state = (GameState)count++; });
 
-	m_gameState[0].m_bridges = { 1 };
-	m_gameState[1].m_bridges = { 0, 2 };
-	m_gameState[2].m_bridges = { 3, 1 };
-	m_gameState[3].m_bridges = { 2, 1 };
+	m_gameStates[0].m_bridges = { 1 };
+	m_gameStates[1].m_bridges = { 0, 2 };
+	m_gameStates[2].m_bridges = { 3, 1 };
+	m_gameStates[3].m_bridges = { 2, 1 };
 
 	desc.m_camera->SetZoom(0.5f);
 
-	SceneLoader::Get().LoadMenu(desc, &m_gameScene, this);
+	LoadStart(desc);
 }
 
 void Game::Tick(GameTickDesc& desc)
 {
-	GameTick(desc);
+	if (m_gameStates[m_gameState].m_state == GameState::START)
+		StartTick(desc);
+	if (m_gameStates[m_gameState].m_state == GameState::MENU)
+		MenuTick(desc);
+	if (m_gameStates[m_gameState].m_state == GameState::GAME)
+		GameTick(desc);
+	if (m_gameStates[m_gameState].m_state == GameState::PAUSE)
+		PauseTick(desc);
 }
 
 void Game::OnResize(int width, int height)
@@ -281,6 +288,44 @@ void Game::GameTick(GameTickDesc& desc)
 	DebugManager::RenderDebugs();
 }
 
+void Game::SwitchState(GameTickDesc& desc, int bridgeIndex)
+{
+	m_gameState = m_gameStates[m_gameState].m_bridges[bridgeIndex];
+	if (m_gameState == 0)
+		LoadStart(desc);
+	else if (m_gameState == 1)
+		LoadMenu(desc);
+	else if (m_gameState == 2)
+	{
+		ClearCurrentScene(desc);
+		SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_exitMap);
+	}
+	else if (m_gameState == 3)
+		LoadPause(desc);
+}
+
+void Game::LoadStart(GameTickDesc& desc)
+{
+	m_gameScene.GetMap().emplace_back();
+}
+
+void Game::LoadMenu(GameTickDesc& desc)
+{
+}
+
+void Game::LoadPause(GameTickDesc& desc)
+{
+}
+
+
+void Game::StartTick(GameTickDesc& desc)
+{
+}
+
 void Game::MenuTick(GameTickDesc& desc)
+{
+}
+
+void Game::PauseTick(GameTickDesc& desc)
 {
 }

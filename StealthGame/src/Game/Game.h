@@ -79,9 +79,19 @@ private:
 private:
 	void NetworkTick(GameTickDesc& desc);
 	void GameTick(GameTickDesc& desc);
-	void MenuTick(GameTickDesc& desc);
 private:
-	std::array<GameStateNode, 4> m_gameState;
+	void SwitchState(GameTickDesc& desc, int bridgeIndex);
+
+	void LoadStart(GameTickDesc& desc);
+	void LoadMenu(GameTickDesc& desc);
+	void LoadPause(GameTickDesc& desc);
+
+	void StartTick(GameTickDesc& desc);
+	void MenuTick(GameTickDesc& desc);
+	void PauseTick(GameTickDesc& desc);
+private:
+	std::array<GameStateNode, 4> m_gameStates;
+	int m_gameState = 0;
 
 	bool m_isOnline = false;
 	GameScene m_gameScene;
