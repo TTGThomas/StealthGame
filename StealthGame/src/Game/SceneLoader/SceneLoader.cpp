@@ -72,7 +72,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 		Object object;
 		glm::vec2 pos = { 0.0f, 1.5f };
 		glm::vec2 radius = { 0.3f, 0.3f };
-		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 1);
+		std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex);
 		std::vector<QuadInitDesc> objectDesc;
 		float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 		objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texLogo });
@@ -159,7 +159,7 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 			{
 				Object object;
 				glm::vec2 radius = { MAP_RADIUS, MAP_RADIUS };
-				std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex, 0);
+				std::shared_ptr<ExitInteract> event = std::make_shared<ExitInteract>(scene, game, specialBlockIndex);
 				std::vector<QuadInitDesc> objectDesc;
 				float index = (0.6f + ((m_allMapDesc.size() + specialBlockIndex) * 0.000001f));
 				objectDesc.push_back({ pos, radius, Depth(index), gData.m_defaultShader, gData.m_texDoor });
@@ -326,6 +326,17 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 	desc.m_collision->SetLayers(6);
 
 	GlobalData::Get().m_bodiesFound = 0;
+}
+
+void SceneLoader::LoadRawConstants(GameTickDesc& desc)
+{
+	desc.m_camera->SetPos({});
+	desc.m_camera->SetZoom(1.0f);
+
+	LoadTextures(desc);
+	LoadAudio(desc);
+
+	desc.m_collision->SetLayers(6);
 }
 
 void SceneLoader::LoadTextures(GameTickDesc& desc)

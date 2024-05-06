@@ -64,7 +64,7 @@ public:
 
 	void OnResize(int width, int height);
 
-	void OnExit(int level);
+	void OnExit();
 
 	void ClearCurrentScene(GameTickDesc& desc);
 
@@ -81,6 +81,7 @@ private:
 	void GameTick(GameTickDesc& desc);
 private:
 	void SwitchState(GameTickDesc& desc, int bridgeIndex);
+	void RawSwitchState(GameTickDesc& desc, int bridgeIndex);
 
 	void LoadStart(GameTickDesc& desc);
 	void LoadMenu(GameTickDesc& desc);
@@ -89,6 +90,8 @@ private:
 	void StartTick(GameTickDesc& desc);
 	void MenuTick(GameTickDesc& desc);
 	void PauseTick(GameTickDesc& desc);
+
+	bool QuadClicked(GameTickDesc& desc, uint64_t uuid);
 private:
 	std::array<GameStateNode, 4> m_gameStates;
 	int m_gameState = 0;
@@ -100,7 +103,9 @@ private:
 
 	bool m_exiting = false;
 	float m_exitStartTime = -1.0f;
-	int m_exitMap = 0;
+	int m_enterMap = 1;
+
+	std::vector<uint64_t> m_menuUUIDs;
 
 	PopUpManager m_popUpManager;
 	ZonePopUp m_zonePopUp;

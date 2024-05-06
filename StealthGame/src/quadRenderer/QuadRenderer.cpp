@@ -217,8 +217,6 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	m_quadRendered = 0;
-
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
 	int index = 0;
 	for (uint64_t& uuid : m_parent->GetDepthOrder())
@@ -248,6 +246,8 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 			}
 		}
 	}
+	m_quadRendered = index;
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	m_shader.Bind();

@@ -23,6 +23,7 @@ void Inventory::GiveEverything()
 	AddItem<Gun>(3);
 	AddItem<Poison>(4);
 	GetEquipped()->OnEquip();
+	GetEquipped()->OnEquipping();
 }
 
 void Inventory::InventoryTick(GameTickDesc& desc)

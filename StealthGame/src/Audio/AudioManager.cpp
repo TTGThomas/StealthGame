@@ -28,7 +28,7 @@ void AudioManager::Cleanup()
 
     free(m_engine);
 
-    m_sounds = {};
+    *this = {};
 }
 
 GameUUID AudioManager::AddSound(const char* filePath, glm::vec2 pos, float minDist, float maxDist, bool deleteOnFinish, bool ignorePos, bool loop)

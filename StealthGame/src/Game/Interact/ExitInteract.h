@@ -11,8 +11,8 @@
 class ExitInteract : public Interaction
 {
 public:
-	ExitInteract(class GameScene* scene, class Game* game, int objIndex, int levelIndex)
-		: m_scene(scene), m_objIndex(objIndex), m_game(game), m_levelIndex(levelIndex) {}
+	ExitInteract(class GameScene* scene, class Game* game, int objIndex)
+		: m_scene(scene), m_objIndex(objIndex), m_game(game) {}
 
 	virtual void OnInteract() override;
 
@@ -24,6 +24,5 @@ private:
 	Game* m_game = nullptr;
 	GameScene* m_scene = nullptr;
 	int m_objIndex = -1;
-	int m_levelIndex = -2;
 };
 

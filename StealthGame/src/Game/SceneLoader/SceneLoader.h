@@ -74,14 +74,15 @@ public:
 	void LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game);
 	void LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game, const char* path);
 
+	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
+	void LoadRawConstants(GameTickDesc& desc);
+	void LoadTextures(GameTickDesc& desc);
+	void LoadAudio(GameTickDesc& desc);
+
 	std::unique_ptr<NPC> MakeNPC(Identities type);
 	uint64_t NPCTex(Identities type, bool isTarget);
 	// input ranges 0 - 1
 	static float Depth(float depth);
-private:
-	void LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game);
-	void LoadTextures(GameTickDesc& desc);
-	void LoadAudio(GameTickDesc& desc);
 private:
 	void LoadZones(const char* path);
 private:

@@ -5,7 +5,7 @@
 
 void ExitInteract::OnInteract()
 {
-	m_game->OnExit(m_levelIndex);
+	m_game->OnExit();
 }
 
 glm::vec2 ExitInteract::OnTick(bool* show)
