@@ -10,7 +10,7 @@ void Guest::InitNodeGraph()
 	// nodes
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = NPC::State::NORMAL;
 				m_speed = m_normalSpeed;
@@ -50,7 +50,7 @@ void Guest::InitNodeGraph()
 	{
 		m_stateOverview = NPC::State::NORMAL;
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
@@ -61,14 +61,14 @@ void Guest::InitNodeGraph()
 	int lookAtPlayerIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = NPC::State::PANIC;
 				m_speed = m_runningSpeed;
 				m_isAttacking = false;
 				GlobalData& gData = GlobalData::Get();
 
-				if (frameFromEnter == 0)
+				if (frame == 0)
 				{
 					m_searchFinish = false;
 
@@ -97,14 +97,14 @@ void Guest::InitNodeGraph()
 
 				if (m_reportNPC == 0)
 				{
-					if (timeFromEnter > PANICTIME)
+					if (time > PANICTIME)
 						m_searchFinish = true;
 					return;
 				}
 
 				NPC& guard = *gData.m_gameScene->GetNPCs()[m_reportNPC];
 
-				if (frameFromEnter == 0)
+				if (frame == 0)
 					StartMoveToLocation(guard.GetPos());
 
 				if (MoveToLocation(gData.m_deltaTime))
@@ -126,25 +126,25 @@ void Guest::InitNodeGraph()
 	int reportPlayerIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
-				if (timeFromEnter < SEARCHTIME)
+				if (time < SEARCHTIME)
 				{
-					if (frameFromEnter == 0)
+					if (frame == 0)
 						StartMoveToLocation(m_searchPos);
 
 
 					if (!m_isDynamicRouteCalculated)
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 
 					if (!MoveToLocation(desc.m_tickTimer->Second()))
 					{
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 					}
 					PointAtPoint(GetPos() + m_velocity);
 				}
@@ -184,7 +184,7 @@ void Guest::InitNodeGraph()
 					return false;
 				if (dist < 0.5f && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 				{
-					m_timeWhenEnter = (float)glfwGetTime();
+					ResetTimer();
 					return false;
 				}
 				return time > 1.0f;

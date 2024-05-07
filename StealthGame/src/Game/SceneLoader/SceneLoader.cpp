@@ -318,6 +318,7 @@ uint64_t SceneLoader::NPCTex(Identities type, bool isTarget)
 
 void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game)
 {
+	*this = {};
 	LoadTextures(desc);
 	LoadAudio(desc);
 
@@ -330,6 +331,7 @@ void SceneLoader::LoadConstants(GameTickDesc& desc, GameScene* scene, Game* game
 
 void SceneLoader::LoadRawConstants(GameTickDesc& desc)
 {
+	*this = {};
 	desc.m_camera->SetPos({});
 	desc.m_camera->SetZoom(1.0f);
 
@@ -344,6 +346,9 @@ void SceneLoader::LoadTextures(GameTickDesc& desc)
 	Shader shader("shaders/default/Vertex.glsl", "shaders/default/Fragment.glsl");
 	GlobalData::Get().m_defaultShader = shader.GetUUID().GetUUID();
 	desc.m_renderer->AddShader(shader);
+
+	unsigned char data[] = { 0, 0, 0 };
+	GlobalData::Get().m_texBlack = desc.m_renderer->AddTexture(data, 1, 1);
 
 	GlobalData::Get().m_texLogo = desc.m_renderer->AddTexture("res/logo.png");
 	GlobalData::Get().m_texPlayerCursor = desc.m_renderer->AddTexture("res/Player/Cursor.png");

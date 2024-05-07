@@ -19,7 +19,7 @@ void Game::Init(GameTickDesc& desc)
 	std::for_each(m_gameStates.begin(), m_gameStates.end(), [&](GameStateNode& x) { x.m_state = (GameState)count++; });
 
 	m_gameStates[0].m_bridges = { 1 };
-	m_gameStates[1].m_bridges = { 0, 2 };
+	m_gameStates[1].m_bridges = { 2 };
 	m_gameStates[2].m_bridges = { 3, 1 };
 	m_gameStates[3].m_bridges = { 2, 1 };
 
@@ -65,7 +65,7 @@ void Game::ClearCurrentScene(GameTickDesc& desc)
 	desc.m_collision->ClearResources();
 	m_gameScene.ClearResources();
 	m_zonePopUp.ClearResources();
-	m_exitPopUp.ClearResources();
+	//m_exitPopUp.ClearResources();
 	m_popUpManager.ClearResources();
 	AnimationPlayer::ClearResource();
 }
@@ -224,6 +224,15 @@ void Game::GameTick(GameTickDesc& desc)
 {
 	Scene* scene = GlobalData::Get().m_scene;
 	GlobalData& gData = GlobalData::Get();
+	
+	if (m_onEnter)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		alpha -= desc.m_tickTimer->Second();
+		if (alpha < 0.0f)
+			m_onEnter = false;
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
+	}
 
 	gData.m_deltaTime = desc.m_tickTimer->Second();
 
@@ -268,16 +277,22 @@ void Game::GameTick(GameTickDesc& desc)
 
 	if (m_exiting)
 	{
-		float time = (float)glfwGetTime() - m_exitStartTime;
+		m_onEnter = false;
+		m_exitState = true;
+		m_exiting = false;
+	}
 
-		m_exitPopUp.StartEnd(desc, &m_popUpManager);
-
-		if (time > 0.5f)
+	if (m_exitState)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		alpha += desc.m_tickTimer->Second();
+		if (alpha > 1.0f)
 		{
-			m_exiting = false;
+			m_exitState = false;
 			SwitchState(desc, 1);
-			m_gameScene.GetPlayer().SetInputEnabled(true);
+			return;
 		}
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
 	}
 
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_ESCAPE))
@@ -293,12 +308,13 @@ void Game::SwitchState(GameTickDesc& desc, int bridgeIndex)
 	m_menuUUIDs = {};
 	ClearCurrentScene(desc);
 	m_gameState = m_gameStates[m_gameState].m_bridges[bridgeIndex];
+	m_onEnter = true;
 	if (m_gameState == 0)
 		LoadStart(desc);
 	else if (m_gameState == 1)
 		LoadMenu(desc);
 	else if (m_gameState == 2)
-		SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_enterMap);
+		LoadGame(desc);
 	else if (m_gameState == 3)
 		LoadPause(desc);
 }
@@ -307,12 +323,13 @@ void Game::RawSwitchState(GameTickDesc& desc, int bridgeIndex)
 {
 	m_menuUUIDs = {};
 	m_gameState = m_gameStates[m_gameState].m_bridges[bridgeIndex];
+	m_onEnter = true;
 	if (m_gameState == 0)
 		LoadStart(desc);
 	else if (m_gameState == 1)
 		LoadMenu(desc);
 	else if (m_gameState == 2)
-		SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_enterMap);
+		LoadGame(desc);
 	else if (m_gameState == 3)
 		LoadPause(desc);
 }
@@ -321,17 +338,32 @@ void Game::LoadStart(GameTickDesc& desc)
 {
 	GlobalData& gData = GlobalData::Get();
 	SceneLoader::Get().LoadRawConstants(desc);
-
-	Quad quad;
-	quad.SetPos({});
-	quad.SetRadius({ 1.0f, 1.0f });
-	m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
-	RenderQuadInitDesc renderDesc;
-	renderDesc.m_depth = 0.0f;
-	renderDesc.m_followCameraOffset = false;
-	renderDesc.m_shaderUUID = gData.m_defaultShader;
-	renderDesc.m_textureUUID = gData.m_texLogo;
-	desc.m_scene->AddQuad(quad, renderDesc);
+	
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 1.0f, 1.0f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 0.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texLogo;
+		desc.m_scene->AddQuad(quad, renderDesc);
+	}
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 1000.0f, 1.0f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 1.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texBlack;
+		desc.m_scene->AddQuad(quad, renderDesc);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(1.0f);
+	}
 }
 
 void Game::LoadMenu(GameTickDesc& desc)
@@ -339,47 +371,130 @@ void Game::LoadMenu(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 	SceneLoader::Get().LoadRawConstants(desc);
 
-	Quad quad;
-	quad.SetPos({});
-	quad.SetRadius({ 0.5f, 0.5f });
-	m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
-	RenderQuadInitDesc renderDesc;
-	renderDesc.m_depth = 0.0f;
-	renderDesc.m_followCameraOffset = false;
-	renderDesc.m_shaderUUID = gData.m_defaultShader;
-	renderDesc.m_textureUUID = gData.m_texLogo;
-	desc.m_scene->AddQuad(quad, renderDesc);
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 0.5f, 0.5f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 0.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texLogo;
+		desc.m_scene->AddQuad(quad, renderDesc);
+	}
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 1000.0f, 1.0f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 1.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texBlack;
+		desc.m_scene->AddQuad(quad, renderDesc);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(1.0f);
+	}
+}
+
+void Game::LoadGame(GameTickDesc& desc)
+{
+	GlobalData& gData = GlobalData::Get();
+	SceneLoader::Get().LoadMap(desc, &m_gameScene, this, m_enterMap);
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 1000.0f, 1.0f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 1.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texBlack;
+		desc.m_scene->AddQuad(quad, renderDesc);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(1.0f);
+	}
 }
 
 void Game::LoadPause(GameTickDesc& desc)
 {
 	GlobalData& gData = GlobalData::Get();
 
-	Quad quad;
-	quad.SetPos({});
-	quad.SetRadius({ 1.0f, 1.0f });
-	m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
-	RenderQuadInitDesc renderDesc;
-	renderDesc.m_depth = 1.0f;
-	renderDesc.m_followCameraOffset = false;
-	renderDesc.m_shaderUUID = gData.m_defaultShader;
-	renderDesc.m_textureUUID = gData.m_texLogo;
-	desc.m_scene->AddQuad(quad, renderDesc);
+	{
+		Quad quad;
+		quad.SetPos({});
+		quad.SetRadius({ 1.0f, 1.0f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 1.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = gData.m_texDoor;
+		desc.m_scene->AddQuad(quad, renderDesc);
+	}
 }
 
 
 void Game::StartTick(GameTickDesc& desc)
 {
+	if (m_onEnter)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs[1]].GetAlpha();
+		alpha -= desc.m_tickTimer->Second();
+		if (alpha < 0.0f)
+			m_onEnter = false;
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs[1]].SetAlpha(alpha);
+	}
+
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_ENTER))
-		SwitchState(desc, 0);
+	{
+		m_onEnter = false;
+		m_exitState = true;
+	}
+
+	if (m_exitState)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs[1]].GetAlpha();
+		alpha += desc.m_tickTimer->Second();
+		if (alpha > 1.0f)
+		{
+			m_exitState = false;
+			SwitchState(desc, 0);
+		}
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs[1]].SetAlpha(alpha);
+	}
 }
 
 void Game::MenuTick(GameTickDesc& desc)
 {
-	if (KeyBoard::IsKeyPressDown(GLFW_KEY_ESCAPE))
-		SwitchState(desc, 0);
-	if (QuadClicked(desc, m_menuUUIDs[0]))
-		SwitchState(desc, 1);
+	if (m_onEnter)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		alpha -= desc.m_tickTimer->Second();
+		if (alpha < 0.0f)
+			m_onEnter = false;
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
+	}
+
+	if (QuadClicked(desc, m_menuUUIDs.back()))
+	{
+		m_onEnter = false;
+		m_exitState = true;
+	}
+
+	if (m_exitState)
+	{
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		alpha += desc.m_tickTimer->Second();
+		if (alpha > 1.0f)
+		{
+			m_exitState = false;
+			SwitchState(desc, 0);
+			return;
+		}
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
+	}
 }
 
 void Game::PauseTick(GameTickDesc& desc)
@@ -393,6 +508,7 @@ void Game::PauseTick(GameTickDesc& desc)
 
 		m_gameState = m_gameStates[m_gameState].m_bridges[0];
 		m_menuUUIDs = {};
+		m_onEnter = false;
 	}
 }
 

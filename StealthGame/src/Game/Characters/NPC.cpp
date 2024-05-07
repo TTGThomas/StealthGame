@@ -77,7 +77,8 @@ void NPC::NPCTick(GameTickDesc& desc)
 	//}
 
 	Node& node = m_nodes[m_nodePos];
-	float time = (float)glfwGetTime() - m_timeWhenEnter;
+	m_timeFromEnter += desc.m_tickTimer->Second();
+	float time = m_timeFromEnter;
 	int frame = m_frameFromEnter;
 	if (m_health > 0)
 	{
@@ -95,7 +96,7 @@ void NPC::NPCTick(GameTickDesc& desc)
 		{
 			m_nodePos = bridge.m_destIndex;
 			m_frameFromEnter = 0;
-			m_timeWhenEnter = (float)glfwGetTime();
+			ResetTimer();
 		}
 	}
 

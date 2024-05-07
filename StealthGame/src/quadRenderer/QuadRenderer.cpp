@@ -192,6 +192,8 @@ void QuadRenderer::ClearResources()
 	m_shaders.clear();
 
 	glDeleteTextures(1, &m_textureArray);
+	m_textureCount = 0;
+	m_textureDimensions.clear();
 
 	glGenTextures(1, &m_textureArray);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);
@@ -275,7 +277,7 @@ void QuadRenderer::ShowStatsWindow()
 	ImGui::Text("Quad count: %u", m_parent->GetQuads().size());
 	ImGui::Text("Quad Rendered: %u", m_quadRendered);
 	ImGui::Text("Shaders Allocated: %u", m_shaders.size());
-	ImGui::Text("Textures Allocated: %u", m_textureCount);
+	ImGui::Text("Textures Allocated: %u", m_textureDimensions.size());
 	ImGui::Checkbox("Use Texture", &m_useTexture);
 	ImGui::End();
 #endif

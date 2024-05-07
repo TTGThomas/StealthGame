@@ -62,6 +62,6 @@ private:
 	glm::vec2 m_rightArmPos;
 	uint64_t m_gun;
 	State m_state;
-	float m_timeOnEnter = 0.0f;
+	float m_timeEntered = 0.0f;
 	static uint64_t m_texGun;
 };

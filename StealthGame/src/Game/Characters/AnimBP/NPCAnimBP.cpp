@@ -129,7 +129,7 @@ void NPCAnimBP::Init(NPC* npc)
 			Quad& rightArm = GlobalData::Get().m_scene->GetQuads()[m_rightArm];
 
 			float t = NPCEATTIME;
-			float x = std::min(t, (float)glfwGetTime() - m_timeOnEnter);
+			float x = std::min(t, m_timeEntered);
 			glm::vec2 add = {};
 			float deg = 180.0f + 180.0f * (1.0f - glm::abs((2.0f * x - t) / t));
 			add.x = glm::sin(glm::radians(deg)) * 1.0f;
@@ -168,7 +168,8 @@ void NPCAnimBP::Tick(NPC* npc)
 		if (node.m_determineFunc(npc))
 		{
 			if (m_state != node.m_representState)
-				m_timeOnEnter = (float)glfwGetTime();
+				m_timeEntered = 0.0f;
+			m_timeEntered += gData.m_deltaTime;
 			m_state = node.m_representState;
 			node.m_execFunc(this, npc);
 			AnimationPlayer::PlayAnimation(uuid, node.m_framesPerSecond, node.m_sideFrames, node.m_startFrame, node.m_endFrame);

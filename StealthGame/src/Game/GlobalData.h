@@ -32,6 +32,7 @@ public:
 	class Camera* m_camera = nullptr;
 
 	uint64_t m_defaultShader;
+	uint64_t m_texBlack;
 	uint64_t m_texLogo;
 	uint64_t m_texPlayerCursor;
 	uint64_t m_texPlayer;

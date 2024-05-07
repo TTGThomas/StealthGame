@@ -179,7 +179,7 @@ protected:
 	virtual void InitNodeGraph() {}
 	void NodeGraphDead();
 
-	void ResetTimer() { m_timeWhenEnter = 0.0f; }
+	void ResetTimer() { m_timeFromEnter = 0.0f; }
 protected:
 	State m_stateOverview = State::NORMAL;
 	GameUUID m_uuid;
@@ -189,7 +189,7 @@ protected:
 	std::vector<Bridge> m_bridges;
 	int m_nodePos = 0;
 	int m_frameFromEnter = 0;
-	float m_timeWhenEnter = 0.0f;
+	float m_timeFromEnter = 0.0f;
 
 	NPCAnimBP m_animBP;
 

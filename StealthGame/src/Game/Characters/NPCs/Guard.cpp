@@ -10,7 +10,7 @@ void Guard::InitNodeGraph()
 	// nodes
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::NORMAL;
 				m_speed = m_normalSpeed;
@@ -34,14 +34,15 @@ void Guard::InitNodeGraph()
 				{
 					if (!m_isAtTarget)
 					{
-						m_timeAtTarget = (float)glfwGetTime();
+						m_timeAtTarget = 0.0f;
 						m_isAtTarget = true;
 					}
-					else if (1000.0f * ((float)glfwGetTime() - m_timeAtTarget) > m_route[m_targetRouteIndex].m_waitMs)
+					else if (1000.0f * m_timeAtTarget > m_route[m_targetRouteIndex].m_waitMs)
 					{
 						m_routeFinished = true;
 						m_targetRouteIndex++;
 					}
+					m_timeAtTarget += desc.m_tickTimer->Second();
 				}
 				else
 				{
@@ -58,7 +59,7 @@ void Guard::InitNodeGraph()
 	{
 		m_stateOverview = State::NORMAL;
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
@@ -69,7 +70,7 @@ void Guard::InitNodeGraph()
 	int lookAtPlayerIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::ATTACK;
 				m_isAttacking = true;
@@ -84,9 +85,9 @@ void Guard::InitNodeGraph()
 
 				m_speed = m_runningSpeed;
 
-				if (timeFromEnter > SHOOTDUR)
+				if (time > SHOOTDUR)
 				{
-					m_timeWhenEnter = (float)glfwGetTime();
+					ResetTimer();
 
 					// shoot
 					uint64_t t = gData.m_scene->GetAudio().AddSound(
@@ -113,25 +114,25 @@ void Guard::InitNodeGraph()
 	int attackIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_runningSpeed;
 				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
-				if (timeFromEnter < SEARCHTIME)
+				if (time < SEARCHTIME)
 				{
 					// phrase 1 - search gunshot source
-					if (frameFromEnter == 0)
+					if (frame == 0)
 						StartMoveToLocation(m_searchPos);
 
 					if (!m_isDynamicRouteCalculated)
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 
 					if (!MoveToLocation(desc.m_tickTimer->Second()))
 					{
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 					}
 					PointAtPoint(GetPos() + m_velocity);
 				}
@@ -144,7 +145,7 @@ void Guard::InitNodeGraph()
 	int searchGunShotIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_runningSpeed;
@@ -152,18 +153,18 @@ void Guard::InitNodeGraph()
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				NPC* body = (NPC*)m_searchParam;
 				m_searchFinish = false;
-				if (timeFromEnter < SEARCHTIME)
+				if (time < SEARCHTIME)
 				{
 					// phrase 1 - search body place
-					if (frameFromEnter == 0)
+					if (frame == 0)
 						StartMoveToLocation(body->GetPos());
 
 					if (!m_isDynamicRouteCalculated)
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 
 					if (!MoveToLocation(desc.m_tickTimer->Second()))
 					{
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 					}
 					PointAtPoint(GetPos() + m_velocity);
 				}
@@ -179,25 +180,25 @@ void Guard::InitNodeGraph()
 	int searchBodyIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_runningSpeed;
 				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
-				if (timeFromEnter < SEARCHTIME)
+				if (time < SEARCHTIME)
 				{
 					// phrase 1 - search player last pos
-					if (frameFromEnter == 0)
+					if (frame == 0)
 						StartMoveToLocation(player->GetPos());
 
 					if (!m_isDynamicRouteCalculated)
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 
 					if (!MoveToLocation(desc.m_tickTimer->Second()))
 					{
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 					}
 					PointAtPoint(GetPos() + m_velocity);
 				}
@@ -210,13 +211,13 @@ void Guard::InitNodeGraph()
 	int searchPlayerIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_runningSpeed;
 				m_isAttacking = false;
 
-				if (frameFromEnter == 0)
+				if (frame == 0)
 				{
 					m_searchFinish = false;
 					StartMoveToLocation(m_reportPos);
@@ -224,36 +225,36 @@ void Guard::InitNodeGraph()
 
 				if (MoveToLocation(desc.m_tickTimer->Second()))
 				{
-					if (timeFromEnter > SEARCHTIME)
+					if (time > SEARCHTIME)
 						m_searchFinish = true;
 				}
 				else
-					m_timeWhenEnter = (float)glfwGetTime();
+					ResetTimer();
 				PointAtPoint(GetPos() + m_velocity);
 			};
 	}
 	int doReportIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::SEARCHING;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
 				Player* player = &GlobalData::Get().m_gameScene->GetPlayer();
 				m_searchFinish = false;
-				if (timeFromEnter < SEARCHTIME)
+				if (time < SEARCHTIME)
 				{
-					if (frameFromEnter == 0)
+					if (frame == 0)
 						StartMoveToLocation(m_searchPos);
 
 
 					if (!m_isDynamicRouteCalculated)
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 
 					if (!MoveToLocation(desc.m_tickTimer->Second()))
 					{
-						m_timeWhenEnter = (float)glfwGetTime();
+						ResetTimer();
 					}
 					PointAtPoint(GetPos() + m_velocity);
 				}
@@ -266,7 +267,7 @@ void Guard::InitNodeGraph()
 	int searchCoinIndex = m_nodes.size() - 1;
 	{
 		Node& node = m_nodes.emplace_back(Node());
-		node.m_func = [this](GameTickDesc& desc, float timeFromEnter, int frameFromEnter)
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
 				m_stateOverview = State::EATING;
 				m_speed = m_normalSpeed;
@@ -274,7 +275,7 @@ void Guard::InitNodeGraph()
 
 				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
 
-				if (timeFromEnter > NPCEATTIME)
+				if (time > NPCEATTIME)
 				{
 					Interaction* interact = manager.GetInteracts()[m_route[m_targetRouteIndex].m_specialIndex].get();
 					if (reinterpret_cast<FoodInteract*>(interact)->IsPoisoned())
@@ -333,7 +334,7 @@ void Guard::InitNodeGraph()
 					return false;
 				if (dist < LOOKOUTER && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 				{
-					m_timeWhenEnter = (float)glfwGetTime();
+					ResetTimer();
 					return false;
 				}
 

@@ -85,6 +85,7 @@ private:
 
 	void LoadStart(GameTickDesc& desc);
 	void LoadMenu(GameTickDesc& desc);
+	void LoadGame(GameTickDesc& desc);
 	void LoadPause(GameTickDesc& desc);
 
 	void StartTick(GameTickDesc& desc);
@@ -105,9 +106,12 @@ private:
 	float m_exitStartTime = -1.0f;
 	int m_enterMap = 1;
 
+	bool m_onEnter = true;
+	bool m_exitState = false;
+
 	std::vector<uint64_t> m_menuUUIDs;
 
 	PopUpManager m_popUpManager;
 	ZonePopUp m_zonePopUp;
-	ExitCurtainPopUp m_exitPopUp;
+	//ExitCurtainPopUp m_exitPopUp;
 };
