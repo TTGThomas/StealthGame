@@ -110,6 +110,7 @@ private:
 	bool m_exitState = false;
 
 	std::vector<uint64_t> m_menuUUIDs;
+	std::vector<uint64_t> m_textures;
 
 	PopUpManager m_popUpManager;
 	ZonePopUp m_zonePopUp;

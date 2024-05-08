@@ -58,7 +58,7 @@ void Coin::OnEquipping()
 		).GetUUID();
 		ProjectileInitDesc desc;
 		desc.m_audioUUID = t;
-		desc.m_colLayer = 4;
+		desc.m_colLayer = 1;
 		desc.m_lifeSpan = 0.5f;
 		desc.m_pos = player.GetPos();;
 		desc.m_rot = rotation;

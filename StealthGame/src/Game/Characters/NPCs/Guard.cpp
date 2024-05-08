@@ -200,10 +200,12 @@ void Guard::InitNodeGraph()
 					{
 						ResetTimer();
 					}
+
 					PointAtPoint(GetPos() + m_velocity);
 				}
 				else
 				{
+					m_routeFinished = true;
 					m_searchFinish = true;
 				}
 			};
@@ -307,7 +309,14 @@ void Guard::InitNodeGraph()
 		bridge.m_destIndex = eatIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
-				return m_route[m_targetRouteIndex].m_eat;
+				if (!m_route[m_targetRouteIndex].m_eat)
+					return false;
+
+				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
+				Object& obj = manager.GetObjects()[m_route[m_targetRouteIndex].m_specialIndex];
+				if (glm::distance(GetPos(), obj.GetQuad(0)->GetPos()) < MAP_SCALE + 0.01f)
+					return true;
+				return false;
 			};
 	}
 	{

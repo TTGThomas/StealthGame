@@ -195,6 +195,8 @@ void QuadRenderer::ClearResources()
 	m_textureCount = 0;
 	m_textureDimensions.clear();
 
+	m_clearColor = { 0.2f, 0.2f, 0.3f, 1.0f };
+
 	glGenTextures(1, &m_textureArray);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);
 	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, 256);
@@ -212,7 +214,7 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 
 	Resize();
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-	glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+	glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 

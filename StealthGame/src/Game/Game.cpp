@@ -238,7 +238,6 @@ void Game::GameTick(GameTickDesc& desc)
 
 	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
 	m_popUpManager.UpdatePopUps(desc);
-	m_gameScene.UpdateProjectiles();
 
 	ShowStatsWindow();
 	m_gameScene.GetPlayer().ShowWindow();
@@ -272,8 +271,12 @@ void Game::GameTick(GameTickDesc& desc)
 
 	InteractTick(desc);
 
-	for (auto& [uuid, npc] : m_gameScene.GetNPCs())
-		npc->NPCTick(desc);
+	if (m_gameScene.GetPlayer().GetVelocity() != glm::vec2(0.0f) || true)
+	{
+		for (auto& [uuid, npc] : m_gameScene.GetNPCs())
+			npc->NPCTick(desc);
+		m_gameScene.UpdateProjectiles();
+	}
 
 	if (m_exiting)
 	{
@@ -306,6 +309,7 @@ void Game::GameTick(GameTickDesc& desc)
 void Game::SwitchState(GameTickDesc& desc, int bridgeIndex)
 {
 	m_menuUUIDs = {};
+	m_textures = {};
 	ClearCurrentScene(desc);
 	m_gameState = m_gameStates[m_gameState].m_bridges[bridgeIndex];
 	m_onEnter = true;
@@ -338,6 +342,9 @@ void Game::LoadStart(GameTickDesc& desc)
 {
 	GlobalData& gData = GlobalData::Get();
 	SceneLoader::Get().LoadRawConstants(desc);
+
+	desc.m_renderer->SetClear({ 0.0f, 0.0f, 0.0f, 1.0f });
+	m_textures.emplace_back(desc.m_renderer->AddTexture("res/start.png"));
 	
 	{
 		Quad quad;
@@ -348,7 +355,7 @@ void Game::LoadStart(GameTickDesc& desc)
 		renderDesc.m_depth = 0.0f;
 		renderDesc.m_followCameraOffset = false;
 		renderDesc.m_shaderUUID = gData.m_defaultShader;
-		renderDesc.m_textureUUID = gData.m_texLogo;
+		renderDesc.m_textureUUID = m_textures[0];
 		desc.m_scene->AddQuad(quad, renderDesc);
 	}
 	{
@@ -364,6 +371,7 @@ void Game::LoadStart(GameTickDesc& desc)
 		desc.m_scene->AddQuad(quad, renderDesc);
 		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(1.0f);
 	}
+
 }
 
 void Game::LoadMenu(GameTickDesc& desc)

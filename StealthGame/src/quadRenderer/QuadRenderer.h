@@ -60,6 +60,8 @@ public:
 	uint64_t AddTexture(const char* filePath);
 	uint64_t AddTexture(unsigned char* data, int x, int y);
 
+	void SetClear(glm::vec4 color) { m_clearColor = color; }
+
 	std::pair<int, int> GetTextureDimension(uint64_t index) { return m_textureDimensions[index]; }
 	int GetTextureWidth(uint64_t index) { return GetTextureDimension(index).first; }
 	int GetTextureHeight(uint64_t index) { return GetTextureDimension(index).second; }
@@ -93,6 +95,8 @@ private:
 	// width, height
 	std::vector<std::pair<int, int>> m_textureDimensions;
 	int m_textureCount;
+
+	glm::vec4 m_clearColor = { 0.2f, 0.2f, 0.3f, 1.0f };
 
 	std::vector<int> m_dstIndex;
 	bool m_useTexture = true;

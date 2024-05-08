@@ -559,6 +559,9 @@
     <Image Include="res\SpecialObjects\FoodPoisoned.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\start.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />

@@ -306,6 +306,7 @@
     <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
+    <Image Include="res\start.png" />
     <Image Include="res\Inventories\Bullet.png" />
     <Image Include="res\Inventories\coin.png" />
     <Image Include="res\Inventories\coinHUD.png" />
