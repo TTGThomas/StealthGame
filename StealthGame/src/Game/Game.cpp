@@ -378,16 +378,31 @@ void Game::LoadMenu(GameTickDesc& desc)
 	GlobalData& gData = GlobalData::Get();
 	SceneLoader::Get().LoadRawConstants(desc);
 
+	desc.m_renderer->SetClear({ 0.15f, 0.15f, 0.15f, 1.0f });
+	m_textures.emplace_back(desc.m_renderer->AddTexture("res/Tutorial.png"));
+	m_textures.emplace_back(desc.m_renderer->AddTexture("res/Level0.png"));
+
 	{
 		Quad quad;
-		quad.SetPos({});
+		quad.SetPos({ -0.6f, 0.0f });
 		quad.SetRadius({ 0.5f, 0.5f });
 		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
 		RenderQuadInitDesc renderDesc;
 		renderDesc.m_depth = 0.0f;
 		renderDesc.m_followCameraOffset = false;
 		renderDesc.m_shaderUUID = gData.m_defaultShader;
-		renderDesc.m_textureUUID = gData.m_texLogo;
+		renderDesc.m_textureUUID = m_textures[0];
+		desc.m_scene->AddQuad(quad, renderDesc);
+	} {
+		Quad quad;
+		quad.SetPos({ 0.6f, 0.0f });
+		quad.SetRadius({ 0.5f, 0.5f });
+		m_menuUUIDs.emplace_back(quad.GetUUID().GetUUID());
+		RenderQuadInitDesc renderDesc;
+		renderDesc.m_depth = 0.0f;
+		renderDesc.m_followCameraOffset = false;
+		renderDesc.m_shaderUUID = gData.m_defaultShader;
+		renderDesc.m_textureUUID = m_textures[1];
 		desc.m_scene->AddQuad(quad, renderDesc);
 	}
 	{
@@ -487,7 +502,14 @@ void Game::MenuTick(GameTickDesc& desc)
 
 	if (QuadClicked(desc, m_menuUUIDs[0]))
 	{
-		m_enterMap = 0;
+		m_enterMap = 1;
+		m_onEnter = false;
+		m_exitState = true;
+	}
+
+	if (QuadClicked(desc, m_menuUUIDs[1]))
+	{
+		m_enterMap = 2;
 		m_onEnter = false;
 		m_exitState = true;
 	}

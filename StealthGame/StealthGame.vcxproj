@@ -306,6 +306,8 @@
     <Image Include="res\Fonts\sample-atlas.png" />
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
+    <Image Include="res\Level0.png" />
+    <Image Include="res\Tutorial.png" />
     <Image Include="res\Levels\TutorialLevel\Back.png" />
     <Image Include="res\Levels\TutorialLevel\Fore.png" />
     <Image Include="res\start.png" />

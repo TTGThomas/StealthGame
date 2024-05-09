@@ -568,6 +568,12 @@
     <Image Include="res\Levels\TutorialLevel\Fore.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Tutorial.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Level0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />

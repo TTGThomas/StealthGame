@@ -5,8 +5,14 @@
 void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game, int index)
 {
 	switch (index)
-	{;
+	{
 	case 0:
+		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
+		break;
+	case 1:
+		LoadFromFile(desc, scene, game, "res/Levels/TutorialLevel/");
+		break;
+	case 2:
 		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
 		break;
 	}
