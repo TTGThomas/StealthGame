@@ -11,37 +11,12 @@ RenderQuad::RenderQuad(RenderQuadInitDesc& desc, GameUUID uuid)
 
 void RenderQuad::Cleanup()
 {
-	return;
-	glDeleteVertexArrays(1, &m_vao);
-	glDeleteBuffers(1, &m_vbo);
-	glDeleteBuffers(1, &m_ebo);
 }
 
 void RenderQuad::Init(float depth, uint64_t shaderUUID, uint64_t textureUUID)
 {
-	//m_shaderUUID = shaderUUID;
 	m_textureUUID = textureUUID;
 	m_depth = depth;
-	//
-	//glGenVertexArrays(1, &m_vao);
-	//glGenBuffers(1, &m_vbo);
-	//glGenBuffers(1, &m_ebo);
-	//
-	//glBindVertexArray(m_vao);
-	//
-	//glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
-	//
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
-	//
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_pos));
-	//
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoord));
-	//
-	//glBindVertexArray(0);
 }
 
 void RenderQuad::Draw(RenderDesc& desc)

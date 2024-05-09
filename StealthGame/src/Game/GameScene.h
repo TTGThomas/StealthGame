@@ -57,9 +57,6 @@ struct SceneInitDesc
 	std::vector<AABB>* m_hostileZones;
 
 	GameTickDesc m_gameTickDesc;
-
-	uint64_t m_foregroundTexID;
-	uint64_t m_backgroundTexID;
 };
 
 class GameScene

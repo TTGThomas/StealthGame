@@ -104,7 +104,7 @@ private:
 
 	bool m_exiting = false;
 	float m_exitStartTime = -1.0f;
-	int m_enterMap = 1;
+	int m_enterMap = 0;
 
 	bool m_onEnter = true;
 	bool m_exitState = false;
@@ -114,5 +114,4 @@ private:
 
 	PopUpManager m_popUpManager;
 	ZonePopUp m_zonePopUp;
-	//ExitCurtainPopUp m_exitPopUp;
 };

@@ -45,6 +45,7 @@ struct InstanceData
 	float m_depth;
 	float m_sideFrames;
 	float m_frameIndex;
+	float m_isGround;// 0 - none  1 - foreground  2 - background
 };
 
 class QuadRenderer
@@ -55,6 +56,9 @@ public:
 	~QuadRenderer();
 
 	void BindCamera(Camera* camera);
+
+	void SetForeTexture(const char* path);
+	void SetBackTexture(const char* path);
 
 	void AddShader(Shader& shader);
 	uint64_t AddTexture(const char* filePath);
@@ -93,6 +97,7 @@ private:
 	int m_wx = 0, m_wy = 0;
 	std::unordered_map<uint64_t, Shader> m_shaders{};
 	// width, height
+	unsigned int m_foreTex, m_backTex;
 	std::vector<std::pair<int, int>> m_textureDimensions;
 	int m_textureCount;
 

@@ -17,9 +17,9 @@ class VisualLayers
 public:
 	VisualLayers() = default;
 
-	void Init(GameTickDesc& desc, uint64_t backgroundTexID, uint64_t foregroundTexID);
+	void Init(GameTickDesc& desc);
 private:
-	uint64_t AddQuad(GameTickDesc& desc, float depth, uint64_t texID);
+	uint64_t AddQuad(GameTickDesc& desc, float ground, float depth, uint64_t texID);
 private:
 	GameUUID m_foreground;
 	GameUUID m_background;

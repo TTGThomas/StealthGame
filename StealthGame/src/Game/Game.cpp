@@ -227,11 +227,11 @@ void Game::GameTick(GameTickDesc& desc)
 	
 	if (m_onEnter)
 	{
-		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs[0]].GetAlpha();
 		alpha -= desc.m_tickTimer->Second();
 		if (alpha < 0.0f)
 			m_onEnter = false;
-		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs[0]].SetAlpha(alpha);
 	}
 
 	gData.m_deltaTime = desc.m_tickTimer->Second();
@@ -287,7 +287,7 @@ void Game::GameTick(GameTickDesc& desc)
 
 	if (m_exitState)
 	{
-		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].GetAlpha();
+		float alpha = desc.m_scene->GetRenderQuads()[m_menuUUIDs[0]].GetAlpha();
 		alpha += desc.m_tickTimer->Second();
 		if (alpha > 1.0f)
 		{
@@ -295,7 +295,7 @@ void Game::GameTick(GameTickDesc& desc)
 			SwitchState(desc, 1);
 			return;
 		}
-		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs[0]].SetAlpha(alpha);
 	}
 
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_ESCAPE))
@@ -325,7 +325,6 @@ void Game::SwitchState(GameTickDesc& desc, int bridgeIndex)
 
 void Game::RawSwitchState(GameTickDesc& desc, int bridgeIndex)
 {
-	m_menuUUIDs = {};
 	m_gameState = m_gameStates[m_gameState].m_bridges[bridgeIndex];
 	m_onEnter = true;
 	if (m_gameState == 0)
@@ -440,6 +439,7 @@ void Game::LoadPause(GameTickDesc& desc)
 		renderDesc.m_shaderUUID = gData.m_defaultShader;
 		renderDesc.m_textureUUID = gData.m_texDoor;
 		desc.m_scene->AddQuad(quad, renderDesc);
+		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(0.1f);
 	}
 }
 
@@ -485,8 +485,9 @@ void Game::MenuTick(GameTickDesc& desc)
 		desc.m_scene->GetRenderQuads()[m_menuUUIDs.back()].SetAlpha(alpha);
 	}
 
-	if (QuadClicked(desc, m_menuUUIDs.back()))
+	if (QuadClicked(desc, m_menuUUIDs[0]))
 	{
+		m_enterMap = 0;
 		m_onEnter = false;
 		m_exitState = true;
 	}
@@ -507,15 +508,13 @@ void Game::MenuTick(GameTickDesc& desc)
 
 void Game::PauseTick(GameTickDesc& desc)
 {
-	desc.m_scene->GetRenderQuads()[m_menuUUIDs[0]].SetAlpha(0.1f);
 	if (KeyBoard::IsKeyPressDown(GLFW_KEY_ESCAPE))
 	{
 		// Manual clear objects
-		for (uint64_t uuid : m_menuUUIDs)
-			desc.m_scene->DeleteQuad(uuid);
+		desc.m_scene->DeleteQuad(m_menuUUIDs.back());
 
+		m_menuUUIDs.erase(m_menuUUIDs.end() - 1);
 		m_gameState = m_gameStates[m_gameState].m_bridges[0];
-		m_menuUUIDs = {};
 		m_onEnter = false;
 	}
 }

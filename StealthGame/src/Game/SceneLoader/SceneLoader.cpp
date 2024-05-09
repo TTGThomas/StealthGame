@@ -5,11 +5,8 @@
 void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game, int index)
 {
 	switch (index)
-	{
+	{;
 	case 0:
-		LoadMenu(desc, scene, game);
-		break;
-	case 1:
 		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
 		break;
 	}
@@ -93,8 +90,6 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 	initDesc.m_gameTickDesc = desc;
 	initDesc.m_trespassingZones = &trespassingZones;
 	initDesc.m_hostileZones = &hostileZones;
-	initDesc.m_foregroundTexID = foregroundID;
-	initDesc.m_backgroundTexID = backgroundID;
 
 	scene->Init(initDesc);
 }
@@ -118,13 +113,14 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 
 	LoadConstants(desc, scene, game);
 
-	std::string backgroundPath = path;
-	backgroundPath.append("Back.png");
-	uint64_t backgroundID = desc.m_renderer->AddTexture(backgroundPath.c_str());
 
 	std::string foregroundPath = path;
 	foregroundPath.append("Fore.png");
-	uint64_t foregroundID = desc.m_renderer->AddTexture(foregroundPath.c_str());
+	desc.m_renderer->SetForeTexture(foregroundPath.c_str());
+
+	std::string backgroundPath = path;
+	backgroundPath.append("Back.png");
+	desc.m_renderer->SetBackTexture(backgroundPath.c_str());
 
 	GlobalData& gData = GlobalData::Get();
 
@@ -250,13 +246,6 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 	initDesc.m_gameTickDesc = desc;
 	initDesc.m_trespassingZones = &m_trespass;
 	initDesc.m_hostileZones = &m_hostile;
-#if 0
-	initDesc.m_foregroundTexID = foregroundID;
-	initDesc.m_backgroundTexID = backgroundID;
-#else
-	initDesc.m_foregroundTexID = 0;
-	initDesc.m_backgroundTexID = 0;
-#endif
 
 	scene->Init(initDesc);
 

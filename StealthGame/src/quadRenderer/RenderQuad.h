@@ -54,6 +54,7 @@ public:
 	void SetAlpha(float alpha) { m_alpha = alpha; }
 	void SetSideFrames(int sideFrames) { m_sideFrames = sideFrames; }
 	void SetFrameIndex(float frameIndex) { m_frameIndex = frameIndex; }
+	void SetIsGround(float isGround) { m_isGround = isGround; }
 
 	uint64_t getShaderUUID() { return m_shaderUUID; }
 	uint64_t GetTextureUUID() { return m_textureUUID;; }
@@ -63,6 +64,7 @@ public:
 	bool GetFollowCamera() { return m_followCamera; }
 	int GetSideFrames() { return m_sideFrames; }
 	float GetFrameIndex() { return m_frameIndex; }
+	float GetIsGround() { return m_isGround; }
 private:
 	unsigned int m_vao = 0, m_vbo = 0, m_ebo = 0;
 	uint64_t m_shaderUUID = 0;
@@ -78,6 +80,8 @@ private:
 
 	float m_frameIndex = 0;
 	int m_sideFrames = 1;
+
+	float m_isGround = 0.0f;
 
 	glm::vec2 m_pos{};
 	glm::vec2 m_radius{};

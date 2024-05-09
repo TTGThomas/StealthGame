@@ -113,6 +113,9 @@ QuadRenderer::QuadRenderer(Scene* parent, Window* window)
 
 	glEnableVertexAttribArray(11);
 	glVertexAttribPointer(11, 1, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)offsetof(InstanceData, m_frameIndex));
+
+	glEnableVertexAttribArray(12);
+	glVertexAttribPointer(12, 1, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)offsetof(InstanceData, m_isGround));
 	
 	glVertexAttribDivisor(2, 1);
 	glVertexAttribDivisor(3, 1);
@@ -124,6 +127,7 @@ QuadRenderer::QuadRenderer(Scene* parent, Window* window)
 	glVertexAttribDivisor(9, 1);
 	glVertexAttribDivisor(10, 1);
 	glVertexAttribDivisor(11, 1);
+	glVertexAttribDivisor(12, 1);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -133,7 +137,29 @@ QuadRenderer::QuadRenderer(Scene* parent, Window* window)
 	glGenTextures(1, &m_textureArray);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);
 
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, 256);
+	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, 128);
+
+
+	glGenTextures(1, &m_foreTex);
+	glBindTexture(GL_TEXTURE_2D, m_foreTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	
+	glGenTextures(1, &m_backTex);
+	glBindTexture(GL_TEXTURE_2D, m_backTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 QuadRenderer::~QuadRenderer()
@@ -155,6 +181,34 @@ QuadRenderer::~QuadRenderer()
 void QuadRenderer::BindCamera(Camera* camera)
 {
 	m_camera = camera;
+}
+
+void QuadRenderer::SetForeTexture(const char* path)
+{
+	int x, y, n;
+	unsigned char* data = stbi_load(path, &x, &y, &n, 4);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_foreTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(data);
+}
+
+void QuadRenderer::SetBackTexture(const char* path)
+{
+	int x, y, n;
+	unsigned char* data = stbi_load(path, &x, &y, &n, 4);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_backTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(data);
 }
 
 void QuadRenderer::AddShader(Shader& shader)
@@ -199,7 +253,33 @@ void QuadRenderer::ClearResources()
 
 	glGenTextures(1, &m_textureArray);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, 256);
+	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 256, 256, 128);
+
+
+
+	glDeleteTextures(1, &m_foreTex);
+	glDeleteTextures(1, &m_backTex);
+
+	glGenTextures(1, &m_foreTex);
+	glBindTexture(GL_TEXTURE_2D, m_foreTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_wx, m_wy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	glGenTextures(1, &m_backTex);
+	glBindTexture(GL_TEXTURE_2D, m_backTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_wx, m_wy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void QuadRenderer::Render(float ratio, int selectedIndex)
@@ -245,6 +325,7 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 				data.m_depth = renderQuad.GetDepth();
 				data.m_sideFrames = (int)renderQuad.GetSideFrames();
 				data.m_frameIndex = (int)renderQuad.GetFrameIndex();
+				data.m_isGround = renderQuad.GetIsGround();
 				glBufferSubData(GL_ARRAY_BUFFER, index * sizeof(InstanceData), sizeof(InstanceData), &data);
 				index++;
 			}
@@ -257,6 +338,12 @@ void QuadRenderer::Render(float ratio, int selectedIndex)
 	m_shader.Bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_textureArray);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_foreTex);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_backTex);
 
 	glUniform1f(LOCATION(m_shader, "u_screenRatio"), ratio);
 	glUniform1i(LOCATION(m_shader, "u_useTexture"), m_useTexture);
@@ -319,6 +406,7 @@ void QuadRenderer::RenderScreen()
 	glDisable(GL_BLEND);
 
 	m_screenShader.Bind();
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_colBuf);
 
 	glBindVertexArray(m_vao);

@@ -562,6 +562,12 @@
     <Image Include="res\start.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Levels\TutorialLevel\Back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Levels\TutorialLevel\Fore.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />
@@ -574,6 +580,13 @@
     <Text Include="res\Levels\DebugLevel\Zones.txt" />
     <Text Include="res\Levels\DebugLevel\5#15.txt" />
     <Text Include="res\Levels\DebugLevel\Item.txt" />
+    <Text Include="res\Levels\TutorialLevel\5#14.txt" />
+    <Text Include="res\Levels\TutorialLevel\5#15.txt" />
+    <Text Include="res\Levels\TutorialLevel\6#15.txt" />
+    <Text Include="res\Levels\TutorialLevel\10#9.txt" />
+    <Text Include="res\Levels\TutorialLevel\Item.txt" />
+    <Text Include="res\Levels\TutorialLevel\Level.txt" />
+    <Text Include="res\Levels\TutorialLevel\Zones.txt" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\Audio\BohemianRapsody.mp3" />
