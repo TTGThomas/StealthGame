@@ -219,6 +219,9 @@
     <ClCompile Include="third\stbi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="res\Levels\Level0\31#19.txt">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="third\ImGui\backends\imgui_impl_glfw.h">
@@ -577,6 +580,12 @@
     <Image Include="res\Levels\grid.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Levels\Level0\Back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Levels\Level0\Fore.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\NPC\FormatInfo.txt" />
@@ -598,6 +607,11 @@
     <Text Include="res\Levels\TutorialLevel\16#15.txt" />
     <Text Include="res\Levels\TutorialLevel\23#14.txt" />
     <Text Include="res\Levels\TutorialLevel\27#10.txt" />
+    <Text Include="res\Levels\Level0\Item.txt" />
+    <Text Include="res\Levels\Level0\Level.txt" />
+    <Text Include="res\Levels\Level0\Zones.txt" />
+    <Text Include="res\Levels\Level0\33#3.txt" />
+    <Text Include="res\Levels\Level0\6#6.txt" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\Audio\BohemianRapsody.mp3" />

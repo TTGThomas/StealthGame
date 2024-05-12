@@ -14,7 +14,8 @@ void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game
 		LoadFromFile(desc, scene, game, "res/Levels/TutorialLevel/");
 		break;
 	case 2:
-		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
+		desc.m_renderer->SetClear({ 0.0f, 0.0f, 0.0f, 1.0f });
+		LoadFromFile(desc, scene, game, "res/Levels/Level0/");
 		break;
 	}
 }
@@ -226,10 +227,10 @@ void SceneLoader::LoadFromFile(GameTickDesc& desc, GameScene* scene, Game* game,
 			else if (c == 'b')
 				gData.m_bodyConcentrationPos = pos;
 			// disguises
-			else if (c >= '0' && c <= '9')
+			else if (c >= '1' && c <= '4')
 			{
 				items.emplace_back(std::make_shared<Disguise>());
-				((Disguise*)items.back().get())->Init(Identities::GUEST, pos, Depth(0.0f), gData.m_defaultShader);
+				((Disguise*)items.back().get())->Init((Identities)(c - '0'), pos, Depth(0.0f), gData.m_defaultShader);
 			}
 
 			noChar++;

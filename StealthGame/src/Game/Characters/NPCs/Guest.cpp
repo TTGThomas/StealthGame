@@ -3,6 +3,8 @@
 #include "Guard.h"
 #include "NPCConfig.h"
 
+#include "../../Interact/FoodInteract.h"
+
 #include "../../GameScene.h"
 
 void Guest::InitNodeGraph()
@@ -12,9 +14,16 @@ void Guest::InitNodeGraph()
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float time, int frame)
 			{
-				m_stateOverview = NPC::State::NORMAL;
+				m_stateOverview = State::NORMAL;
 				m_speed = m_normalSpeed;
 				m_isAttacking = false;
+
+				if (m_targetRouteIndex >= m_route.size())
+					m_targetRouteIndex -= m_route.size();
+
+				if (m_route[m_targetRouteIndex].m_eat)
+					return;
+
 				glm::vec2 location = m_route[m_targetRouteIndex].m_pos;
 
 				if (m_routeFinished)
@@ -27,16 +36,15 @@ void Guest::InitNodeGraph()
 				{
 					if (!m_isAtTarget)
 					{
-						m_timeAtTarget = (float)glfwGetTime();
+						m_timeAtTarget = 0.0f;
 						m_isAtTarget = true;
 					}
-					else if (1000.0f * ((float)glfwGetTime() - m_timeAtTarget) > m_route[m_targetRouteIndex].m_waitMs)
+					else if (1000.0f * m_timeAtTarget > m_route[m_targetRouteIndex].m_waitMs)
 					{
 						m_routeFinished = true;
 						m_targetRouteIndex++;
-						if (m_targetRouteIndex == m_route.size())
-							m_targetRouteIndex = 0;
 					}
+					m_timeAtTarget += desc.m_tickTimer->Second();
 				}
 				else
 				{
@@ -44,6 +52,9 @@ void Guest::InitNodeGraph()
 					if (m_velocity != glm::vec2(0.0f))
 						PointAtPoint(GetPos() + m_velocity);
 				}
+
+				if (m_targetRouteIndex >= m_route.size())
+					m_targetRouteIndex -= m_route.size();
 			};
 	}
 	int moveOnRouteIndex = m_nodes.size() - 1;
@@ -124,6 +135,7 @@ void Guest::InitNodeGraph()
 			};
 	}
 	int reportPlayerIndex = m_nodes.size() - 1;
+
 	{
 		Node& node = m_nodes.emplace_back(Node());
 		node.m_func = [this](GameTickDesc& desc, float time, int frame)
@@ -146,7 +158,9 @@ void Guest::InitNodeGraph()
 					{
 						ResetTimer();
 					}
-					PointAtPoint(GetPos() + m_velocity);
+
+					if (m_velocity != glm::vec2(0.0f))
+						PointAtPoint(GetPos() + m_velocity);
 				}
 				else
 				{
@@ -155,6 +169,25 @@ void Guest::InitNodeGraph()
 			};
 	}
 	int searchCoinIndex = m_nodes.size() - 1;
+	{
+		Node& node = m_nodes.emplace_back(Node());
+		node.m_func = [this](GameTickDesc& desc, float time, int frame)
+			{
+				m_stateOverview = State::EATING;
+				m_speed = m_normalSpeed;
+				m_isAttacking = false;
+
+				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
+
+				if (time > NPCEATTIME)
+				{
+					Interaction* interact = manager.GetInteracts()[m_route[m_targetRouteIndex].m_specialIndex].get();
+					if (reinterpret_cast<FoodInteract*>(interact)->IsPoisoned())
+						EliminateMyself();
+				}
+			};
+	}
+	int eatIndex = m_nodes.size() - 1;
 
 	// bridges
 	{
@@ -170,6 +203,33 @@ void Guest::InitNodeGraph()
 				if (dist < 0.5f && player.GetVelocity() != glm::vec2(0.0f, 0.0f))
 					return true;
 				return false;
+			};
+	} {
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(moveOnRouteIndex);
+		bridge.m_destIndex = eatIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				if (!m_route[m_targetRouteIndex].m_eat)
+					return false;
+
+				SpecialBlockManager& manager = GlobalData::Get().m_gameScene->GetSpecialBlockManager();
+				Object& obj = manager.GetObjects()[m_route[m_targetRouteIndex].m_specialIndex];
+				if (glm::distance(GetPos(), obj.GetQuad(0)->GetPos()) < MAP_SCALE + 0.01f)
+					return true;
+				return false;
+			};
+	}
+	{
+		Bridge& bridge = m_bridges.emplace_back(Bridge());
+		bridge.m_originIndexes.emplace_back(eatIndex);
+		bridge.m_destIndex = moveOnRouteIndex;
+		bridge.m_determineFunc = [this](float time, int frame) -> bool
+			{
+				bool ret = time > NPCEATTIME + 0.2f;
+				if (ret)
+					m_targetRouteIndex++;
+				return ret;
 			};
 	}
 	{

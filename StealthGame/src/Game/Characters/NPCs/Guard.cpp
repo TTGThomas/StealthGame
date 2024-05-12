@@ -264,6 +264,7 @@ void Guard::InitNodeGraph()
 				}
 				else
 				{
+					
 					m_searchFinish = true;
 				}
 			};
@@ -574,6 +575,8 @@ void Guard::InitNodeGraph()
 		bridge.m_destIndex = moveOnRouteIndex;
 		bridge.m_determineFunc = [this](float time, int frame) -> bool
 			{
+				if (m_searchFinish)
+					m_routeFinished = true;
 				return m_searchFinish;
 			};
 	}

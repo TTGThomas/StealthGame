@@ -34,7 +34,7 @@ bool Projectile::Tick()
 
 	if ((float)glfwGetTime() - m_lifeStart > m_lifeSpan)
 		ret = false;
-	if (gData.m_collision->Collide(0, m_entity.GetUUID(0)).m_hasHit)
+	if (gData.m_collision->Collide(3, m_entity.GetUUID(0)).m_hasHit)
 		ret = false;
 
 	m_entity.GetQuad(0)->ChangePos(m_vel * m_speed * gData.m_deltaTime);
