@@ -258,7 +258,9 @@ void Guard::InitNodeGraph()
 					{
 						ResetTimer();
 					}
-					PointAtPoint(GetPos() + m_velocity);
+
+					if (m_velocity != glm::vec2(0.0f))
+						PointAtPoint(GetPos() + m_velocity);
 				}
 				else
 				{

@@ -37,6 +37,7 @@ void Disguise::OnCollect(GameScene* scene)
 	gData.m_scene->GetRenderQuads()[GetUUID().GetUUID()].SetTextureUUID(
 		DisguiseFromIdentity(m_type)
 	);
+	gData.m_scene->GetQuads()[GetUUID().GetUUID()].SetPos(player.GetPos());
 }
 
 uint64_t Disguise::DisguiseFromIdentity(Identities type)

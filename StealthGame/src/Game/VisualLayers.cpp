@@ -13,8 +13,8 @@ uint64_t VisualLayers::AddQuad(GameTickDesc& desc, float ground, float depth, ui
 	Scene* scene = desc.m_scene;
 	QuadRenderer* renderer = desc.m_renderer;
 
-	float rate = MAP_SCALE / 32.0f;
-	float size = 1024.0f;
+	float rate = MAP_RADIUS / 32.0f;
+	float size = 2048.0f;
 	
 	// 32 px for 0.45
 	// 1 px for 0.45 / 32

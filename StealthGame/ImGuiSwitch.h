@@ -1,3 +1,3 @@
 #pragma once
 
-//#define IMGUI_DISABLE
+#define IMGUI_DISABLE

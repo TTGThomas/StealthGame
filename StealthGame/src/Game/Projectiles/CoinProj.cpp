@@ -16,8 +16,8 @@ CoinProj::CoinProj(ProjectileInitDesc& desc, glm::vec2 pos)
 
 	std::vector<QuadInitDesc> descs;
 	float size = desc.m_size;
-	descs.push_back({ m_pos, { size, size }, SceneLoader::Depth(0.9f), gData.m_defaultShader, desc.m_texID });
-	descs.push_back({ m_pos, { size, size }, SceneLoader::Depth(0.9f), gData.m_defaultShader, desc.m_texID });
+	descs.push_back({ m_pos, { size, size }, SceneLoader::Depth(0.991f), gData.m_defaultShader, desc.m_texID });
+	descs.push_back({ m_pos, { size, size }, SceneLoader::Depth(0.991f), gData.m_defaultShader, desc.m_texID });
 	m_entity.Init(descs);
 	gData.m_collision->AddToLayer(desc.m_colLayer, m_entity.GetUUID(0).GetUUID());
 

@@ -41,7 +41,7 @@ protected:
 
 		RenderQuadInitDesc renderDesc;
 		renderDesc.m_followCameraOffset = followCameraOffset;
-		renderDesc.m_depth = 0.91f;
+		renderDesc.m_depth = 0.999f;
 		renderDesc.m_shaderUUID = gData.m_defaultShader;
 		renderDesc.m_textureUUID = texture;
 

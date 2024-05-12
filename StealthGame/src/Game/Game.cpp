@@ -239,6 +239,10 @@ void Game::GameTick(GameTickDesc& desc)
 	m_gameScene.GetTaskbar().UpdateTaskbar(desc);
 	m_popUpManager.UpdatePopUps(desc);
 
+	desc.m_camera->ChangeZoom((float)Mouse::GetMouseScrollDY() / 50.0f);
+	if (Mouse::IsMousePressDown(GLFW_MOUSE_BUTTON_MIDDLE))
+		desc.m_camera->SetZoom(0.5f);
+
 	ShowStatsWindow();
 	m_gameScene.GetPlayer().ShowWindow();
 	m_gameScene.GetTaskbar().ShowStatsWindow();

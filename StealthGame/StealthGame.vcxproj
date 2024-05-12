@@ -307,6 +307,7 @@
     <Image Include="res\Icons\Eliminate.png" />
     <Image Include="res\Icons\Escape.png" />
     <Image Include="res\Level0.png" />
+    <Image Include="res\Levels\grid.png" />
     <Image Include="res\Tutorial.png" />
     <Image Include="res\Levels\TutorialLevel\Back.png" />
     <Image Include="res\Levels\TutorialLevel\Fore.png" />
@@ -349,10 +350,12 @@
     <Text Include="res\Levels\DebugLevel\Zones.txt" />
     <Text Include="res\Levels\DebugLevel\Level.txt" />
     <Text Include="res\Levels\LevelFormat.txt" />
-    <Text Include="res\Levels\TutorialLevel\10#9.txt" />
-    <Text Include="res\Levels\TutorialLevel\5#14.txt" />
-    <Text Include="res\Levels\TutorialLevel\5#15.txt" />
-    <Text Include="res\Levels\TutorialLevel\6#15.txt" />
+    <Text Include="res\Levels\TutorialLevel\16#15.txt" />
+    <Text Include="res\Levels\TutorialLevel\17#4.txt" />
+    <Text Include="res\Levels\TutorialLevel\23#14.txt" />
+    <Text Include="res\Levels\TutorialLevel\23#4.txt" />
+    <Text Include="res\Levels\TutorialLevel\27#10.txt" />
+    <Text Include="res\Levels\TutorialLevel\32#5.txt" />
     <Text Include="res\Levels\TutorialLevel\Item.txt" />
     <Text Include="res\Levels\TutorialLevel\Level.txt" />
     <Text Include="res\Levels\TutorialLevel\Zones.txt" />

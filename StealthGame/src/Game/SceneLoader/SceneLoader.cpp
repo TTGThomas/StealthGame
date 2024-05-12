@@ -10,6 +10,7 @@ void SceneLoader::LoadMap(GameTickDesc& desc, GameScene* scene, class Game* game
 		LoadFromFile(desc, scene, game, "res/Levels/DebugLevel/");
 		break;
 	case 1:
+		desc.m_renderer->SetClear({ 0.216f, 0.216f, 0.216f, 1.0f });
 		LoadFromFile(desc, scene, game, "res/Levels/TutorialLevel/");
 		break;
 	case 2:
@@ -22,7 +23,7 @@ void SceneLoader::LoadMenu(GameTickDesc& desc, GameScene* scene, Game* game)
 {
 	desc.m_camera->SetZoom(0.5f);
 	game->InitZonePopUp(desc);
-
+ 
 	LoadConstants(desc, scene, game);
 
 	//Texture foreground("res/NPC/Dir.png");
